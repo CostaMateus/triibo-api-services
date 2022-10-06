@@ -20,16 +20,6 @@
 			settings_fields( "triibo_api_services_general_settings" );
 			do_settings_sections( "triibo_api_services_general_settings" );
 			submit_button();
-
-			// echo "ENV | ";
-			// echo get_option( "triibo_api_services_gate_env"    ) ? "true " : "false ";
-			// echo get_option( "triibo_api_services_node_env"    ) ? "true " : "false ";
-			// echo get_option( "triibo_api_services_php_env"     ) ? "true " : "false ";
-
-			// echo "<br>STATUS | ";
-			// echo get_option( "triibo_api_services_gate_status" ) ? "true " : "false ";
-			// echo get_option( "triibo_api_services_node_status" ) ? "true " : "false ";
-			// echo get_option( "triibo_api_services_php_status"  ) ? "true " : "false ";
 		?>
 	</form>
 </div>
