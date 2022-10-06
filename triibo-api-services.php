@@ -12,21 +12,17 @@
  * Author URI: 		https://costamateus.com.br/
  * Text Domain: 	triibo-api-services
  */
-
-// If this file is called directly, abort.
 defined( "ABSPATH" ) || exit;
 
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
  */
 define( "TRIIBO_API_SERVICES_VERSION", "1.0.0"  );
 define( "TRIIBO_API_SERVICES_FILE",    __FILE__ );
 
 /**
- * The core plugin class that is used to define internationalization,
- * admin-specific hooks, and public-facing site hooks.
+ * The core plugin class that is used to define admin-specific hooks.
  */
 require plugin_dir_path( __FILE__ ) . 'includes/class-triibo-api-services.php';
 
