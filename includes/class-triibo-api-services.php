@@ -45,6 +45,10 @@ class Triibo_Api_Services
 		add_action( "admin_init", [ $this, "register_and_build_fields" ]    );
 
 		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links" ] );
+
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-node.php" );
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-php.php" );
 	}
 
 	/**
@@ -137,78 +141,81 @@ class Triibo_Api_Services
 		$gate_fields  = [
 			[
 				"key"   => "gate_status",
-				"value" => "Ativar / Desativar",
-				"label" => "Ativar API Gateway"
+				"title" => "Ativar / Desativar",
+				"label" => "Ativar API Gateway",
 			],[
 				"key"   => "gate_env",
-				"value" => "Homologação",
-				"label" => "Habilitar API de homologação"
+				"title" => "Homologação",
+				"label" => "Habilitar API de homologação",
+				"value" => true,
 			],[
 				"key"   => "gate_hml_tkn",
-				"value" => "Token (homol)",
+				"title" => "Token (homol)",
 			],[
 				"key"   => "gate_hml_chn_id",
-				"value" => "Channel ID (homol)",
+				"title" => "Channel ID (homol)",
 			],[
 				"key"   => "gate_hml_chn_tkn",
-				"value" => "Channel Token (homol)",
+				"title" => "Channel Token (homol)",
 			],[
 				"key"   => "gate_prd_tkn",
-				"value" => "Token",
+				"title" => "Token",
 			],[
 				"key"   => "gate_prd_chn_id",
-				"value" => "Channel ID",
+				"title" => "Channel ID",
 			],[
 				"key"   => "gate_prd_chn_tkn",
-				"value" => "Channel Token",
+				"title" => "Channel Token",
 			],
 		];
 
 		$node_fields  = [
 			[
 				"key"   => "node_status",
-				"value" => "Ativar / Desativar",
-				"label" => "Ativar API Node"
+				"title" => "Ativar / Desativar",
+				"label" => "Ativar API Node",
 			],[
 				"key"   => "node_env",
-				"value" => "Homologação",
-				"label" => "Habilitar API de homologação"
+				"title" => "Homologação",
+				"label" => "Habilitar API de homologação",
+				"value" => true,
 			],[
 				"key"   => "node_hml_user",
-				"value" => "Usuário (homol)",
+				"title" => "Usuário (homol)",
 			],[
 				"key"   => "node_hml_pass",
-				"value" => "Senha (homol)",
+				"title" => "Senha (homol)",
 			],[
 				"key"   => "node_prd_user",
-				"value" => "Usuário",
+				"title" => "Usuário",
 			],[
 				"key"   => "node_prd_pass",
-				"value" => "Senha",
+				"title" => "Senha",
 			],
 		];
 
 		$php_fields   = [
 			[
 				"key"   => "php_status",
-				"value" => "Ativar / Desativar",
-				"label" => "Ativar API PHP"
+				"title" => "Ativar / Desativar",
+				"label" => "Ativar API PHP",
 			],[
 				"key"   => "php_env",
-				"value" => "Homologação",
-				"label" => "Habilitar API de homologação"
+				"title" => "Homologação",
+				"label" => "Habilitar API de homologação",
+				"value" => true,
 			],[
 				"key"   => "php_hml_key",
-				"value" => "Key (homol)",
+				"title" => "Key (homol)",
 			],[
 				"key"   => "php_hml_tkn",
-				"value" => "Token (homol)",
+				"title" => "Token (homol)",
 			],[
 				"key"   => "php_prd_key",
-				"value" => "key",
+				"title" => "key",
 			],[
 				"key"   => "php_prd_tkn",
-				"value" => "Token",
+				"title" => "Token",
 			],
 		];
 
@@ -270,7 +277,7 @@ class Triibo_Api_Services
 	public function add_settings_field( $section, $index, $field )
 	{
 		$id      = $this->prefix . $field[ "key" ];
-		$title   = $field[ "value" ];
+		$title   = $field[ "title" ];
 		$section = $this->prefix . $section . $this->sufix;
 
 		add_settings_field(
@@ -279,6 +286,7 @@ class Triibo_Api_Services
 				"type"             => "input",
 				"subtype"          => ( in_array( $index, [ 0, 1 ] ) ) ? "checkbox"        : "text",
 				"label"            => ( in_array( $index, [ 0, 1 ] ) ) ? $field[ "label" ] : "",
+				"value"            => ( $index == 1 ) ? $field[ "value" ] : "",
 				"id"               => $id,
 				"name"             => $id,
 				"required"         => true,
