@@ -85,6 +85,11 @@ class Triibo_Api_Node extends Triibo_Api
 			return false;
 	}
 
+	public function empty( string $attr )
+	{
+		return empty( $this->{$attr} ) ? true : false;
+	}
+
 	/**
 	 * Register logs
 	 *
