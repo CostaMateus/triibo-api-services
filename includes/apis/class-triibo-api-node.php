@@ -10,7 +10,7 @@
  * @author     Mateus Costa <mateus@costamateus.com.br>
  */
 
-class Triibo_Api_Node
+class Triibo_Api_Node extends Triibo_Api
 {
 	const AUTH       = "/auth";
 	const BRAND      = "/payments/brand";
@@ -98,7 +98,7 @@ class Triibo_Api_Node
 		];
 	}
 
-    private function call( array $params, string $method, string $token, string $endpoint )
+    private function call( string $endpoint, string $token, array $params = [] )
     {
 		$url    = $this->url_api . $endpoint;
 		$header = $this->get_header();
@@ -120,66 +120,60 @@ class Triibo_Api_Node
 			array_push( $header, $token );
 		}
 
-        $args = [
-			"method"  => $method,
-            "timeout" => 30,
-			"headers" => $header,
-        ];
+		// remover posteriormente
+		$this->log( json_encode( [ $url, $params ] ) );
 
-		$this->log( json_encode( $args ) );
-
-		if ( $params ) $args[ "body" ] = $params;
-
-		$response = wp_remote_request( $url, $args );
-
-		return wp_remote_retrieve_body( $response );
+		return self::exec( $url, $header, $params );
     }
 
-	public function auth( array $params, string $method, string $token )
+	public function auth( string $token )
 	{
-		$response = $this->call( $params, $method, $token, self::AUTH );
+		$response = $this->call( self::AUTH, $token );
+
+		// remover posteriormente
+		$this->log( json_encode( $response ) );
+
+		return $response;
+	}
+
+	public function brand( string $token, array $params )
+	{
+		$response = $this->call( self::BRAND, $token, $params );
 		$this->log( json_encode( $response ) );
 		return $response;
 	}
 
-	public function brand( array $params, string $method, string $token )
+	public function payment( string $token, array $params )
 	{
-		$response = $this->call( $params, $method, $token, self::BRAND );
+		$response = $this->call( self::PAYMENT, $token, $params );
 		$this->log( json_encode( $response ) );
 		return $response;
 	}
 
-	public function payment( array $params, string $method, string $token )
+	public function check_token( string $token, array $params )
 	{
-		$response = $this->call( $params, $method, $token, self::PAYMENT );
+		$response = $this->call( self::TKN_CHECK, $token, $params );
 		$this->log( json_encode( $response ) );
 		return $response;
 	}
 
-	public function check_token( array $params, string $method, string $token )
+	public function create_token( string $token, array $params )
 	{
-		$response = $this->call( $params, $method, $token, self::TKN_CHECK );
+		$response = $this->call( self::TKN_CREATE, $token, $params );
 		$this->log( json_encode( $response ) );
 		return $response;
 	}
 
-	public function create_token( array $params, string $method, string $token )
+	public function delete_token( string $token, array $params )
 	{
-		$response = $this->call( $params, $method, $token, self::TKN_CREATE );
+		$response = $this->call( self::TKN_DELETE, $token, $params );
 		$this->log( json_encode( $response ) );
 		return $response;
 	}
 
-	public function delete_token( array $params, string $method, string $token )
+	public function event( string $token, array $params )
 	{
-		$response = $this->call( $params, $method, $token, self::TKN_DELETE );
-		$this->log( json_encode( $response ) );
-		return $response;
-	}
-
-	public function event( array $params, string $method, string $token )
-	{
-		$response = $this->call( $params, $method, $token, self::TKN_DELETE );
+		$response = $this->call( self::TKN_DELETE, $token, $params );
 		$this->log( json_encode( $response ) );
 		return $response;
 	}
