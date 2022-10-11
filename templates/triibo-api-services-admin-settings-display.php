@@ -11,7 +11,7 @@
 ?>
 
 <div class="wrap">
-	<h2>Settings Page Settings</h2>
+	<h2>Configurações | Triibo API Services</h2>
 
 	<?php settings_errors(); ?>
 
