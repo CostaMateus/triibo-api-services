@@ -334,18 +334,6 @@ class Triibo_Api_Services
 	 */
 	public function render_settings_field( $args )
 	{
-		// $args = [
-		// 	"type"            => "input",
-		// 	"subtype"         => "",
-		// 	"id"              => $this->plugin_name."_example_setting",
-		// 	"name"            => $this->plugin_name."_example_setting",
-		// 	"required"        => true, // true or false
-		// 	"get_option_list" => "",
-		// 	"value_type"      => "", // serialized OR normal,
-		// 	"wp_data"         => "", // option     OR post_meta,
-		// 	"post_id"         => "",
-		// ];
-
 		if ( $args[ "wp_data" ] == "option" )
 		{
 			$wp_data_value = get_option( $args[ "name" ] );
