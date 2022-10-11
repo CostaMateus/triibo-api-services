@@ -47,6 +47,7 @@ class Triibo_Api_Services
 
 		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links" ] );
 
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php" );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-node.php" );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-php.php" );
