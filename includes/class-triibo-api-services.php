@@ -18,6 +18,7 @@
  */
 class Triibo_Api_Services
 {
+	protected static $name = "triibo-api-services";
 	protected $loader;
 	protected $plugin_name;
 	protected $version;
@@ -32,7 +33,7 @@ class Triibo_Api_Services
 	 */
 	public function __construct()
 	{
-		$this->plugin_name = "triibo-api-services";
+		$this->plugin_name = self::$name;
 		$this->version     = defined( "TRIIBO_API_SERVICES_VERSION" ) ? TRIIBO_API_SERVICES_VERSION : "1.0.0";
 
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/class-triibo-api-services-loader.php" );
@@ -49,6 +50,16 @@ class Triibo_Api_Services
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-node.php" );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-php.php" );
+	}
+
+	/**
+	 * Return the plugin name
+	 *
+	 * @return string
+	 */
+	public static function get_name()
+	{
+		return self::$name;
 	}
 
 	/**
@@ -78,14 +89,39 @@ class Triibo_Api_Services
 	 */
 	public function add_admin_menu()
 	{
+		add_menu_page(
+			"Triibo Services",
+			"Triibo Services",
+			'manage_options',
+			$this->plugin_name,
+			[ $this, "display_admin_menu" ],
+			plugins_url( "assets/images/triibo20.png", TRIIBO_API_SERVICES_FILE ),
+            65
+		);
+
 		add_submenu_page(
-			"options-general.php",
-			"Serviços de API Triibo",
-			"Triibo APIs",
+			$this->plugin_name, // "options-general.php",
+			"Triibo API Services",
+			"Configurações APIs",
 			"manage_options",
 			$this->plugin_name . "-settings",
 			[ $this, "display_admin_menu_settings" ]
 		);
+	}
+
+	public function display_admin_menu()
+	{
+		if ( !current_user_can( "manage_options" ) ) wp_die( __( "Você não tem permissões suficientes para acessar esta página." ) );
+
+		$active_tab = isset( $_GET[ "tab" ] ) ? $_GET[ "tab" ] : "general";
+
+		if ( isset( $_GET[ "error_message" ] ) )
+		{
+			add_action( "admin_notices", [ $this, "triibo_api_services_settings_messages" ] );
+			do_action( "admin_notices", $_GET[ "error_message" ] );
+		}
+
+		require_once ( plugin_dir_path( dirname( __FILE__ ) ) . "templates/" . $this->plugin_name . "-admin-display.php" );
 	}
 
 	public function display_admin_menu_settings()
