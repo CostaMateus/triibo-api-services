@@ -28,70 +28,76 @@ class Triibo_Api_Php
 
             $this->url = "http://php" . ( $this->env ? "-hml" : "" ) . ".triibo.com.br";
             $this->key = $this->env ? get_option( "triibo_api_services_php_hml_key" ) : get_option( "triibo_api_services_php_prd_key" );
-            $this->tkn = $this->env ? get_option( "triibo_api_services_php_hml_tkn" ) : get_option( "triibo_api_services_php_prd_prd" );
+            $this->tkn = $this->env ? get_option( "triibo_api_services_php_hml_tkn" ) : get_option( "triibo_api_services_php_prd_tkn" );
         }
     }
 
-    /**
-     * Returns whether the PHP API is active or not
-     *
-     * @since   1.0.0
-     *
-     * @return boolean
-     */
-    public function is_active()
-    {
-        return $this->status;
-    }
+    // /**
+    //  * Returns the php api status
+    //  * TRUE  for active.
+    //  * FALSE for inactive.
+    //  *
+    //  * @since   1.0.0
+    //  *
+    //  * @return boolean
+    //  */
+	// public function status()
+	// {
+	// 	return $this->status == "on" ? true : false;
+	// }
 
-    /**
-     * Returns if the php api is configured for homol or prod
-     * TRUE  for homol.
-     * FALSE for prod.
-     * NULL  for disabled API.
-     *
-     * @since   1.0.0
-     *
-     * @return boolean
-     */
-    public function is_homol()
-    {
-        if ( $this->env === null ) return null;
+    // /**
+    //  * Returns if the php api is configured for homol or prod or disabled
+    //  * NULL  for disabled API.
+    //  * TRUE  for homol.
+    //  * FALSE for prod.
+    //  *
+    //  * @since   1.0.0
+    //  *
+    //  * @return boolean|null
+    //  */
+	// public function env()
+	// {
+	// 	if ( $this->env === null )
+	// 		return null;
 
-        return $this->env;
-    }
+	// 	else if ( $this->env === "on" )
+	// 		return true;
 
-    private function get_header()
-    {
-        return [
-            "Accept: application/json",
-            "Content-Type: application/json",
-            "api-key: " . $this->key,
-            "api-token: " . $this->tsoken,
-        ];
-    }
+	// 	else
+	// 		return false;
+	// }
 
-    public function call( array $params, string $method, string $endpoint )
-    {
-        $url  = $this->url . "/" . $endpoint;
-        $args = [
-            "body"    => $params,
-            "method"  => $method,
-            "timeout" => 30,
-            "headers" => $this->get_header()
-        ];
+    // private function get_header()
+    // {
+    //     return [
+    //         "Accept: application/json",
+    //         "Content-Type: application/json",
+    //         "api-key: " . $this->key,
+    //         "api-token: " . $this->tsoken,
+    //     ];
+    // }
 
-        $response = wp_remote_request( $url, $args );
+    // public function call( array $params, string $method, string $endpoint )
+    // {
+    //     $url  = $this->url . "/" . $endpoint;
+    //     $args = [
+    //         "body"    => $params,
+    //         "method"  => $method,
+    //         "timeout" => 30,
+    //         "headers" => $this->get_header()
+    //     ];
 
-        if ( !is_wp_error( $response ) && in_array( $response[ "response" ][ "code" ], [ 200, 201 ] ) )
-        {
-          return $response[ "body" ];
-        }
-        else
-        {
-          return false;
-        }
-    }
+    //     $response = wp_remote_request( $url, $args );
 
+    //     if ( !is_wp_error( $response ) && in_array( $response[ "response" ][ "code" ], [ 200, 201 ] ) )
+    //     {
+    //       return $response[ "body" ];
+    //     }
+    //     else
+    //     {
+    //       return false;
+    //     }
+    // }
 
 }
