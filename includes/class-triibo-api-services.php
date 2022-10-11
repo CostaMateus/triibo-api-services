@@ -55,11 +55,15 @@ class Triibo_Api_Services
 	/**
 	 * Return the plugin name
 	 *
+	 * @param boolean $config 	If true, return the slug for config page
 	 * @return string
 	 */
-	public static function get_name()
+	public static function get_name( $config = false )
 	{
-		return self::$name;
+		$name = self::$name;
+		$name .= $config ? "-settings" : "";
+
+		return $name;
 	}
 
 	/**
