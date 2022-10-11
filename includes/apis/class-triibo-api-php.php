@@ -10,7 +10,7 @@
  * @author     Mateus Costa <mateus@costamateus.com.br>
  */
 
-class Triibo_Api_Php
+class Triibo_Api_Php extends Triibo_Api
 {
     private $status = null;
     private $env    = null;
