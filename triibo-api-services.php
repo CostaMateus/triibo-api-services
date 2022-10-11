@@ -4,7 +4,7 @@
  * @since 			1.0.0
  * @package 		Triibo_Api_Services
  *
- * Plugin Name: 	#Triibo API Services
+ * Plugin Name: 	#Triibo_API_Services
  * Plugin URI: 		https://triibo.com.br
  * Description: 	Disponibiliza os serviços de API da Triibo (Gateway/Node/PHP) em um único plugin. Demais plugins dependerão deste.
  * Version: 		1.0.0
