@@ -85,11 +85,21 @@ class Triibo_Api_Node extends Triibo_Api
 			return false;
 	}
 
+	/**
+	 * Register logs
+	 *
+	 * @param string $message
+	 */
 	private function log( string $message )
 	{
 		$this->log->add( $this->id, $message );
 	}
 
+	/**
+	 * Provides basic header for all calls
+	 *
+	 * @return array
+	 */
 	private function get_header()
 	{
 		return [
@@ -98,6 +108,14 @@ class Triibo_Api_Node extends Triibo_Api
 		];
 	}
 
+	/**
+	 * Prepare header to make request to the API
+	 *
+	 * @param string 	$endpoint 	Endpoint url
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Body of request
+	 * @return array
+	 */
     private function call( string $endpoint, string $token, array $params = [] )
     {
 		$url    = $this->url_api . $endpoint;
@@ -126,15 +144,18 @@ class Triibo_Api_Node extends Triibo_Api
 		return self::exec( $url, $header, $params );
     }
 
+	/**
+	 * Call /auth endpoint
+	 *
+	 * @param string $token 	Authorization of request
+	 * @return array
+	 */
 	public function auth( string $token )
 	{
-		$response = $this->call( self::AUTH, $token );
-
-		// remover posteriormente
-		$this->log( json_encode( $response ) );
-
-		return $response;
+		return $this->call( self::AUTH, $token );
 	}
+
+
 
 	public function brand( string $token, array $params )
 	{

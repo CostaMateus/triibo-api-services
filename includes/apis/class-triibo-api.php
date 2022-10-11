@@ -12,7 +12,15 @@
 
 class Triibo_Api
 {
-    public static function exec( string $url, array $header, array $params = [] )
+	/**
+	 * Make request to the API
+	 *
+	 * @param string 	$endpoint 	Endpoint url
+	 * @param array 	$header		Header of request
+	 * @param array 	$params 	Body of request
+	 * @return array
+	 */
+    public static function exec( string $endpoint, array $header, array $params = [] )
     {
 		$curl     = curl_init();
 
@@ -29,7 +37,7 @@ class Triibo_Api
         $params   = ( !empty( $params ) ) ? json_encode( $params ) : null;
 
 		curl_setopt_array( $curl, [
-			CURLOPT_URL            => $url,
+			CURLOPT_URL            => $endpoint,
 			CURLOPT_RETURNTRANSFER => TRUE,
 			CURLOPT_ENCODING       => "",
 			CURLOPT_MAXREDIRS      => 0,
