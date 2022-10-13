@@ -172,40 +172,60 @@ class Triibo_Api_Node extends Triibo_Api
 		return $this->call( self::BRAND, $token, $params );
 	}
 
-
-
+	/**
+	 * Call /payments/doPayment endpoint
+	 *
+	 * @param string $token 	Authorization of request
+	 * @param array $params 	Parameters of card
+	 * @return array
+	 */
 	public function payment( string $token, array $params )
 	{
-		$response = $this->call( self::PAYMENT, $token, $params );
-		$this->log( json_encode( $response ) );
-		return $response;
+		return $this->call( self::PAYMENT, $token, $params );
 	}
 
+	/**
+	 * Call /payments/checkToken endpoint
+	 *
+	 * @param string $token 	Authorization of request
+	 * @param array $params 	Parameters of card
+	 * @return array
+	 */
 	public function check_token( string $token, array $params )
 	{
-		$response = $this->call( self::TKN_CHECK, $token, $params );
-		$this->log( json_encode( $response ) );
-		return $response;
+		return $this->call( self::TKN_CHECK, $token, $params );
 	}
 
+	/**
+	 * Call /payments/createToken endpoint
+	 *
+	 * @param string $token 	Authorization of request
+	 * @param array $params 	Parameters of card
+	 * @return array
+	 */
 	public function create_token( string $token, array $params )
 	{
-		$response = $this->call( self::TKN_CREATE, $token, $params );
-		$this->log( json_encode( $response ) );
-		return $response;
+		return $this->call( self::TKN_CREATE, $token, $params );
 	}
 
+	/**
+	 * Call /payments/deleteToken endpoint
+	 *
+	 * @param string $token 	Authorization of request
+	 * @param array $params 	Parameters of card
+	 * @return array
+	 */
 	public function delete_token( string $token, array $params )
 	{
-		$response = $this->call( self::TKN_DELETE, $token, $params );
-		$this->log( json_encode( $response ) );
-		return $response;
+		return $this->call( self::TKN_DELETE, $token, $params );
 	}
 
-	public function event( string $token, array $params )
-	{
-		$response = $this->call( self::TKN_DELETE, $token, $params );
-		$this->log( json_encode( $response ) );
-		return $response;
-	}
+
+
+	// public function event( string $token, array $params )
+	// {
+	// 	$response = $this->call( self::AUTH, $token, $params );
+	// 	$this->log( json_encode( $response ) );
+	// 	return $response;
+	// }
 }
