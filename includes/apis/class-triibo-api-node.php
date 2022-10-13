@@ -160,14 +160,19 @@ class Triibo_Api_Node extends Triibo_Api
 		return $this->call( self::AUTH, $token );
 	}
 
-
-
+	/**
+	 * Call /payments/brand endpoint
+	 *
+	 * @param string $token 	Authorization of request
+	 * @param array $params 	Parameters of card
+	 * @return array
+	 */
 	public function brand( string $token, array $params )
 	{
-		$response = $this->call( self::BRAND, $token, $params );
-		$this->log( json_encode( $response ) );
-		return $response;
+		return $this->call( self::BRAND, $token, $params );
 	}
+
+
 
 	public function payment( string $token, array $params )
 	{
