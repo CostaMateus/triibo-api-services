@@ -124,7 +124,7 @@ class Triibo_Api
 			if ( empty( $info[ "http_code" ] ) )
 			{
 				$response = [
-					"code"    => "500.2",
+					"code"    => "500.3",
 					"success" => false,
 					"message" => "Falha na comunicação com a API.",
 					"error"   => "No HTTP code was returned.",
