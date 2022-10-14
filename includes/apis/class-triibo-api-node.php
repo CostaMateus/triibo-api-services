@@ -123,6 +123,21 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
     private function call( string $endpoint, string $token, array $params = [] )
     {
+		if ( !$this->status() )
+		{
+			$error = [
+				"code"    => "500.4",
+				"success" => false,
+				"message" => "API está desabilitada.",
+				"error"   => "API is disabled.",
+				"data"    => null,
+			];
+
+			$this->log( json_encode( $error ) );
+
+			return $error;
+		}
+
 		$url    = $this->url_api . $endpoint;
 		$header = $this->get_header();
 
