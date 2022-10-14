@@ -143,9 +143,6 @@ class Triibo_Api_Node extends Triibo_Api
 			array_push( $header, $token );
 		}
 
-		// remover posteriormente
-		$this->log( json_encode( [ $url, $params ] ) );
-
 		return self::exec( $url, $header, $params );
     }
 
