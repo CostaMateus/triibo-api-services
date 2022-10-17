@@ -34,7 +34,7 @@ class Triibo_Api_Php extends Triibo_Api
 
         $this->status = get_option( "triibo_api_services_php_status" );
 
-        if ( $this->status )
+        if ( $this->status == "on" )
         {
             $this->env = get_option( "triibo_api_services_php_env" );
 
