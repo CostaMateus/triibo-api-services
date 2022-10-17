@@ -433,7 +433,7 @@ class Triibo_Api_Services
 
 	public function plugin_action_links( $links )
 	{
-        $url            = esc_url( admin_url( "options-general.php?page=" . $this->plugin_name . "-settings" ) );
+        $url            = esc_url( admin_url( "admin.php?page=" . $this->plugin_name . "-settings" ) );
 		$plugin_links   = [ "<a href='{$url}' >Configurações</a>" ];
 
 		return array_merge( $plugin_links, $links );
