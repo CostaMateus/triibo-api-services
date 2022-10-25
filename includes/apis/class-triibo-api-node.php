@@ -18,7 +18,6 @@ class Triibo_Api_Node extends Triibo_Api
 	const TKN_CHECK  = "/payments/checkToken";
 	const TKN_CREATE = "/payments/createToken";
 	const TKN_DELETE = "/payments/deleteToken";
-	const EVENT      = "/x";
 
 	private $id      = "triibo-api-node";
 
@@ -230,16 +229,5 @@ class Triibo_Api_Node extends Triibo_Api
 	public function delete_token( string $token, array $params )
 	{
 		return $this->call( self::TKN_DELETE, $token, $params );
-	}
-
-
-
-	public function event( string $token, array $params )
-	{
-		$response = $this->call( self::EVENT, $token, $params );
-
-		$this->log( json_encode( $response ) );
-
-		return $response;
 	}
 }
