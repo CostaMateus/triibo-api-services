@@ -305,10 +305,10 @@
 		handlerNode();
 		handlerPhp();
 
-		let el1 = $( "#triibo_api_services_node_status" ).parent().parent().parent().parent().prev().prev();
-		let el2 = $( "#triibo_api_services_php_status" ).parent().parent().parent().parent().prev().prev();
-		el1.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
-		el2.css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+		let els = $( "#triibo_api_services_gate_status" ).parent().parent().parent().parent().siblings( "h2" );
+		els.each( ( i, e ) => {
+			if ( i > 0 ) $( e ).css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+		});
 	} );
 
 } )( jQuery );

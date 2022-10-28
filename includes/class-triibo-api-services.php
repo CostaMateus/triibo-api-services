@@ -361,9 +361,26 @@ class Triibo_Api_Services
 	 */
 	public function message_section( $args )
 	{
-		if ( strpos( $args[ "id" ], "gateway" ) !== false ) echo "<p>Configurações da API Gateway</p>";
-		if ( strpos( $args[ "id" ], "node"    ) !== false ) echo "<p>Configurações da API Node.</p>";
-		if ( strpos( $args[ "id" ], "php"     ) !== false ) echo "<p>Configurações da API PHP.</p>";
+		if ( strpos( $args[ "id" ], "gateway" ) !== false )
+		{
+			echo "<p>Configurações da API Gateway</p>";
+			echo "<p>Plugins que usam essa API:</p>";
+			do_action( "triibo_api_service_list_plugin_gate" );
+		}
+
+		if ( strpos( $args[ "id" ], "node"    ) !== false )
+		{
+			echo "<p>Configurações da API Node</p>";
+			echo "<p>Plugins que usam essa API:</p>";
+			do_action( "triibo_api_service_list_plugin_node" );
+		}
+
+		if ( strpos( $args[ "id" ], "php"     ) !== false )
+		{
+			echo "<p>Configurações da API PHP</p>";
+			echo "<p>Plugins que usam essa API:</p>";
+			do_action( "triibo_api_service_list_plugin_php" );
+		}
 	}
 
 	/**
