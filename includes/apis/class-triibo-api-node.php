@@ -13,6 +13,7 @@
 class Triibo_Api_Node extends Triibo_Api
 {
 	const AUTH       = "/auth";
+	const AUTH_MKT   = "/auth/marketplace";
 	const BRAND      = "/payments/brand";
 	const PAYMENT    = "/payments/doPayment";
 	const TKN_CHECK  = "/payments/checkToken";
@@ -28,6 +29,8 @@ class Triibo_Api_Node extends Triibo_Api
     private $user    = null;
     private $pass    = null;
 
+    private $x_key   = null;
+
 	private $log     = null;
 
     public function __construct()
@@ -35,16 +38,18 @@ class Triibo_Api_Node extends Triibo_Api
 		$this->log    = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
 
         $this->status = get_option( "triibo_api_services_node_status" );
+		$this->env    = get_option( "triibo_api_services_node_env"    );
 
         if ( $this->status == "on" )
         {
-            $this->env     = get_option( "triibo_api_services_node_env" );
 
-            $this->url_api = "https://api" . ( $this->env ? "-hml" : "" ) . ".triibo.com.br";
-            $this->url_mkt = "https://"    . ( $this->env ? "dev-" : "" ) . "marketplace.triibo.com.br";
+            $this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+            $this->url_mkt = "https://"    . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
 
-            $this->user    = $this->env ? get_option( "triibo_api_services_node_hml_user" ) : get_option( "triibo_api_services_node_prd_user" );
-            $this->pass    = $this->env ? get_option( "triibo_api_services_node_hml_pass" ) : get_option( "triibo_api_services_node_prd_pass" );
+            $this->user    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_user" ) : get_option( "triibo_api_services_node_prd_user" );
+            $this->pass    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_pass" ) : get_option( "triibo_api_services_node_prd_pass" );
+
+			$this->x_key   = ( $this->env == "on" ) ? "652e0505-f010-48a4-a9a5-ce12783777ea" : "xp8bqzil-b15e-da2v-3jcm-25pniix0y859";
         }
     }
 
@@ -151,9 +156,18 @@ class Triibo_Api_Node extends Triibo_Api
 
 			$header = array_merge( $header, $aux );
 		}
+		else if ( $endpoint === self::AUTH_MKT )
+		{
+			$aux = [
+				"Authorization: {$token}",
+				"x-api-key: {$this->x_key}"
+			];
+
+			$header = array_merge( $header, $aux );
+		}
 		else
 		{
-			$token  = "Authorization: Bearer $token";
+			$token = "Authorization: Bearer $token";
 			array_push( $header, $token );
 		}
 
@@ -230,4 +244,10 @@ class Triibo_Api_Node extends Triibo_Api
 	{
 		return $this->call( self::TKN_DELETE, $token, $params );
 	}
+
+
+    public function validate_token( string $token )
+    {
+		return $this->call( self::AUTH_MKT, $token );
+    }
 }

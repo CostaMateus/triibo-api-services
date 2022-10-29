@@ -152,7 +152,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     public function credit_points( string $triiboId, int $value )
-    {   
+    {
         $params = [
             "triiboId"       => "{$triiboId}@sms.triibo.com.br",
             "eventType"      => "Compra_Marketplace_Triibo",
