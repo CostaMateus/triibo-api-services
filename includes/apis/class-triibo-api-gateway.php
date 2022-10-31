@@ -17,6 +17,8 @@ class Triibo_Api_Gateway extends Triibo_Api
 
     const CHN_TKN_ID    = "/getChannelToken_v1";
     const CREDIT_POINTS = "/creditPoints";
+    const LOGIN         = "/login";
+    const SET_USER_INFO = "/setUserInfo_v1";
 
 	private $id         = "triibo-api-gateway";
 
@@ -34,18 +36,26 @@ class Triibo_Api_Gateway extends Triibo_Api
     {
 		$this->log    = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
 
-        $this->status = get_option( "triibo_api_services_gateway_status" );
+        $this->status = get_option( "triibo_api_services_gate_status" );
+        $this->env    = get_option( "triibo_api_services_gate_env"    );
 
         if ( $this->status == "on" )
         {
-            $this->env     = get_option( "triibo_api_services_gateway_env" );
-
             $this->url     = "https://triibo-api-gateway" . ( $this->env ? "-hml" : "" ) . ".triibo.com.br";
 
             $this->token   = $this->env ? get_option( "triibo_api_services_gate_hml_tkn"     ) : get_option( "triibo_api_services_gate_prd_tkn"     );
             $this->chn_id  = $this->env ? get_option( "triibo_api_services_gate_hml_chn_id"  ) : get_option( "triibo_api_services_gate_prd_chn_id"  );
             $this->chn_tkn = $this->env ? get_option( "triibo_api_services_gate_hml_chn_tkn" ) : get_option( "triibo_api_services_gate_prd_chn_tkn" );
         }
+
+        $this->triibo_header = [
+            "channelName"   => self::GP_NM,
+            "channelGroup"  => self::GP_NM,
+            "apiToken"      => $this->token,
+            "channelId"     => $this->chn_id,
+            "sessionId"     => "001",
+            "transactionId" => "002",
+        ];
     }
 
     /**
@@ -121,31 +131,28 @@ class Triibo_Api_Gateway extends Triibo_Api
 		return self::exec( $url, self::HEADER, $params );
     }
 
-    private function hash( string $passPhrase )
+    private function hash( string $uid = null )
     {
+        $passPhrase = floor( rand( 1000000000, 9999999999 ) ) . $uid . floor( rand( 1000000000, 9999999999 ) );
+
         $challenge1 = md5( $passPhrase . $this->token   );
         $challenge2 = md5( $challenge1 . $this->chn_tkn );
 
-        return $challenge2;
+        return [
+            "passPhrase" => $passPhrase,
+            "challenge"  => $challenge2,
+        ];
     }
 
     public function get_channel_token( string $uid = null )
     {
-        $passPhrase = floor( rand( 1000000000, 9999999999 ) ) . $uid . floor( rand( 1000000000, 9999999999 ) );
-        $challenge  = $this->hash( $passPhrase );
-
-        $params     = [
-            "triiboHeader" => [
-                "channelName"   => self::GP_NM,
-                "channelGroup"  => self::GP_NM,
-                "apiToken"      => $this->token,
-                "channelId"     => $this->chn_id,
-                "sessionId"     => "001",
-                "transactionId" => "002",
-                "uId"           => $uid,
-                "passPhrase"    => $passPhrase,
-                "challenge"     => $challenge
-            ],
+        $hash   = $this->hash( $uid );
+        $params = [
+            "triiboHeader" => array_merge( $this->triibo_header, [
+                "uId"        => $uid,
+                "passPhrase" => $hash[ "passPhrase" ],
+                "challenge"  => $hash[ "challenge"  ]
+            ] ),
         ];
 
         return $this->call( self::CHN_TKN_ID, $params );
@@ -160,5 +167,98 @@ class Triibo_Api_Gateway extends Triibo_Api
         ];
 
         return $this->call( self::CREDIT_POINTS, $params );
+    }
+
+    public function update_user_mkt( string $cellphone, string $email, string $action )
+    {
+        // $response = [
+        // 	"code"    => $info[ "http_code" ],
+        // 	"success" => true,
+        // 	"message" => "ok",
+        // 	"error"   => null,
+        // 	"data"    => json_decode( $response, true ),
+        // ];
+
+        $response   = $this->get_channel_token();
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $params     = [
+            "triiboHeader"  => array_merge( $this->triibo_header, [
+                "channelTokenId" => $chn_tkn_id
+            ] ),
+            "linkedAccount" => NULL,
+            "cellphone"     => $cellphone,
+        ];
+
+        $response   = $this->call( self::LOGIN, $params );
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        $user       = $response[ "data" ][ "user" ];
+        $uid        = $user[ "uId"                ];
+        $contact    = $user[ "contactList"        ];
+
+        $key        = array_search( "emailMarketplace", array_column( $contact, "type" ) );
+
+        // email marketplace
+        if ( $key !== false )
+        {
+            $contact[ $key ][ "value"    ] = $email;
+            $contact[ $key ][ "verified" ] = true;
+        }
+        else
+        {
+            array_push( $contact, [
+                "type"     => "emailMarketplace",
+                "value"    => $email,
+                "verified" => true
+            ] );
+        }
+
+        if ( in_array( $action, [ "UPDATE", "CREATE" ] ) )
+        {
+            $key = array_search( "email", array_column( $contact, "type" ) );
+
+            // email
+            if ( $key !== false )
+            {
+                $contact[ $key ][ "verified" ] = true;
+            }
+            else
+            {
+                array_push( $contact, [
+                    "type"     => "email",
+                    "value"    => $email,
+                    "verified" => true
+                ] );
+            }
+        }
+
+        $response   = $this->get_channel_token( $uid );
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+        $params     = [
+            "triiboHeader"  => [
+                ... $this->triibo_header,
+                "channelTokenId" => $chn_tkn_id,
+                "uId"            => $uid
+            ],
+            "queryPartnerAPI" => [ "setUserInfo" ],
+            "userInfo"        => [
+                "syncType"    => "override",
+                "uId"         => $uid,
+                "contactList" => [ ... $contact ],
+            ],
+        ];
+
+        $response   = $this->call( self::SET_USER_INFO, $params );
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        $response[ "uid" ] = $uid;
+
+        return $response;
     }
 }
