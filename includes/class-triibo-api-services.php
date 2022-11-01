@@ -196,7 +196,7 @@ class Triibo_Api_Services
 		{
 			case "1":
 				$message       = __( "There was an error adding this setting. Please try again. If this persists, shoot us an email.", $this->plugin_name );
-				$err_code      = esc_attr(  "triibo_api_services_example_setting" );
+				$err_code      = esc_attr(  "triibo_api_services-example-setting" );
 				$setting_field = "triibo_api_services_example_setting";
 			break;
 		}

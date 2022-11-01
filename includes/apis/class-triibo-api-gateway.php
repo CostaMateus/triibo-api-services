@@ -158,15 +158,26 @@ class Triibo_Api_Gateway extends Triibo_Api
         return $this->call( self::CHN_TKN_ID, $params );
     }
 
-    public function credit_points( string $triiboId, int $value )
+    public function credit_points( string $triibo_id, int $value )
     {
-        $params = [
-            "triiboId"       => "{$triiboId}@sms.triibo.com.br",
+        $response   = $this->get_channel_token();
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+        $params     = [
+            "triiboHeader"  => [
+                ... $this->triibo_header,
+                "channelTokenId" => $chn_tkn_id,
+            ],
+            "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
             "eventType"      => "Compra_Marketplace_Triibo",
             "recursionValue" => $value,
         ];
 
-        return $this->call( self::CREDIT_POINTS, $params );
+        $response   = $this->call( self::CREDIT_POINTS, $params );
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        return $response;
     }
 
     public function update_user_mkt( string $cellphone, string $email, string $action )
