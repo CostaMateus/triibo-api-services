@@ -165,10 +165,9 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
         $params     = [
-            "triiboHeader"  => [
-                ... $this->triibo_header,
+            "triiboHeader"   => array_merge( $this->triibo_header, [
                 "channelTokenId" => $chn_tkn_id,
-            ],
+            ] ),
             "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
             "eventType"      => "Compra_Marketplace_Triibo",
             "recursionValue" => $value,
@@ -252,11 +251,10 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
         $params     = [
-            "triiboHeader"  => [
-                ... $this->triibo_header,
+            "triiboHeader"    => array_merge( $this->triibo_header, [
                 "channelTokenId" => $chn_tkn_id,
                 "uId"            => $uid
-            ],
+            ] ),
             "queryPartnerAPI" => [ "setUserInfo" ],
             "userInfo"        => [
                 "syncType"    => "override",
