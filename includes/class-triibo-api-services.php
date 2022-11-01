@@ -18,12 +18,51 @@
  */
 class Triibo_Api_Services
 {
-	protected static $name = "triibo-api-services";
+	/**
+	 * Plugin domain.
+	 *
+	 * @var string
+	 */
+	protected static $name = "triibo_api_services";
+
+	/**
+	 * Plugin loader.
+	 *
+	 * @var Triibo_Api_Services_Loader
+	 */
 	protected $loader;
+
+	/**
+	 * Plugin domain.
+	 *
+	 * @var string
+	 */
 	protected $plugin_name;
+
+	/**
+	 * Plugin version.
+	 *
+	 * @var string
+	 */
 	protected $version;
+
+	/**
+	 * Prefix of plugin name.
+	 *
+	 * @var string
+	 */
 	protected $prefix;
+
+	/**
+	 * Sufix of plugin name.
+	 *
+	 * @var string
+	 */
 	protected $sufix;
+
+	/**
+	 * @var string
+	 */
 	protected $page;
 
 	/**
