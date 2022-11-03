@@ -169,7 +169,7 @@ class Triibo_Api_Gateway extends Triibo_Api
                 "channelTokenId" => $chn_tkn_id,
             ] ),
             "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
-            "eventType"      => "Compra_Marketplace_Triibo",
+            "eventType"      => "Compra_Marketplace",
             "recursionValue" => $value,
         ];
 
