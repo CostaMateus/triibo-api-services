@@ -132,7 +132,7 @@ class Triibo_Api_Node extends Triibo_Api
 			$error = [
 				"code"    => "500.4",
 				"success" => false,
-				"message" => "API está desabilitada.",
+				"message" => "API está desabilitada. {$endpoint}",
 				"error"   => "API is disabled.",
 				"data"    => null,
 			];
