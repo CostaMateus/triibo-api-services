@@ -4,14 +4,20 @@
  *
  * A class definition that includes attributes and functions used for access the Triibo API.
  *
- * @since      1.0.0
- * @package    Triibo_Api_Services
- * @subpackage Triibo_Api_Services/includes/apis
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author 		Mateus Costa <mateus@costamateus.com.br>
+ * @package 	Triibo_Api_Services/Classes/Api
+ * @version 	1.0.0
  */
+defined( "ABSPATH" ) || exit;
 
 class Triibo_Api
 {
+	/**
+	 * Http codes
+	 *
+	 * @since 	1.0.0
+	 * @var 	array
+	 */
 	const HTTP_CODES = [
 		// [Informational 1xx]
 		100 => "Continue",
@@ -68,10 +74,11 @@ class Triibo_Api
 	/**
 	 * Make request to the API
 	 *
-	 * @param string 	$endpoint 	Endpoint url
-	 * @param array 	$header		Header of request
-	 * @param array 	$params 	Body of request
-	 * @return array
+	 * @since 	1.0.0
+	 * @param 	string 	$endpoint 	Endpoint url
+	 * @param 	array 	$header		Header of request
+	 * @param 	array 	$params 	Body of request
+	 * @return 	array
 	 */
     public static function exec( string $endpoint, array $header, array $params = [] )
     {
