@@ -88,7 +88,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 * Environment hml/prod
 	 *
 	 * @since 	1.0.0
-	 * @var 	array|null
+	 * @var 	string|null
 	 */
     private $env        = null;
 
@@ -128,7 +128,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 * Logger
 	 *
 	 * @since 	1.0.0
-	 * @var 	wc_get_logger|WC_Logger
+	 * @var 	wc_get_logger|WC_Logger|null
 	 */
 	private $log        = null;
 
