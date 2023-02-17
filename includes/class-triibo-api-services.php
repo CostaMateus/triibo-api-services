@@ -1,14 +1,13 @@
 <?php
 /**
  * The file that defines the core plugin class
- *
  * A class definition that includes attributes and functions used in the admin area.
  *
- * @since      1.0.0
- * @package    Triibo_Api_Services
- * @subpackage Triibo_Api_Services/includes
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author 		Mateus Costa <mateus@costamateus.com.br>
+ * @package 	Triibo_Api_Services/Classes
+ * @version 	1.0.0
  */
+defined( "ABSPATH" ) || exit;
 
 /**
  * The core plugin class.
@@ -21,47 +20,55 @@ class Triibo_Api_Services
 	/**
 	 * Plugin domain.
 	 *
-	 * @var string
+	 * @since 	1.0.0
+	 * @var 	string
 	 */
 	protected static $name = "triibo_api_services";
 
 	/**
 	 * Plugin loader.
 	 *
-	 * @var Triibo_Api_Services_Loader
+	 * @since 	1.0.0
+	 * @var 	Triibo_Api_Services_Loader
 	 */
 	protected $loader;
 
 	/**
 	 * Plugin domain.
 	 *
-	 * @var string
+	 * @since 	1.0.0
+	 * @var 	string
 	 */
 	protected $plugin_name;
 
 	/**
 	 * Plugin version.
 	 *
-	 * @var string
+	 * @since 	1.0.0
+	 * @var 	string
 	 */
 	protected $version;
 
 	/**
 	 * Prefix of plugin name.
 	 *
-	 * @var string
+	 * @since 	1.0.0
+	 * @var 	string
 	 */
 	protected $prefix;
 
 	/**
 	 * Sufix of plugin name.
 	 *
-	 * @var string
+	 * @since 	1.0.0
+	 * @var 	string
 	 */
 	protected $sufix;
 
 	/**
-	 * @var string
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
 	 */
 	protected $page;
 
@@ -77,7 +84,7 @@ class Triibo_Api_Services
 
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/class-triibo-api-services-loader.php" );
 
-		$this->loader = new Triibo_Api_Services_Loader();
+		$this->loader      = new Triibo_Api_Services_Loader();
 		$this->loader->add_action( "admin_enqueue_scripts", $this, "enqueue_styles"  );
 		$this->loader->add_action( "admin_enqueue_scripts", $this, "enqueue_scripts" );
 
@@ -86,21 +93,22 @@ class Triibo_Api_Services
 
 		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links" ] );
 
-		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php" );
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php"         );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
-		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-node.php" );
-		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-php.php" );
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-node.php"    );
+		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-php.php"     );
 	}
 
 	/**
 	 * Return the plugin name
 	 *
-	 * @param boolean $config 	If true, return the slug for config page
-	 * @return string
+	 * @since 	1.0.0
+	 * @param 	boolean $config 	If true, return the slug for config page
+	 * @return 	string
 	 */
 	public static function get_name( $config = false )
 	{
-		$name = self::$name;
+		$name  = self::$name;
 		$name .= $config ? "-settings" : "";
 
 		return $name;
@@ -110,6 +118,7 @@ class Triibo_Api_Services
 	 * Register the stylesheets for the admin area.
 	 *
 	 * @since 	1.0.0
+	 * @return 	void
 	 */
 	public function enqueue_styles()
 	{
@@ -120,6 +129,7 @@ class Triibo_Api_Services
 	 * Register the JavaScript for the admin area.
 	 *
 	 * @since 	1.0.0
+	 * @return 	void
 	 */
 	public function enqueue_scripts()
 	{
@@ -130,6 +140,7 @@ class Triibo_Api_Services
 	 * Add submenu on WP Settings menu
 	 *
 	 * @since 	1.0.0
+	 * @return 	void
 	 */
 	public function add_admin_menu()
 	{
@@ -153,6 +164,12 @@ class Triibo_Api_Services
 		);
 	}
 
+	/**
+	 *
+	 *
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
 	public function display_admin_menu()
 	{
 		if ( !current_user_can( "manage_options" ) ) wp_die( __( "Você não tem permissões suficientes para acessar esta página." ) );
@@ -168,6 +185,12 @@ class Triibo_Api_Services
 		require_once ( plugin_dir_path( dirname( __FILE__ ) ) . "templates/" . $this->plugin_name . "-admin-display.php" );
 	}
 
+	/**
+	 * Undocumented function
+	 *
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
 	public function display_admin_menu_settings()
 	{
 		if ( !current_user_can( "manage_options" ) ) wp_die( __( "Você não tem permissões suficientes para acessar esta página." ) );
@@ -187,8 +210,7 @@ class Triibo_Api_Services
 	 * Handles errors and displays messages accordingly
 	 *
 	 * @since 	1.0.0
-	 *
-	 * @param string $error_message
+	 * @param 	string $error_message
 	 */
 	public function triibo_api_services_settings_messages( $error_message )
 	{
@@ -210,6 +232,7 @@ class Triibo_Api_Services
 	 * Register and build the plugin fields
 	 *
 	 * @since 	1.0.0
+	 * @return 	void
 	 */
 	public function register_and_build_fields()
 	{
@@ -330,9 +353,9 @@ class Triibo_Api_Services
 	 * Adds plugin fields to allowed options
 	 *
 	 * @since 	1.0.0
-	 *
-	 * @param string $page
-	 * @param array $data
+	 * @param 	string $page
+	 * @param 	array $data
+	 * @return 	void
 	 */
 	public function add_allowed_options( $page, $data )
 	{
@@ -349,10 +372,10 @@ class Triibo_Api_Services
 	 * Configure each plugin field
 	 *
 	 * @since 	1.0.0
-	 *
-	 * @param string $section
-	 * @param string $index
-	 * @param array $field
+	 * @param 	string $section
+	 * @param 	string $index
+	 * @param 	array $field
+	 * @return 	void
 	 */
 	public function add_settings_field( $section, $index, $field )
 	{
@@ -381,8 +404,8 @@ class Triibo_Api_Services
 	 * Register each plugin field
 	 *
 	 * @since 	1.0.0
-	 *
-	 * @param array $field
+	 * @param 	array $field
+	 * @return 	void
 	 */
 	public function register_settings( $field )
 	{
@@ -395,8 +418,8 @@ class Triibo_Api_Services
 	 * Echos out any content at the top of the section (between heading and fields).
 	 *
 	 * @since 	1.0.0
-	 *
-	 * @param array $args
+	 * @param 	array $args
+	 * @return 	void
 	 */
 	public function message_section( $args )
 	{
@@ -426,8 +449,8 @@ class Triibo_Api_Services
 	 * Renders each field according to the configured args
 	 *
 	 * @since 	1.0.0
-	 *
-	 * @param array $args
+	 * @param 	array $args
+	 * @return 	void
 	 */
 	public function render_settings_field( $args )
 	{
@@ -487,6 +510,13 @@ class Triibo_Api_Services
 		}
 	}
 
+	/**
+	 *
+	 *
+	 * @since 	1.0.0
+	 * @param 	array $links
+	 * @return 	array
+	 */
 	public function plugin_action_links( $links )
 	{
         $url            = esc_url( admin_url( "admin.php?page=" . $this->plugin_name . "-settings" ) );
@@ -499,6 +529,7 @@ class Triibo_Api_Services
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
 	 * @since 	1.0.0
+	 * @return 	void
 	 */
 	public function run()
 	{
