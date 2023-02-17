@@ -3,10 +3,9 @@
  * Provide a admin area view for the plugin
  * This file is used to markup the admin-facing aspects of the plugin.
  *
- * @since      1.0.0
- * @package    Triibo_Api_Services
- * @subpackage Triibo_Api_Services/templates
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author 		Mateus Costa <mateus@costamateus.com.br>
+ * @package 	Triibo_Api_Services
+ * @version 	1.0.0
  */
 ?>
 

@@ -1,9 +1,5 @@
 <?php
 /**
- * @link 			https://triibo.com.br
- * @since 			1.0.0
- * @package 		Triibo_Api_Services
- *
  * Plugin Name: 	#Triibo_API_Services
  * Plugin URI: 		https://triibo.com.br
  * Description: 	Disponibiliza os serviços de API da Triibo (Gateway/Node/PHP) em um único plugin. Demais plugins dependerão deste.
@@ -11,6 +7,9 @@
  * Author: 			Mateus Costa
  * Author URI: 		https://costamateus.com.br/
  * Text Domain: 	triibo-api-services
+ *
+ * @package 		Triibo_Api_Services
+ * @version 		1.0.0
  */
 defined( "ABSPATH" ) || exit;
 
