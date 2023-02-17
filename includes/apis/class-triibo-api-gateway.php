@@ -4,34 +4,139 @@
  *
  * A class definition that includes attributes and functions used for access the Triibo Gateway API.
  *
- * @since      1.0.0
- * @package    Triibo_Api_Services
- * @subpackage Triibo_Api_Services/includes/apis
- * @author     Mateus Costa <mateus@costamateus.com.br>
+ * @author 		Mateus Costa <mateus@costamateus.com.br>
+ * @package 	Triibo_Api_Services/Classes/Api
+ * @version 	1.0.0
  */
+defined( "ABSPATH" ) || exit;
 
 class Triibo_Api_Gateway extends Triibo_Api
 {
+	/**
+	 * GROUP/NAME composition of $header
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
+	 */
     const GP_NM         = "triibo-webapp"; // GROUP/NAME
+
+	/**
+	 * Default header of all calls. Can be incremented
+	 *
+	 * @since 	1.0.0
+	 * @var 	array
+	 */
     const HEADER        = [ "Content-type: application/json" ];
 
+	/**
+	 * Endpoint for api /getChannelToken_v1
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
+	 */
     const CHN_TKN_ID    = "/getChannelToken_v1";
+
+	/**
+	 * Endpoint for api /creditPoints
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
+	 */
     const CREDIT_POINTS = "/creditPoints";
+
+	/**
+	 * Endpoint for api /login
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
+	 */
     const LOGIN         = "/login";
+
+	/**
+	 * Endpoint for api /setUserInfo_v1
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
+	 */
     const SET_USER_INFO = "/setUserInfo_v1";
 
+	/**
+	 * Internal ID for log
+	 *
+	 * @since 	1.0.0
+	 * @var 	string
+	 */
 	private $id         = "triibo-api-gateway";
 
+	/**
+	 * Header of this api calls
+	 *
+	 * @since 	1.0.0
+	 * @var 	array|null
+	 */
+    private $header     = null;
+
+	/**
+	 * Status of this api
+	 *
+	 * @since 	1.0.0
+	 * @var 	string|null
+	 */
     private $status     = null;
+
+	/**
+	 * Environment hml/prod
+	 *
+	 * @since 	1.0.0
+	 * @var 	array|null
+	 */
     private $env        = null;
+
+	/**
+	 * Endpoint hml/prod
+	 *
+	 * @since 	1.0.0
+	 * @var 	string|null
+	 */
     private $url        = null;
 
+	/**
+	 * Token
+	 *
+	 * @since 	1.0.0
+	 * @var 	string|null
+	 */
     private $token      = null;
+
+	/**
+	 * Channel ID
+	 *
+	 * @since 	1.0.0
+	 * @var 	string|null
+	 */
     private $chn_id     = null;
+
+	/**
+	 * Channel Token
+	 *
+	 * @since 	1.0.0
+	 * @var 	string|null
+	 */
     private $chn_tkn    = null;
 
+	/**
+	 * Logger
+	 *
+	 * @since 	1.0.0
+	 * @var 	wc_get_logger|WC_Logger
+	 */
 	private $log        = null;
 
+    /**
+     * Construct
+     *
+     * @since   1.0.0
+     */
     public function __construct()
     {
 		$this->log    = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
@@ -48,7 +153,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             $this->chn_tkn = $this->env ? get_option( "triibo_api_services_gate_hml_chn_tkn" ) : get_option( "triibo_api_services_gate_prd_chn_tkn" );
         }
 
-        $this->triibo_header = [
+        $this->header = [
             "channelName"   => self::GP_NM,
             "channelGroup"  => self::GP_NM,
             "apiToken"      => $this->token,
@@ -64,8 +169,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      * FALSE for inactive.
      *
      * @since   1.0.0
-     *
-     * @return boolean
+     * @return  boolean
      */
 	public function status()
 	{
@@ -79,8 +183,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      * FALSE for prod.
      *
      * @since   1.0.0
-     *
-     * @return boolean|null
+     * @return  boolean|null
      */
 	public function env()
 	{
@@ -94,6 +197,13 @@ class Triibo_Api_Gateway extends Triibo_Api
 			return false;
 	}
 
+    /**
+     * Check if $attr is empty
+     *
+     * @since   1.0.0
+     * @param   string $attr
+     * @return  bool
+     */
 	public function empty( string $attr )
 	{
 		return empty( $this->{$attr} ) ? true : false;
@@ -102,13 +212,22 @@ class Triibo_Api_Gateway extends Triibo_Api
 	/**
 	 * Register logs
 	 *
-	 * @param string $message
+     * @since   1.0.0
+	 * @param   string $message
 	 */
 	private function log( string $message )
 	{
 		$this->log->add( $this->id, $message );
 	}
 
+    /**
+     * Exec api call
+     *
+     * @since   1.0.0
+     * @param   string $endpoint
+     * @param   array $params
+     * @return  array
+     */
     private function call( string $endpoint, array $params )
     {
 		if ( !$this->status() )
@@ -131,6 +250,13 @@ class Triibo_Api_Gateway extends Triibo_Api
 		return self::exec( $url, self::HEADER, $params );
     }
 
+    /**
+     * Get hash for channel token
+     *
+     * @since   1.0.0
+     * @param   string|null $uid
+     * @return  array
+     */
     private function hash( string $uid = null )
     {
         $passPhrase = floor( rand( 1000000000, 9999999999 ) ) . $uid . floor( rand( 1000000000, 9999999999 ) );
@@ -144,11 +270,18 @@ class Triibo_Api_Gateway extends Triibo_Api
         ];
     }
 
+    /**
+     * Get channel token
+     *
+     * @since   1.0.0
+     * @param   string|null $uid
+     * @return  array
+     */
     public function get_channel_token( string $uid = null )
     {
         $hash   = $this->hash( $uid );
         $params = [
-            "triiboHeader" => array_merge( $this->triibo_header, [
+            "triiboHeader" => array_merge( $this->header, [
                 "uId"        => $uid,
                 "passPhrase" => $hash[ "passPhrase" ],
                 "challenge"  => $hash[ "challenge"  ]
@@ -158,6 +291,14 @@ class Triibo_Api_Gateway extends Triibo_Api
         return $this->call( self::CHN_TKN_ID, $params );
     }
 
+    /**
+     * Credits points to the user
+     *
+     * @since   1.0.0
+     * @param   string $triibo_id
+     * @param   integer $value
+     * @return  array
+     */
     public function credit_points( string $triibo_id, int $value )
     {
         $response   = $this->get_channel_token();
@@ -165,7 +306,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
         $params     = [
-            "triiboHeader"   => array_merge( $this->triibo_header, [
+            "triiboHeader"   => array_merge( $this->header, [
                 "channelTokenId" => $chn_tkn_id,
             ] ),
             "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
@@ -179,6 +320,15 @@ class Triibo_Api_Gateway extends Triibo_Api
         return $response;
     }
 
+    /**
+     * Update marketplace user
+     *
+     * @since   1.0.0
+     * @param   string $cellphone
+     * @param   string $email
+     * @param   string $action
+     * @return  array
+     */
     public function update_user_mkt( string $cellphone, string $email, string $action )
     {
         // $response = [
@@ -196,7 +346,7 @@ class Triibo_Api_Gateway extends Triibo_Api
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
 
         $params     = [
-            "triiboHeader"  => array_merge( $this->triibo_header, [
+            "triiboHeader"  => array_merge( $this->header, [
                 "channelTokenId" => $chn_tkn_id
             ] ),
             "linkedAccount" => NULL,
@@ -251,7 +401,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
         $params     = [
-            "triiboHeader"    => array_merge( $this->triibo_header, [
+            "triiboHeader"    => array_merge( $this->header, [
                 "channelTokenId" => $chn_tkn_id,
                 "uId"            => $uid
             ] ),
