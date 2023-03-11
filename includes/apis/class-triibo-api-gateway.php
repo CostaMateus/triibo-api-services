@@ -69,6 +69,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     const AUTH_SMS = "/authSMS_v1";
 
 	/**
+	 * Endpoint for api /validateSMS_v1
+	 *
+	 * @since 	1.1.0
+	 * @var 	string
+	 */
+    const VAL_SMS  = "/validateSMS_v1";
+
+	/**
 	 * Internal ID for log
 	 *
 	 * @since 	1.0.0
@@ -430,7 +438,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Undocumented function
+     * Send code SMS
      *
      * @since   1.1.0
      * @param   string $cellphone
@@ -440,7 +448,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     {
         $response   = $this->get_channel_token();
 
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
             $this->log( json_encode( $response ) );
             return $response;
@@ -459,7 +467,46 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $response   = $this->call( self::AUTH_SMS, $params );
 
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+            $this->log( json_encode( $response ) );
+
+        return $response;
+    }
+
+    /**
+     * Validates code SMS
+     *
+     * @since   1.1.0
+     * @param   string $code
+     * @param   string $cellphone
+     * @param   string $trans_id
+     * @return  void
+     */
+    public function validate_sms( string $code, string $cellphone, string $trans_id )
+    {
+        $response   = $this->get_channel_token();
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
+
+        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $params     = [
+            "triiboHeader"  => array_merge( $this->header, [
+                "channelTokenId" => $chn_tkn_id
+            ] ),
+            "code"          => $code,
+            "cellphone"     => $cellphone,
+            "transactionId" => $trans_id,
+        ];
+
+        $response   = $this->call( self::VAL_SMS, $params );
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             $this->log( json_encode( $response ) );
 
         return $response;
