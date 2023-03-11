@@ -61,6 +61,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     const SET_USER_INFO = "/setUserInfo_v1";
 
 	/**
+	 * Endpoint for api /authSMS_v1
+	 *
+	 * @since 	1.1.0
+	 * @var 	string
+	 */
+    const AUTH_SMS = "/authSMS_v1";
+
+	/**
 	 * Internal ID for log
 	 *
 	 * @since 	1.0.0
@@ -417,6 +425,42 @@ class Triibo_Api_Gateway extends Triibo_Api
         if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
 
         $response[ "uid" ] = $uid;
+
+        return $response;
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @since   1.1.0
+     * @param   string $cellphone
+     * @return  array
+     */
+    public function auth_sms( string $cellphone )
+    {
+        $response   = $this->get_channel_token();
+
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
+
+        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $params     = [
+            "triiboHeader" => array_merge( $this->header, [
+                "channelTokenId" => $chn_tkn_id
+            ] ),
+            "platform"     => "web",
+            "cellphone"    => $cellphone,
+        ];
+
+        $response   = $this->call( self::AUTH_SMS, $params );
+
+        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] )
+            $this->log( json_encode( $response ) );
 
         return $response;
     }
