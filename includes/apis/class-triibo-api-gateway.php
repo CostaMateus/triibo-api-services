@@ -6,7 +6,7 @@
  *
  * @author 		Mateus Costa <mateus@costamateus.com.br>
  * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.0.0
+ * @version 	1.1.0
  */
 defined( "ABSPATH" ) || exit;
 
@@ -66,7 +66,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 * @since 	1.1.0
 	 * @var 	string
 	 */
-    const AUTH_SMS = "/authSMS_v1";
+    const AUTH_SMS      = "/authSMS_v1";
 
 	/**
 	 * Endpoint for api /validateSMS_v1
@@ -74,7 +74,15 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 * @since 	1.1.0
 	 * @var 	string
 	 */
-    const VAL_SMS  = "/validateSMS_v1";
+    const VAL_SMS       = "/validateSMS_v1";
+
+	/**
+	 * Endpoint for api /getUserInfo_v1
+	 *
+	 * @since 	1.1.0
+	 * @var 	string
+	 */
+    const GET_USER_INFO = "/getUserInfo_v1";
 
 	/**
 	 * Internal ID for log
@@ -505,6 +513,51 @@ class Triibo_Api_Gateway extends Triibo_Api
         ];
 
         $response   = $this->call( self::VAL_SMS, $params );
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+            $this->log( json_encode( $response ) );
+
+        return $response;
+    }
+
+    /**
+     * Get user info
+     *
+     * @since   1.1.0
+     * @param   string $cellphone
+     * @return  array
+     */
+    public function user_info( string $cellphone )
+    {
+        $response   = $this->get_channel_token();
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
+
+        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $params     = [
+            "triiboHeader" => array_merge( $this->header, [
+                "channelTokenId" => $chn_tkn_id
+            ] ),
+            "queryPartnerAPI" => [
+                "getUserInfo"
+            ],
+            "userInfo"        => [
+                "contactList" => [
+                    [
+                        "type"  => "cellPhone",
+                        "value" => $cellphone
+                    ]
+                ]
+            ],
+        ];
+
+        $response   = $this->call( self::GET_USER_INFO, $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             $this->log( json_encode( $response ) );
