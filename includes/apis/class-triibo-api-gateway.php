@@ -351,9 +351,11 @@ class Triibo_Api_Gateway extends Triibo_Api
      * @param   string $cellphone
      * @param   string $email
      * @param   string $action
+     * @param   string $name
+     * @param   string $nick
      * @return  array
      */
-    public function update_user_mkt( string $cellphone, string $email, string $action )
+    public function update_user_mkt( string $cellphone, string $email, string $action, string $name = "", string $nick = "" )
     {
         // $response = [
         // 	"code"    => $info[ "http_code" ],
@@ -364,7 +366,12 @@ class Triibo_Api_Gateway extends Triibo_Api
         // ];
 
         $response   = $this->get_channel_token();
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
 
         $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
@@ -378,11 +385,17 @@ class Triibo_Api_Gateway extends Triibo_Api
         ];
 
         $response   = $this->call( self::LOGIN, $params );
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
 
         $user       = $response[ "data" ][ "user" ];
-        $uid        = $user[ "uId"                ];
-        $contact    = $user[ "contactList"        ];
+
+        $uid        = $user[ "uId"         ];
+        $contact    = $user[ "contactList" ];
 
         $key        = array_search( "emailMarketplace", array_column( $contact, "type" ) );
 
@@ -421,7 +434,12 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
 
         $response   = $this->get_channel_token( $uid );
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
 
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
         $params     = [
@@ -433,12 +451,19 @@ class Triibo_Api_Gateway extends Triibo_Api
             "userInfo"        => [
                 "syncType"    => "override",
                 "uId"         => $uid,
+                "name"        => ( $user[ "name" ] && $user[ "name" ] != "Triiber" ) ? $user[ "name" ] : ( $name ?? "Triiber" ),
+                "aliasName"   => ( $user[ "aliasName" ] ) ? $user[ "aliasName" ] : $nick,
                 "contactList" => [ ... $contact ],
             ],
         ];
 
         $response   = $this->call( self::SET_USER_INFO, $params );
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
 
         $response[ "uid" ] = $uid;
 
