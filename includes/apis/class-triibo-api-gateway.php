@@ -347,6 +347,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Update marketplace user
      *
+     * @since   1.1.0 Add params $name and $nick
      * @since   1.0.0
      * @param   string $cellphone
      * @param   string $email
