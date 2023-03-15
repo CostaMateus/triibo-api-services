@@ -347,6 +347,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Update marketplace user
      *
+     * @since   1.1.1 Fix array contactList
      * @since   1.1.0 Add params $name and $nick
      * @since   1.0.0
      * @param   string $cellphone
@@ -403,8 +404,11 @@ class Triibo_Api_Gateway extends Triibo_Api
         // email marketplace
         if ( $key !== false )
         {
-            $contact[ $key ][ "value"    ] = $email;
-            $contact[ $key ][ "verified" ] = true;
+            $contact[ $key ] = [
+                "type"     => "emailMarketplace",
+                "value"    => $email,
+                "verified" => true,
+            ];
         }
         else
         {
