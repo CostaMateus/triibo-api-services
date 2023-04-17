@@ -318,28 +318,38 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Credits points to the user
      *
+     * @since   1.1.2 Add param $event
      * @since   1.0.0
-     * @param   string $triibo_id
+     * @param   string  $triibo_id
      * @param   integer $value
+     * @param   string $event
      * @return  array
      */
-    public function credit_points( string $triibo_id, int $value )
+    public function credit_points( string $triibo_id, int $value, string $event )
     {
-        $response   = $this->get_channel_token();
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+        $events = [ "Compra_Marketplace", "Assinatura_Triibo_Vip", ];
 
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
-        $params     = [
-            "triiboHeader"   => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id,
-            ] ),
-            "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
-            "eventType"      => "Compra_Marketplace",
-            "recursionValue" => $value,
-        ];
+        if ( !in_array( $event, $events ) )
+        {
+            $response   = [ "success" => false, "event" => "Not found" ];
+        }
+        else
+        {
+            $response   = $this->get_channel_token();
+            if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
 
-        $response   = $this->call( self::CREDIT_POINTS, $params );
-        if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+            $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+            $params     = [
+                "triiboHeader"   => array_merge( $this->header, [
+                    "channelTokenId" => $chn_tkn_id,
+                ] ),
+                "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
+                "eventType"      => $event,
+                "recursionValue" => $value,
+            ];
+
+            $response   = $this->call( self::CREDIT_POINTS, $params );
+        }
 
         return $response;
     }
