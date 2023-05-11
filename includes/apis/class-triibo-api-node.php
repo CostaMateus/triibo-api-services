@@ -69,6 +69,14 @@ class Triibo_Api_Node extends Triibo_Api
 	const TKN_DELETE = "/payments/deleteToken";
 
 	/**
+	 * Endpoint for api /users/findUIDsByPhones
+	 *
+	 * @since 	1.1.3
+	 * @var 	string
+	 */
+	const FIND_UID   = "/users/findUIDsByPhones";
+
+	/**
 	 * Internal ID for log
 	 *
 	 * @since 	1.0.0
@@ -154,12 +162,11 @@ class Triibo_Api_Node extends Triibo_Api
 
         if ( $this->status == "on" )
         {
+			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+			$this->url_mkt = "https://"    . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
 
-            $this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
-            $this->url_mkt = "https://"    . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
-
-            $this->user    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_user" ) : get_option( "triibo_api_services_node_prd_user" );
-            $this->pass    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_pass" ) : get_option( "triibo_api_services_node_prd_pass" );
+			$this->user    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_user" ) : get_option( "triibo_api_services_node_prd_user" );
+			$this->pass    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_pass" ) : get_option( "triibo_api_services_node_prd_pass" );
 
 			$this->x_key   = ( $this->env == "on" ) ? "652e0505-f010-48a4-a9a5-ce12783777ea" : "xp8bqzil-b15e-da2v-3jcm-25pniix0y859";
         }
@@ -383,4 +390,17 @@ class Triibo_Api_Node extends Triibo_Api
     {
 		return $this->call( self::AUTH_MKT, $token );
     }
+
+	/**
+	 * Call /users/findUIDsByPhones
+	 *
+     * @since   1.1.3
+	 * @param 	string $token 	Authorization of request
+	 * @param 	string $phone 	Phone number to search
+	 * @return 	array
+	 */
+	public function find_uid( string $token, string $phone )
+	{
+		return $this->call( self::FIND_UID, $token, [ "phones" => [ $phone ] ] );
+	}
 }
