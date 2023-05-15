@@ -18,7 +18,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const AUTH       = "/auth";
+	const AUTH           = "/auth";
 
 	/**
 	 * Endpoint for api /auth/marketplace
@@ -26,7 +26,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const AUTH_MKT   = "/auth/marketplace";
+	const AUTH_MKT       = "/auth/marketplace";
 
 	/**
 	 * Endpoint for api /payments/brand
@@ -34,7 +34,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const BRAND      = "/payments/brand";
+	const BRAND          = "/payments/brand";
 
 	/**
 	 * Endpoint for api /payments/doPayment
@@ -42,7 +42,15 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const PAYMENT    = "/payments/doPayment";
+	const PAYMENT        = "/payments/doPayment";
+
+	/**
+	 * Endpoint for api /payments/status
+	 *
+	 * @since 	1.1.4
+	 * @var 	string
+	 */
+	const PAYMENT_STATUS = "/payments/status";
 
 	/**
 	 * Endpoint for api /payments/checkToken
@@ -50,7 +58,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const TKN_CHECK  = "/payments/checkToken";
+	const TKN_CHECK      = "/payments/checkToken";
 
 	/**
 	 * Endpoint for api /payments/createToken
@@ -58,7 +66,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const TKN_CREATE = "/payments/createToken";
+	const TKN_CREATE     = "/payments/createToken";
 
 	/**
 	 * Endpoint for api /payments/deleteToken
@@ -66,7 +74,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const TKN_DELETE = "/payments/deleteToken";
+	const TKN_DELETE     = "/payments/deleteToken";
 
 	/**
 	 * Endpoint for api /users/findUIDsByPhones
@@ -74,7 +82,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.1.3
 	 * @var 	string
 	 */
-	const FIND_UID   = "/users/findUIDsByPhones";
+	const FIND_UID       = "/users/findUIDsByPhones";
 
 	/**
 	 * Internal ID for log
@@ -82,7 +90,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $id      = "triibo-api-node";
+	private $id          = "triibo-api-node";
 
 	/**
 	 * Status of this api
@@ -90,7 +98,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $status  = null;
+    private $status      = null;
 
 	/**
 	 * Environment hml/prod
@@ -98,7 +106,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $env     = null;
+    private $env         = null;
 
 	/**
 	 * Endpoint hml/prod of api
@@ -106,7 +114,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $url_api = null;
+    private $url_api     = null;
 
 	/**
 	 * Endpoint hml/prod of marketplace
@@ -114,7 +122,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $url_mkt = null;
+    private $url_mkt     = null;
 
 	/**
 	 * User hml/prod to make the api calls
@@ -122,7 +130,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $user    = null;
+    private $user        = null;
 
 	/**
 	 * Password hml/prod of user
@@ -130,7 +138,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $pass    = null;
+    private $pass        = null;
 
 	/**
 	 * Extra token hml/prod for /auth/marketplace api call
@@ -138,7 +146,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string|null
 	 */
-    private $x_key   = null;
+    private $x_key       = null;
 
 	/**
 	 * Logger
@@ -146,7 +154,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	wc_get_logger|WC_Logger
 	 */
-	private $log     = null;
+	private $log         = null;
 
     /**
      * Construct
@@ -162,7 +170,10 @@ class Triibo_Api_Node extends Triibo_Api
 
         if ( $this->status == "on" )
         {
-			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+			$this->url_api = ( get_home_url() == "http://localhost:8000" )
+								? "http://localhost:3000"
+								: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+
 			$this->url_mkt = "https://"    . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
 
 			$this->user    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_user" ) : get_option( "triibo_api_services_node_prd_user" );
@@ -318,7 +329,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 *
      * @since   1.0.0
 	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of card
+	 * @param 	array $params 	Parameters of brand
 	 * @return 	array
 	 */
 	public function brand( string $token, array $params )
@@ -331,7 +342,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 *
      * @since   1.0.0
 	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of card
+	 * @param 	array $params 	Parameters of payment
 	 * @return 	array
 	 */
 	public function payment( string $token, array $params )
@@ -340,11 +351,24 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
+	 * Call /payments/status endpoint
+	 *
+	 * @since 	1.1.4
+	 * @param 	string 	$token 	Authorization of request
+	 * @param 	array 	$params
+	 * @return 	void
+	 */
+	public function payment_status( string $token, array $params )
+	{
+		return $this->call( self::PAYMENT_STATUS, $token, $params );
+	}
+
+	/**
 	 * Call /payments/checkToken endpoint
 	 *
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of card
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters of token, check
 	 * @return 	array
 	 */
 	public function check_token( string $token, array $params )
@@ -356,8 +380,8 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /payments/createToken endpoint
 	 *
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of card
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters of token, create
 	 * @return 	array
 	 */
 	public function create_token( string $token, array $params )
@@ -369,8 +393,8 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /payments/deleteToken endpoint
 	 *
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of card
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters of token, delete
 	 * @return 	array
 	 */
 	public function delete_token( string $token, array $params )
@@ -378,12 +402,11 @@ class Triibo_Api_Node extends Triibo_Api
 		return $this->call( self::TKN_DELETE, $token, $params );
 	}
 
-
 	/**
 	 * Call /auth/marketplace endpoint
 	 *
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
+	 * @param 	string 	$token 		Authorization of request
 	 * @return 	array
 	 */
     public function validate_token( string $token )
@@ -395,8 +418,8 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /users/findUIDsByPhones
 	 *
      * @since   1.1.3
-	 * @param 	string $token 	Authorization of request
-	 * @param 	string $phone 	Phone number to search
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	string 	$phone 		Phone number to search
 	 * @return 	array
 	 */
 	public function find_uid( string $token, string $phone )
