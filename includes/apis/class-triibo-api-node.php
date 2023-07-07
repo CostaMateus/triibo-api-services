@@ -170,9 +170,11 @@ class Triibo_Api_Node extends Triibo_Api
 
         if ( $this->status == "on" )
         {
-			$this->url_api = ( get_home_url() == "http://localhost:8000" )
-								? "http://localhost:3000"
-								: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+			// $this->url_api = ( get_home_url() == "http://localhost:8000" )
+			// 					? "http://localhost:3000"
+			// 					: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+
+			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
 
 			$this->url_mkt = "https://"    . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
 
