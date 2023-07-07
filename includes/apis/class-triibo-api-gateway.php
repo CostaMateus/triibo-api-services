@@ -357,6 +357,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Update marketplace user
      *
+     * @since   1.1.5 ContactList email/emailMarketplace no longer verified
      * @since   1.1.1 Fix array contactList
      * @since   1.1.0 Add params $name and $nick
      * @since   1.0.0
@@ -417,7 +418,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             $contact[ $key ] = [
                 "type"     => "emailMarketplace",
                 "value"    => $email,
-                "verified" => true,
+                "verified" => false,
             ];
         }
         else
@@ -425,7 +426,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             array_push( $contact, [
                 "type"     => "emailMarketplace",
                 "value"    => $email,
-                "verified" => true
+                "verified" => false
             ] );
         }
 
@@ -436,14 +437,14 @@ class Triibo_Api_Gateway extends Triibo_Api
             // email
             if ( $key !== false )
             {
-                $contact[ $key ][ "verified" ] = true;
+                $contact[ $key ][ "verified" ] = false;
             }
             else
             {
                 array_push( $contact, [
                     "type"     => "email",
                     "value"    => $email,
-                    "verified" => true
+                    "verified" => false
                 ] );
             }
         }
