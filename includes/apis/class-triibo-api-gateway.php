@@ -411,14 +411,21 @@ class Triibo_Api_Gateway extends Triibo_Api
         $contact    = $user[ "contactList" ];
 
         $key        = array_search( "emailMarketplace", array_column( $contact, "type" ) );
+        $verified   = false;
 
         // email marketplace
         if ( $key !== false )
         {
+            $verified        = ( $email == $contact[ $key ][ "value" ] )
+                                ? ( $contact[ $key ][ "verified" ]
+                                    ? true
+                                    : false )
+                                : false;
+
             $contact[ $key ] = [
                 "type"     => "emailMarketplace",
                 "value"    => $email,
-                "verified" => false,
+                "verified" => $verified,
             ];
         }
         else
@@ -435,16 +442,12 @@ class Triibo_Api_Gateway extends Triibo_Api
             $key = array_search( "email", array_column( $contact, "type" ) );
 
             // email
-            if ( $key !== false )
-            {
-                $contact[ $key ][ "verified" ] = false;
-            }
-            else
+            if ( $key === false )
             {
                 array_push( $contact, [
                     "type"     => "email",
                     "value"    => $email,
-                    "verified" => false
+                    "verified" => $verified
                 ] );
             }
         }
