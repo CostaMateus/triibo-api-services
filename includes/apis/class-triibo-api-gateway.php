@@ -295,6 +295,102 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
+     * Process contact list
+     *
+     * @since   1.1.6
+     * @param   array   $contact
+     * @param   string  $email
+     * @param   string  $action
+     * @return  array
+     */
+    private function process_contact_list( array $contact, string $email, string $action )
+    {
+        $key      = array_search( "emailMarketplace", array_column( $contact, "type" ) );
+        $verified = false;
+
+        // email marketplace
+        if ( $key !== false )
+        {
+            $verified        = ( $email == $contact[ $key ][ "value" ] )
+                                ? ( $contact[ $key ][ "verified" ]
+                                    ? true
+                                    : false )
+                                : false;
+
+            $contact[ $key ] = [
+                "type"     => "emailMarketplace",
+                "value"    => $email,
+                "verified" => $verified,
+            ];
+        }
+        else
+        {
+            array_push( $contact, [
+                "type"     => "emailMarketplace",
+                "value"    => $email,
+                "verified" => false
+            ] );
+        }
+
+        if ( in_array( $action, [ "UPDATE", "CREATE" ] ) )
+        {
+            $key = array_search( "email", array_column( $contact, "type" ) );
+
+            // email
+            if ( $key === false )
+            {
+                array_push( $contact, [
+                    "type"     => "email",
+                    "value"    => $email,
+                    "verified" => $verified
+                ] );
+            }
+        }
+
+        return $contact;
+    }
+
+    /**
+     * Process contact
+     *
+     * @since   1.1.6
+     * @param   array   $terms
+     * @return  array
+     */
+    private function process_terms( array $terms )
+    {
+        $id   = "-Kzj_F6wDcfHkLMO_q4c";
+        $term = [
+            "accept"         => true,
+            "dateAcceptance" => time() * 1000,
+            "optInId"        => $id,
+            "type"           => "Termos de Uso da Triibo",
+            "version"        => 1
+        ];
+
+        if ( count( $terms ) == 0 )
+        {
+            $terms = [ $term ];
+        }
+        else
+        {
+            $key   = array_search( $id, array_column( $terms, "optInId" ) );
+
+            if ( $key !== false )
+            {
+                $terms[ $key ][ "accept"         ] = true;
+                $terms[ $key ][ "dateAcceptance" ] = time() * 1000;
+            }
+            else
+            {
+                array_push( $terms, $term );
+            }
+        }
+
+        return $terms;
+    }
+
+    /**
      * Get channel token
      *
      * @since   1.0.0
@@ -361,14 +457,15 @@ class Triibo_Api_Gateway extends Triibo_Api
      * @since   1.1.1 Fix array contactList
      * @since   1.1.0 Add params $name and $nick
      * @since   1.0.0
-     * @param   string $cellphone
-     * @param   string $email
-     * @param   string $action
-     * @param   string $name
-     * @param   string $nick
+     * @param   string  $cellphone
+     * @param   string  $email
+     * @param   string  $action
+     * @param   string  $name
+     * @param   string  $nick
+     * @param   bool    $terms
      * @return  array
      */
-    public function update_user_mkt( string $cellphone, string $email, string $action, string $name = "", string $nick = "" )
+    public function update_user_mkt( string $cellphone, string $email, string $action, string $name = "", string $nick = "", bool $terms = null )
     {
         // $response = [
         // 	"code"    => $info[ "http_code" ],
@@ -407,50 +504,8 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $user       = $response[ "data" ][ "user" ];
 
-        $uid        = $user[ "uId"         ];
-        $contact    = $user[ "contactList" ];
-
-        $key        = array_search( "emailMarketplace", array_column( $contact, "type" ) );
-        $verified   = false;
-
-        // email marketplace
-        if ( $key !== false )
-        {
-            $verified        = ( $email == $contact[ $key ][ "value" ] )
-                                ? ( $contact[ $key ][ "verified" ]
-                                    ? true
-                                    : false )
-                                : false;
-
-            $contact[ $key ] = [
-                "type"     => "emailMarketplace",
-                "value"    => $email,
-                "verified" => $verified,
-            ];
-        }
-        else
-        {
-            array_push( $contact, [
-                "type"     => "emailMarketplace",
-                "value"    => $email,
-                "verified" => false
-            ] );
-        }
-
-        if ( in_array( $action, [ "UPDATE", "CREATE" ] ) )
-        {
-            $key = array_search( "email", array_column( $contact, "type" ) );
-
-            // email
-            if ( $key === false )
-            {
-                array_push( $contact, [
-                    "type"     => "email",
-                    "value"    => $email,
-                    "verified" => $verified
-                ] );
-            }
-        }
+        $uid        = $user[ "uId" ];
+        $contact    = $this->process_contact_list( $user[ "contactList" ], $email, $action );
 
         $response   = $this->get_channel_token( $uid );
 
@@ -475,6 +530,12 @@ class Triibo_Api_Gateway extends Triibo_Api
                 "contactList" => [ ... $contact ],
             ],
         ];
+
+        if ( $terms )
+        {
+            $user_terms                          = ( isset( $user[ "optInList" ] ) ) ? $user[ "optInList" ] : [];
+            $params[ "userInfo" ][ "optInList" ] = [ ... $this->process_terms( $user_terms ) ];
+        }
 
         $response   = $this->call( self::SET_USER_INFO, $params );
 
