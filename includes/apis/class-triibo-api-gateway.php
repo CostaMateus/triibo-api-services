@@ -453,6 +453,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Update marketplace user
      *
+     * @since   1.1.6 Add param $terms
      * @since   1.1.5 ContactList email/emailMarketplace no longer verified
      * @since   1.1.1 Fix array contactList
      * @since   1.1.0 Add params $name and $nick
