@@ -629,11 +629,12 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Get user info
      *
+     * @since   1.1.7 Add $is_uid param, change $cellphone param to $data
      * @since   1.1.0
-     * @param   string $cellphone
+     * @param   string $data
      * @return  array
      */
-    public function user_info( string $cellphone )
+    public function user_info( string $data, bool $is_uid = false )
     {
         $response   = $this->get_channel_token();
 
@@ -643,24 +644,30 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
         $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
 
-        $params     = [
-            "triiboHeader" => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id
-            ] ),
-            "queryPartnerAPI" => [
-                "getUserInfo"
-            ],
-            "userInfo"        => [
+        if ( $is_uid )
+        {
+            $user_info = [ "uId" => $data ];
+        }
+        else
+        {
+            $user_info = [
                 "contactList" => [
                     [
                         "type"  => "cellPhone",
-                        "value" => $cellphone
+                        "value" => "+" . preg_replace( "/\D/", "", $data )
                     ]
                 ]
-            ],
+            ];
+        }
+
+        $params     = [
+            "triiboHeader"    => array_merge( $this->header, [
+                "channelTokenId" => $chn_tkn_id
+            ] ),
+            "queryPartnerAPI" => [ "getUserInfo" ],
+            "userInfo"        => $user_info,
         ];
 
         $response   = $this->call( self::GET_USER_INFO, $params );
