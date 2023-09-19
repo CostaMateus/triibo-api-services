@@ -423,7 +423,12 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function credit_points( string $triibo_id, int $value, string $event )
     {
-        $events = [ "Compra_Marketplace", "Assinatura_Triibo_Vip", ];
+        $events = [
+            "Compra_Marketplace",
+            "Assinatura_Triibo_Vip",
+            "Assinatura_Triibo_VIP_Plano_2",
+            "Assinatura_Triibo_VIP_Plano_3"
+        ];
 
         if ( !in_array( $event, $events ) )
         {
