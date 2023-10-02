@@ -34,7 +34,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.2.0
 	 * @var 	string
 	 */
-	const AUTH_CODE      = "/authcode";
+	const AUTH_CODE      = "/authCode";
 
 	/**
 	 * Endpoint for api /payments/brand
@@ -449,10 +449,10 @@ class Triibo_Api_Node extends Triibo_Api
 			"cellphone"    => $params[ "cellphone" ],
 			"platform"     => "web",
 			"languageCode" => "pt_BR",
-			"sentType"     => [
+			"sendType"     => [
 				"sms"      => ( $params[ "type" ] == "sms"      ) ? true : false,
-				"email"    => false,
 				"whatsapp" => ( $params[ "type" ] == "whatsapp" ) ? true : false,
+				"email"    => false,
 			]
 		];
 
