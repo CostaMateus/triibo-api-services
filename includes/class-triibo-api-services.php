@@ -75,6 +75,7 @@ class Triibo_Api_Services
 	/**
 	 * Define the core functionality of the plugin.
 	 *
+	 * @since 	1.2.0 Add filter plugin_row_meta
 	 * @since 	1.0.0
 	 */
 	public function __construct()
@@ -92,6 +93,7 @@ class Triibo_Api_Services
 		add_action( "admin_init", [ $this, "register_and_build_fields" ]    );
 
 		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links" ] );
+		add_filter( "plugin_row_meta",                                                    [ $this, "plugin_row_meta"     ], 10, 3 );
 
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php"         );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
@@ -523,6 +525,36 @@ class Triibo_Api_Services
 		$plugin_links   = [ "<a href='{$url}' >Configurações</a>" ];
 
 		return array_merge( $plugin_links, $links );
+	}
+
+	/**
+	 * Add link to changelog modal
+	 *
+	 * @since 	1.2.0
+	 * @param 	array 	$plugin_meta
+	 * @param 	string 	$plugin_file
+	 * @param 	array 	$plugin_data
+	 * @return 	array
+	 */
+	public function plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data )
+	{
+		$path = path_join( WP_PLUGIN_DIR, $plugin_file );
+		$path = str_replace( "/", "\\", $path );
+
+        if ( TRIIBO_API_SERVICES_FILE === $path )
+		{
+            $url = plugins_url( "readme.txt", TRIIBO_API_SERVICES_FILE );
+
+            $plugin_meta[] = sprintf(
+                "<a href='%s' class='thickbox open-plugin-details-modal' aria-label='%s' data-title='%s'>%s</a>",
+                add_query_arg( "TB_iframe", "true", $url ),
+                esc_attr( sprintf( __( "More information about %s" ), $plugin_data[ "Name" ] ) ),
+                esc_attr( $plugin_data[ "Name" ] ),
+                __( "Histórico de alterações" )
+            );
+        }
+
+        return $plugin_meta;
 	}
 
 	/**
