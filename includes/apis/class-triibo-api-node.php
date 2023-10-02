@@ -29,6 +29,14 @@ class Triibo_Api_Node extends Triibo_Api
 	const AUTH_MKT       = "/auth/marketplace";
 
 	/**
+	 * Endpoint for api /authcode
+	 *
+	 * @since 	1.2.0
+	 * @var 	string
+	 */
+	const AUTH_CODE      = "/authcode";
+
+	/**
 	 * Endpoint for api /payments/brand
 	 *
 	 * @since 	1.0.0
@@ -426,4 +434,28 @@ class Triibo_Api_Node extends Triibo_Api
 	{
 		return $this->call( self::FIND_UID, $token, [ "phones" => [ $phone ] ] );
 	}
+
+    /**
+     * Call /authcode
+     *
+     * @since   1.2.0
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters for send auth code
+     * @return  array
+     */
+    public function auth_code( string $token, array $params )
+    {
+		$params = [
+			"cellphone"    => $params[ "cellphone" ],
+			"platform"     => "web",
+			"languageCode" => "pt_BR",
+			"sentType"     => [
+				"sms"      => ( $params[ "type" ] == "sms"      ) ? true : false,
+				"email"    => false,
+				"whatsapp" => ( $params[ "type" ] == "whatsapp" ) ? true : false,
+			]
+		];
+
+		return $this->call( self::AUTH_CODE, $token, $params );
+    }
 }
