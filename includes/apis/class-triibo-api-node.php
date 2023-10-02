@@ -440,18 +440,22 @@ class Triibo_Api_Node extends Triibo_Api
      *
      * @since   1.2.0
 	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters for send auth code
+	 * @param 	array 	$data 		Data to pass to parameters for send auth code
      * @return  array
      */
-    public function auth_code( string $token, array $params )
+    public function auth_code( string $token, array $data )
     {
-		$params = [
-			"cellphone"    => $params[ "cellphone" ],
+        $cellphone  = "+" . preg_replace( "/\D/", "", $data[ "cellphone" ] );
+		$sms        = ( $data[ "type" ] == "sms" ) ? true : false;
+		$wpp        = ( $data[ "type" ] == "wpp" ) ? true : false;
+
+		$params     = [
+			"cellphone"    => $cellphone,
 			"platform"     => "web",
 			"languageCode" => "pt_BR",
 			"sendType"     => [
-				"sms"      => ( $params[ "type" ] == "sms"      ) ? true : false,
-				"whatsapp" => ( $params[ "type" ] == "whatsapp" ) ? true : false,
+				"sms"      => $sms,
+				"whatsapp" => $wpp,
 				"email"    => false,
 			]
 		];
