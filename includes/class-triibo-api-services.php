@@ -539,7 +539,9 @@ class Triibo_Api_Services
 	public function plugin_row_meta( $plugin_meta, $plugin_file, $plugin_data )
 	{
 		$path = path_join( WP_PLUGIN_DIR, $plugin_file );
-		$path = str_replace( "/", "\\", $path );
+
+		if ( DIRECTORY_SEPARATOR == "\\" )
+			$path = str_replace( "/", "\\", $path );
 
         if ( TRIIBO_API_SERVICES_FILE === $path )
 		{
