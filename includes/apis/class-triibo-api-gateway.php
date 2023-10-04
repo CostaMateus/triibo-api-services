@@ -765,7 +765,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      * @param   string $org_id
      * @return  array
      */
-    public function remove_org( string $uid, string $org_id )
+    public function del_org( string $uid, string $org_id )
     {
         return $this->process_org( self::DEL_USER_ORG, "del", $uid, $org_id );
     }
