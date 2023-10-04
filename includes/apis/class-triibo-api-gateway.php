@@ -6,7 +6,7 @@
  *
  * @author 		Mateus Costa <mateus@costamateus.com.br>
  * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.1.0
+ * @version 	1.3.0
  */
 defined( "ABSPATH" ) || exit;
 
@@ -83,6 +83,22 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 * @var 	string
 	 */
     const GET_USER_INFO = "/getUserInfo_v1";
+
+	/**
+	 * Endpoint for api /insertUserOrgs
+	 *
+	 * @since 	1.3.0
+	 * @var 	string
+	 */
+    const ADD_USER_ORG  = "/insertUserOrgs";
+
+	/**
+     * Endpoint for api /removeUserOrgs
+	 *
+     * @since 	1.3.0
+     * @var 	string
+	 */
+    const DEL_USER_ORG  = "/removeUserOrgs";
 
 	/**
 	 * Internal ID for log
@@ -391,6 +407,46 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
+     * Process org action
+     *
+     * @since   1.3.0
+     * @param   string $action
+     * @param   string $uid
+     * @param   string $org_id
+     * @return  array
+     */
+    private function process_org( string $api, string $action, string $uid, string $org_id )
+    {
+        $response   = $this->get_channel_token();
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log( json_encode( $response ) );
+            return $response;
+        }
+
+        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $params     = [
+            "triiboHeader" => array_merge( $this->header, [
+                "channelTokenId" => $chn_tkn_id
+            ] ),
+            "orgID"        => $org_id,
+            "uId"          => $uid,
+        ];
+
+        if ( $action == "add" )
+            $params[ "ignorePending" ] = false;
+
+        $response   = $this->call( $api, $params );
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+            $this->log( json_encode( $response ) );
+
+        return $response;
+    }
+
+    /**
      * Get channel token
      *
      * @since   1.0.0
@@ -686,5 +742,31 @@ class Triibo_Api_Gateway extends Triibo_Api
             $this->log( json_encode( $response ) );
 
         return $response;
+    }
+
+    /**
+     * Add org to user
+     *
+     * @since   1.3.0
+     * @param   string $uid
+     * @param   string $org_id
+     * @return  array
+     */
+    public function add_org( string $uid, string $org_id )
+    {
+        return $this->process_org( self::ADD_USER_ORG, "add", $uid, $org_id );
+    }
+
+    /**
+     * Remove org from user
+     *
+     * @since   1.3.0
+     * @param   string $uid
+     * @param   string $org_id
+     * @return  array
+     */
+    public function remove_org( string $uid, string $org_id )
+    {
+        return $this->process_org( self::DEL_USER_ORG, "del", $uid, $org_id );
     }
 }
