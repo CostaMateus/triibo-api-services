@@ -437,7 +437,12 @@ class Triibo_Api_Gateway extends Triibo_Api
         else
         {
             $response   = $this->get_channel_token();
-            if ( !$response[ "success" ] || !$response[ "data" ][ "success" ] ) return $response;
+
+            if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+            {
+                $this->log( json_encode( $response ) );
+                return $response;
+            }
 
             $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
             $params     = [
