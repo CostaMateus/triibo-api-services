@@ -74,13 +74,15 @@ class Triibo_Api
 	/**
 	 * Make request to the API
 	 *
+	 * @since 	1.4.0 	Added $method parameter
 	 * @since 	1.0.0
 	 * @param 	string 	$endpoint 	Endpoint url
 	 * @param 	array 	$header		Header of request
 	 * @param 	array 	$params 	Body of request
+	 * @param 	string 	$method 	Method of request
 	 * @return 	array
 	 */
-    public static function exec( string $endpoint, array $header, array $params = [] )
+    public static function exec( string $endpoint, array $header, array $params = [], string $method = "POST" )
     {
 		$curl     = curl_init();
 
@@ -105,7 +107,7 @@ class Triibo_Api
 			CURLOPT_FOLLOWLOCATION => TRUE,
 			CURLOPT_SSL_VERIFYPEER => TRUE,
 			CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-			CURLOPT_CUSTOMREQUEST  => "POST",
+			CURLOPT_CUSTOMREQUEST  => $method,
 			CURLOPT_POSTFIELDS     => $params,
 			CURLOPT_HTTPHEADER     => $header,
         ] );
