@@ -149,6 +149,14 @@ class Triibo_Api_Node extends Triibo_Api
     private $pass        = null;
 
 	/**
+	 * Header for api calls
+	 *
+	 * @since 	1.4.0
+	 * @var 	array|null
+	 */
+    private $header      = null;
+
+	/**
 	 * Extra token hml/prod for /auth/marketplace api call
 	 *
 	 * @since 	1.0.0
@@ -188,6 +196,11 @@ class Triibo_Api_Node extends Triibo_Api
 			$this->pass    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_pass" ) : get_option( "triibo_api_services_node_prd_pass" );
 
 			$this->x_key   = ( $this->env == "on" ) ? "652e0505-f010-48a4-a9a5-ce12783777ea" : "xp8bqzil-b15e-da2v-3jcm-25pniix0y859";
+
+			$this->header  = [
+				"origin: {$this->url_mkt}",
+				"content-type: application/json",
+			];
         }
     }
 
@@ -256,10 +269,19 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	private function get_header()
 	{
-		return [
-			"Origin: {$this->url_mkt}",
-			"Content-type: application/json",
-		];
+		return $this->header;
+	}
+
+
+	/**
+	 * Add header in basic header
+	 *
+     * @since   1.4.0
+	 * @return 	void
+	 */
+	private function set_header( string $add )
+	{
+		array_push( $this->header, $add );
 	}
 
 	/**
@@ -336,8 +358,8 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /payments/brand endpoint
 	 *
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of brand
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters of brand
 	 * @return 	array
 	 */
 	public function brand( string $token, array $params )
@@ -349,8 +371,8 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /payments/doPayment endpoint
 	 *
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
-	 * @param 	array $params 	Parameters of payment
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters of payment
 	 * @return 	array
 	 */
 	public function payment( string $token, array $params )
@@ -362,7 +384,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /payments/status endpoint
 	 *
 	 * @since 	1.1.4
-	 * @param 	string 	$token 	Authorization of request
+	 * @param 	string 	$token 		Authorization of request
 	 * @param 	array 	$params
 	 * @return 	void
 	 */
