@@ -287,13 +287,15 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Prepare header to make request to the API
 	 *
+     * @since   1.4.0 	Added $method param
      * @since   1.0.0
 	 * @param 	string 	$endpoint 	Endpoint url
 	 * @param 	string 	$token 		Authorization of request
 	 * @param 	array 	$params 	Body of request
+	 * @param 	string 	$method 	Method of request
 	 * @return 	array
 	 */
-    private function call( string $endpoint, string $token, array $params = [] )
+    private function call( string $endpoint, string $token, array $params = [], string $method = "POST" )
     {
 		if ( !$this->status() )
 		{
@@ -339,7 +341,7 @@ class Triibo_Api_Node extends Triibo_Api
 			array_push( $header, $token );
 		}
 
-		return self::exec( $url, $header, $params );
+		return self::exec( $url, $header, $params, $method );
     }
 
 	/**
