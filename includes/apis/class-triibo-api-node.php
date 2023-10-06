@@ -343,6 +343,42 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
+	 * Encrypt a string
+	 *
+     * @since   1.4.0
+	 * @param 	string $str
+	 * @param 	string $key
+	 * @return	string
+	 */
+    private function encrypt( $str, $key )
+    {
+        if ( !$str ) return null;
+
+        $iv   = hex2bin( "00000000000000000000000000000000" );
+        $encr = openssl_encrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
+
+        return urlencode( base64_encode( $encr ) );
+    }
+
+	/**
+	 * Decrypt a string
+	 *
+     * @since   1.4.0
+	 * @param 	string $str
+	 * @param 	string $key
+	 * @return 	string
+	 */
+    private function decrypt( $str, $key )
+    {
+        if ( !$str ) return null;
+
+        $str = base64_decode( urldecode( $str ) );
+        $iv  = hex2bin( "00000000000000000000000000000000" );
+
+        return openssl_decrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
+    }
+
+	/**
 	 * Call /auth endpoint
 	 *
      * @since   1.0.0
