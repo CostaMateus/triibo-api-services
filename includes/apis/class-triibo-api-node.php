@@ -383,13 +383,46 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Call /auth endpoint
 	 *
+     * @since   1.4.0 	Added param $code
      * @since   1.0.0
-	 * @param 	string $token 	Authorization of request
+	 * @param 	string 	$token 	Authorization of request
+	 * @param 	string 	$code 	Security code
 	 * @return 	array
 	 */
-	public function auth( string $token )
+	public function auth( string $token, string $code = "" )
 	{
+		if ( $code ) $this->set_header( "securitycode: {$code}" );
+
 		return $this->call( self::AUTH, $token );
+	}
+
+	/**
+	 * Call /auth endpoint, to get security code for validation
+	 *
+     * @since   1.4.0
+	 * @return 	array
+	 */
+	public function get_security_code()
+	{
+		$response = $this->call( self::AUTH, "", [], "GET" );
+
+		if ( !$response[ "success" ] ) return $response;
+
+		$key64    = get_option( "_triibo_security_code" ); // insert manually in DB
+		$key      = base64_decode( $key64 );
+
+		$code     = $response[ "data" ][ "securityCode" ];
+
+		$decrypt  = $this->decrypt( $code, $key );
+        $decrypt  = json_decode( $decrypt );
+
+        $decrypt->code *= 3;
+
+		$encrypt  = $this->encrypt( json_encode( $decrypt ), $key );
+
+		$response[ "data" ][ "securityCode" ] = $encrypt;
+
+		return $response;
 	}
 
 	/**
