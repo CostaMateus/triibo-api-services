@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.4.1 - 2023/10/10 =
+
+- Unificação e atualização de requerimentos
+
 = 1.4.0 - 2023/10/06 =
 
 - Adicionado SecurityCode
