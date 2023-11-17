@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.4.2 - 2023/11/17
+
+- Ajuste na API adicionar/remover orgs, Gateway
+
 = 1.4.1 - 2023/10/10 =
 
 - Unificação e atualização de requerimentos

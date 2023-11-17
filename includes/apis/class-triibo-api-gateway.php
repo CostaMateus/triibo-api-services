@@ -100,6 +100,14 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 */
     const DEL_USER_ORG  = "/removeUserOrgs";
 
+    /**
+     * System uId
+     *
+     * @since   1.4.2
+     * @var     string
+     */
+    const SYS_UID       = "J4NjCHtvxuRojrXb29whbsNPAy33"; // +5510999991477
+
 	/**
 	 * Internal ID for log
 	 *
@@ -409,15 +417,15 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Process org action
      *
+     * @since   1.4.2   Removed parameter $action
      * @since   1.3.0
-     * @param   string $action
-     * @param   string $uid
-     * @param   string $org_id
+     * @param   string  $uid
+     * @param   string  $org_id
      * @return  array
      */
-    private function process_org( string $api, string $action, string $uid, string $org_id )
+    private function process_org( string $api, string $uid, string $org_id )
     {
-        $response   = $this->get_channel_token();
+        $response   = $this->get_channel_token( self::SYS_UID );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
@@ -429,14 +437,12 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $params     = [
             "triiboHeader" => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id
+                "channelTokenId" => $chn_tkn_id,
+                "uId"            => self::SYS_UID,
             ] ),
             "orgID"        => $org_id,
             "uId"          => $uid,
         ];
-
-        if ( $action == "add" )
-            $params[ "ignorePending" ] = false;
 
         $response   = $this->call( $api, $params );
 
@@ -754,7 +760,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function add_org( string $uid, string $org_id )
     {
-        return $this->process_org( self::ADD_USER_ORG, "add", $uid, $org_id );
+        return $this->process_org( self::ADD_USER_ORG, $uid, $org_id );
     }
 
     /**
@@ -767,6 +773,6 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function del_org( string $uid, string $org_id )
     {
-        return $this->process_org( self::DEL_USER_ORG, "del", $uid, $org_id );
+        return $this->process_org( self::DEL_USER_ORG, $uid, $org_id );
     }
 }
