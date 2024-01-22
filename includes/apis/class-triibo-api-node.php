@@ -42,7 +42,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const BRAND          = "/payments/brand";
+	const PAY_BRAND      = "/payments/brand";
 
 	/**
 	 * Endpoint for api /payments/doPayment
@@ -66,7 +66,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const TKN_CHECK      = "/payments/checkToken";
+	const PAY_TKN_CHECK  = "/payments/checkToken";
 
 	/**
 	 * Endpoint for api /payments/createToken
@@ -74,7 +74,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const TKN_CREATE     = "/payments/createToken";
+	const PAY_TKN_CREATE = "/payments/createToken";
 
 	/**
 	 * Endpoint for api /payments/deleteToken
@@ -82,7 +82,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const TKN_DELETE     = "/payments/deleteToken";
+	const PAY_TKN_DELETE = "/payments/deleteToken";
 
 	/**
 	 * Endpoint for api /users/findUIDsByPhones
@@ -90,7 +90,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.1.3
 	 * @var 	string
 	 */
-	const FIND_UID       = "/users/findUIDsByPhones";
+	const USER_FIND_UID  = "/users/findUIDsByPhones";
 
 	/**
 	 * Internal ID for log
@@ -272,7 +272,6 @@ class Triibo_Api_Node extends Triibo_Api
 		return $this->header;
 	}
 
-
 	/**
 	 * Add header in basic header
 	 *
@@ -435,7 +434,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function brand( string $token, array $params )
 	{
-		return $this->call( self::BRAND, $token, $params );
+		return $this->call( self::PAY_BRAND, $token, $params );
 	}
 
 	/**
@@ -474,7 +473,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function check_token( string $token, array $params )
 	{
-		return $this->call( self::TKN_CHECK, $token, $params );
+		return $this->call( self::PAY_TKN_CHECK, $token, $params );
 	}
 
 	/**
@@ -487,7 +486,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function create_token( string $token, array $params )
 	{
-		return $this->call( self::TKN_CREATE, $token, $params );
+		return $this->call( self::PAY_TKN_CREATE, $token, $params );
 	}
 
 	/**
@@ -500,7 +499,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function delete_token( string $token, array $params )
 	{
-		return $this->call( self::TKN_DELETE, $token, $params );
+		return $this->call( self::PAY_TKN_DELETE, $token, $params );
 	}
 
 	/**
@@ -525,7 +524,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function find_uid( string $token, string $phone )
 	{
-		return $this->call( self::FIND_UID, $token, [ "phones" => [ $phone ] ] );
+		return $this->call( self::USER_FIND_UID, $token, [ "phones" => [ $phone ] ] );
 	}
 
     /**
