@@ -396,8 +396,33 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
+	 * Set security code
+	 *
+	 * @since 	1.5.0
+	 * @param 	$code
+	 * @return 	void
+	 */
+	private function set_security_code( string $code )
+	{
+		if ( $code ) $this->set_header( "securitycode: {$code}" );
+	}
+
+	/**
+	 * Format cellphone for +55 DDD number
+	 *
+	 * @since 	1.5.0
+	 * @param 	string 	$cellphone
+	 * @return 	string
+	 */
+	private function format_cellphone( string $cellphone )
+	{
+        return "+" . preg_replace( "/\D/", "", $cellphone );
+	}
+
+	/**
 	 * Call /auth endpoint
 	 *
+	 * @since 	1.5.0 	Added func to set security code
      * @since   1.4.0 	Added param $code
      * @since   1.0.0
 	 * @param 	string 	$token 	Authorization of request
@@ -406,7 +431,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function auth( string $token, string $code = "" )
 	{
-		if ( $code ) $this->set_header( "securitycode: {$code}" );
+		$this->set_security_code( $code );
 
 		return $this->call( self::AUTH, $token );
 	}
@@ -546,6 +571,7 @@ class Triibo_Api_Node extends Triibo_Api
     /**
      * Call /authcode
      *
+	 * @since 	1.5.0 	Added func to format cellphone
      * @since   1.2.0
 	 * @param 	string 	$token 		Authorization of request
 	 * @param 	array 	$data 		Data to pass to parameters for send auth code
@@ -553,7 +579,8 @@ class Triibo_Api_Node extends Triibo_Api
      */
     public function auth_code( string $token, array $data )
     {
-        $cellphone  = "+" . preg_replace( "/\D/", "", $data[ "cellphone" ] );
+        $cellphone  = $this->format_cellphone( $data[ "cellphone" ] );
+
 		$sms        = ( $data[ "type" ] == "sms" ) ? true : false;
 		$wpp        = ( $data[ "type" ] == "wpp" ) ? true : false;
 
@@ -581,7 +608,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function get_user( string $token, string $cellphone )
 	{
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = $this->format_cellphone( $cellphone );
 
 		return $this->call( self::LOGIN, $token, [ "cellphone" => $cellphone ] );
 	}
@@ -596,12 +623,12 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function validate_sms( string $token, array $data )
 	{
-        $cellphone = "+" . preg_replace( "/\D/", "", $data[ "cellphone" ] );
+		$this->set_security_code( $data[ "security" ] );
 
-        $params    = [
-            "code"          => $data[ "code"           ],
-            "cellphone"     => $cellphone,
-            "transactionId" => $data[ "transaction_id" ],
+        $params = [
+            "code"          => $data[ "code"     ],
+            "transactionId" => $data[ "trans_id" ],
+            "cellphone"     => $this->format_cellphone( $data[ "cellphone" ] ),
         ];
 
 		return $this->call( self::SMS_VALIDATE, $token, $params );
