@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.5.0 - 2024/01/22
+
+- Adicionado APIs /login e /sms/validateSMS, Node
+
 = 1.4.2 - 2023/11/17
 
 - Ajuste na API adicionar/remover orgs, Gateway

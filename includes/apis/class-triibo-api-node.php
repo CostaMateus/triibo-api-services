@@ -37,6 +37,14 @@ class Triibo_Api_Node extends Triibo_Api
 	const AUTH_CODE      = "/authCode";
 
 	/**
+	 * Endpoint for api /login
+	 *
+	 * @since 	1.5.0
+	 * @var 	string
+	 */
+    const LOGIN          = "/login";
+
+	/**
 	 * Endpoint for api /payments/brand
 	 *
 	 * @since 	1.0.0
@@ -83,6 +91,14 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @var 	string
 	 */
 	const PAY_TKN_DELETE = "/payments/deleteToken";
+
+	/**
+	 * Endpoint for api /sms/validateSMS
+	 *
+	 * @since 	1.5.0
+	 * @var 	string
+	 */
+	const SMS_VALIDATE   = "/sms/validateSMS";
 
 	/**
 	 * Endpoint for api /users/findUIDsByPhones
@@ -554,4 +570,41 @@ class Triibo_Api_Node extends Triibo_Api
 
 		return $this->call( self::AUTH_CODE, $token, $params );
     }
+
+	/**
+	 * Get user triibo, create if not exists
+	 *
+     * @since   1.5.0
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	string 	$cellphone 	Cellphone of user
+	 * @return 	array
+	 */
+	public function get_user( string $token, string $cellphone )
+	{
+        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+
+		return $this->call( self::LOGIN, $token, [ "cellphone" => $cellphone ] );
+	}
+
+	/**
+	 * Validates SMS code
+	 *
+	 * @since 	1.5.0
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$data 		Data to pass to parameters for validation of SMS code
+	 * @return 	array
+	 */
+	public function validate_sms( string $token, array $data )
+	{
+        $cellphone = "+" . preg_replace( "/\D/", "", $data[ "cellphone" ] );
+
+        $params    = [
+            "code"          => $data[ "code"           ],
+            "cellphone"     => $cellphone,
+            "transactionId" => $data[ "transaction_id" ],
+        ];
+
+		return $this->call( self::SMS_VALIDATE, $token, $params );
+	}
+
 }
