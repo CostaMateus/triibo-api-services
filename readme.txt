@@ -1,6 +1,6 @@
 == Changelog ==
 
-= 1.5.0 - 2024/01/22
+= 1.5.0 - 2024/02/01
 
 - Adicionado APIs /login e /sms/validateSMS, Node
 
