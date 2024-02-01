@@ -202,9 +202,11 @@ class Triibo_Api_Node extends Triibo_Api
 
         if ( $this->status == "on" )
         {
-			$this->url_api = ( get_home_url() === "http://localhost:8000" )
-								? "http://localhost:3000"
-								: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+			// $this->url_api = ( get_home_url() === "http://localhost:8000" )
+			// 					? "http://localhost:3000"
+			// 					: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+
+			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
 
 			$this->url_mkt = "https://" . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
 
@@ -343,7 +345,7 @@ class Triibo_Api_Node extends Triibo_Api
 		}
 		else if ( $endpoint === self::AUTH_MKT )
 		{
-			$aux = [
+			$aux    = [
 				"Authorization: {$token}",
 				"x-api-key: {$this->x_key}"
 			];
@@ -352,7 +354,7 @@ class Triibo_Api_Node extends Triibo_Api
 		}
 		else
 		{
-			$token = "Authorization: Bearer $token";
+			$token  = "Authorization: Bearer $token";
 			array_push( $header, $token );
 		}
 
@@ -579,12 +581,12 @@ class Triibo_Api_Node extends Triibo_Api
      */
     public function auth_code( string $token, array $data )
     {
-        $cellphone  = $this->format_cellphone( $data[ "cellphone" ] );
+        $cellphone = $this->format_cellphone( $data[ "cellphone" ] );
 
-		$sms        = ( $data[ "type" ] == "sms" ) ? true : false;
-		$wpp        = ( $data[ "type" ] == "wpp" ) ? true : false;
+		$sms       = ( $data[ "type" ] == "sms" ) ? true : false;
+		$wpp       = ( $data[ "type" ] == "wpp" ) ? true : false;
 
-		$params     = [
+		$params    = [
 			"cellphone"    => $cellphone,
 			"platform"     => "web",
 			"languageCode" => "pt_BR",
@@ -601,7 +603,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Get user triibo, create if not exists
 	 *
-     * @since   1.5.0
+     * @since 	1.5.0
 	 * @param 	string 	$token 		Authorization of request
 	 * @param 	string 	$cellphone 	Cellphone of user
 	 * @return 	array
@@ -623,8 +625,6 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	public function validate_sms( string $token, array $data )
 	{
-		$this->set_security_code( $data[ "security" ] );
-
         $params = [
             "code"          => $data[ "code"     ],
             "transactionId" => $data[ "trans_id" ],
