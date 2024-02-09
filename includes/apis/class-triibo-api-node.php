@@ -581,13 +581,11 @@ class Triibo_Api_Node extends Triibo_Api
      */
     public function auth_code( string $token, array $data )
     {
-        $cellphone = $this->format_cellphone( $data[ "cellphone" ] );
+		$sms    = ( $data[ "type" ] == "sms" ) ? true : false;
+		$wpp    = ( $data[ "type" ] == "wpp" ) ? true : false;
 
-		$sms       = ( $data[ "type" ] == "sms" ) ? true : false;
-		$wpp       = ( $data[ "type" ] == "wpp" ) ? true : false;
-
-		$params    = [
-			"cellphone"    => $cellphone,
+		$params = [
+			"cellphone"    => $this->format_cellphone( $data[ "cellphone" ] ),
 			"platform"     => "web",
 			"languageCode" => "pt_BR",
 			"sendType"     => [
@@ -604,34 +602,63 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Get user triibo, create if not exists
 	 *
      * @since 	1.5.0
-	 * @param 	string 	$token 		Authorization of request
 	 * @param 	string 	$cellphone 	Cellphone of user
 	 * @return 	array
 	 */
-	public function get_user( string $token, string $cellphone )
+	public function get_user( string $cellphone )
 	{
-        $cellphone = $this->format_cellphone( $cellphone );
+        $response = $this->get_security_code();
 
-		return $this->call( self::LOGIN, $token, [ "cellphone" => $cellphone ] );
+        if ( $response[ "success" ] )
+        {
+			$code     = $response[ "data" ][ "securityCode" ];
+			$response = $this->auth( "", $code );
+
+            if ( $response[ "success" ] )
+			{
+                $token  = $response[ "data"  ][ "token" ];
+
+				$params = [
+					"cellphone" => $this->format_cellphone( $cellphone ),
+				];
+
+				return $this->call( self::LOGIN, $token, $params );
+			}
+		}
+
+		return $response;
 	}
 
 	/**
 	 * Validates SMS code
 	 *
-	 * @since 	1.5.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$data 		Data to pass to parameters for validation of SMS code
+	 * @since 	1.5.0 	Removed param $token
+	 * @param 	array 	$data 	Data to pass to parameters for validation of SMS code
 	 * @return 	array
 	 */
-	public function validate_sms( string $token, array $data )
+	public function validate_sms( array $data )
 	{
-        $params = [
-            "code"          => $data[ "code"     ],
-            "transactionId" => $data[ "trans_id" ],
-            "cellphone"     => $this->format_cellphone( $data[ "cellphone" ] ),
-        ];
+        $response = $this->get_security_code();
 
-		return $this->call( self::SMS_VALIDATE, $token, $params );
+        if ( $response[ "success" ] )
+        {
+			$code     = $response[ "data" ][ "securityCode" ];
+			$response = $this->auth( "", $code );
+
+            if ( $response[ "success" ] )
+			{
+                $token  = $response[ "data"  ][ "token" ];
+
+				$params = [
+					"code"          => $data[ "code"     ],
+					"transactionId" => $data[ "trans_id" ],
+					"cellphone"     => $this->format_cellphone( $data[ "cellphone" ] ),
+				];
+
+				return $this->call( self::SMS_VALIDATE, $token, $params );
+			}
+		}
+
+		return $response;
 	}
-
 }
