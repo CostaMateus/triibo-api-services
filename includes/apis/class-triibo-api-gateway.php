@@ -525,12 +525,13 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Update marketplace user
      *
+     * @since   1.5.0 Change param $cellphone to $user
      * @since   1.1.6 Add param $terms
      * @since   1.1.5 ContactList email/emailMarketplace no longer verified
      * @since   1.1.1 Fix array contactList
      * @since   1.1.0 Add params $name and $nick
      * @since   1.0.0
-     * @param   string  $cellphone
+     * @param   array   $user
      * @param   string  $email
      * @param   string  $action
      * @param   string  $name
@@ -538,7 +539,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      * @param   bool    $terms
      * @return  array
      */
-    public function update_user_mkt( string $cellphone, string $email, string $action, string $name = "", string $nick = "", bool $terms = null )
+    public function update_user_mkt( array $user, string $email, string $action, string $name = "", string $nick = "", bool $terms = null )
     {
         // $response = [
         // 	"code"    => $info[ "http_code" ],
@@ -547,35 +548,6 @@ class Triibo_Api_Gateway extends Triibo_Api
         // 	"error"   => null,
         // 	"data"    => json_decode( $response, true ),
         // ];
-
-        $response   = $this->get_channel_token();
-
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-        {
-            $this->log( json_encode( $response ) );
-            return $response;
-        }
-
-        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
-
-        $params     = [
-            "triiboHeader"  => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id
-            ] ),
-            "linkedAccount" => NULL,
-            "cellphone"     => $cellphone,
-        ];
-
-        $response   = $this->call( self::LOGIN, $params );
-
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-        {
-            $this->log( json_encode( $response ) );
-            return $response;
-        }
-
-        $user       = $response[ "data" ][ "user" ];
 
         $uid        = $user[ "uId" ];
         $contact    = $this->process_contact_list( $user[ "contactList" ], $email, $action );
