@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.6.0 - 2024/03/07
+
+- Adicionado tratamento de exceção na base das APIs
+
 = 1.5.0 - 2024/02/01
 
 - Adicionado APIs /login e /sms/validateSMS, Node
