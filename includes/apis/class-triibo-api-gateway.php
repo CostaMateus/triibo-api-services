@@ -476,7 +476,8 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Credits points to the user
      *
-     * @since   1.1.2 Add param $event
+     * @since   1.7.0 Added new plans
+     * @since   1.1.2 Added param $event
      * @since   1.0.0
      * @param   string  $triibo_id
      * @param   integer $value
@@ -489,7 +490,11 @@ class Triibo_Api_Gateway extends Triibo_Api
             "Compra_Marketplace",
             "Assinatura_Triibo_Vip",
             "Assinatura_Triibo_Vip_Plano_2",
-            "Assinatura_Triibo_Vip_Plano_3"
+            "Assinatura_Triibo_Vip_Plano_3",
+
+            "Assinatura_Triibo_Vip_Plano_4",
+            "Assinatura_Triibo_Vip_Plano_5",
+            "Assinatura_Triibo_Vip_Plano_6",
         ];
 
         if ( !in_array( $event, $events ) )
