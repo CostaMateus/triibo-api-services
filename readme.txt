@@ -1,12 +1,12 @@
 == Changelog ==
 
+= 1.8.0 - 2024/06/27 =
+
+- Adiciona compatibilidade com WooCommerce HPOS
+
 = 1.7.0 - 2024/05/29 =
 
 - Adiciona três eventos de assinatura Triibo VIP, Gateway
-
-= 1.6.0 - 2024/03/07
-
-- Adicionado tratamento de exceção na base das APIs
 
 = 1.6.0 - 2024/03/07
 

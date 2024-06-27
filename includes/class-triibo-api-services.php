@@ -476,7 +476,7 @@ class Triibo_Api_Services
 
 				$value = ( $args[ "value_type" ] == "serialized" ) ? serialize( $wp_data_value ) : $wp_data_value;
 
-				if ( $args[ "subtype" ] != "checkbox")
+				if ( $args[ "subtype" ] != "checkbox" )
 				{
 					$prependStart = ( isset( $args[ "prepend_value" ] ) ) ? "<div class='input-prepend'> <span class='add-on'>{$args[ "prepend_value" ]}</span>" : "";
 					$prependEnd   = ( isset( $args[ "prepend_value" ] ) ) ? "</div>"                   : "";
