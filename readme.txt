@@ -2,11 +2,11 @@
 
 = 1.8.0 - 2024/06/27 =
 
-- Adiciona compatibilidade com WooCommerce HPOS
+- Adicionada compatibilidade com WooCommerce HPOS
 
 = 1.7.0 - 2024/05/29 =
 
-- Adiciona três eventos de assinatura Triibo VIP, Gateway
+- Adicionado três eventos de assinatura Triibo VIP, Gateway
 
 = 1.6.0 - 2024/03/07
 
@@ -14,7 +14,7 @@
 
 = 1.5.0 - 2024/02/01
 
-- Adicionado APIs /login e /sms/validateSMS, Node
+- Adicionada APIs '/login' e '/sms/validateSMS', Node
 
 = 1.4.2 - 2023/11/17
 
@@ -30,9 +30,9 @@
 
 = 1.3.0 - 2023/10/04 =
 
-- Adicionado API para adicionar ou remover orgs de um usuário
+- Adicionada API para adicionar ou remover orgs de um usuário
 
 = 1.2.0 - 2023/10/02 =
 
 - Adicionado changelog
-- Adicionado nova API de código de autenticação, via SMS/e-mail/whatsapp
+- Adicionada nova API de código de autenticação, via SMS/e-mail/whatsapp
