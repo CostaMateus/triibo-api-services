@@ -649,4 +649,16 @@ class Triibo_Api_Node extends Triibo_Api
 
 		return $response;
 	}
+
+	/**
+	 * Call /auth/marketplace endpoint
+	 *
+     * @since   1.0.0
+	 * @param 	string 	$token 		Authorization of request
+	 * @return 	array
+	 */
+    public function validate_token_auth_app( string $token )
+    {
+		return $this->call( self::AUTH_MKT, $token );
+    }
 }
