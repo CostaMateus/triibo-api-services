@@ -438,34 +438,33 @@ class Triibo_Api_Node extends Triibo_Api
 		return $this->call( self::AUTH, $token );
 	}
 
-	/**
-	 * Call /auth endpoint, to get security code for validation
-	 *
-     * @since   1.4.0
-	 * @return 	array
-	 */
-	public function get_security_code()
-	{
-		$response = $this->call( self::AUTH, "", [], "GET" );
+    /**
+     * Call /authcode
+     *
+	 * @since 	1.5.0 	Added func to format cellphone
+     * @since   1.2.0
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$data 		Data to pass to parameters for send auth code
+     * @return  array
+     */
+    public function auth_code( string $token, array $data )
+    {
+		$sms    = ( $data[ "type" ] == "sms" ) ? true : false;
+		$wpp    = ( $data[ "type" ] == "wpp" ) ? true : false;
 
-		if ( !$response[ "success" ] ) return $response;
+		$params = [
+			"cellphone"    => $this->format_cellphone( $data[ "cellphone" ] ),
+			"platform"     => "web",
+			"languageCode" => "pt_BR",
+			"sendType"     => [
+				"sms"      => $sms,
+				"whatsapp" => $wpp,
+				"email"    => false,
+			]
+		];
 
-		$key64    = get_option( "_triibo_security_code" ); // insert manually in DB
-		$key      = base64_decode( $key64 );
-
-		$code     = $response[ "data" ][ "securityCode" ];
-
-		$decrypt  = $this->decrypt( $code, $key );
-        $decrypt  = json_decode( $decrypt );
-
-        $decrypt->code *= 3;
-
-		$encrypt  = $this->encrypt( json_encode( $decrypt ), $key );
-
-		$response[ "data" ][ "securityCode" ] = $encrypt;
-
-		return $response;
-	}
+		return $this->call( self::AUTH_CODE, $token, $params );
+    }
 
 	/**
 	 * Call /payments/brand endpoint
@@ -478,32 +477,6 @@ class Triibo_Api_Node extends Triibo_Api
 	public function brand( string $token, array $params )
 	{
 		return $this->call( self::PAY_BRAND, $token, $params );
-	}
-
-	/**
-	 * Call /payments/doPayment endpoint
-	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters of payment
-	 * @return 	array
-	 */
-	public function payment( string $token, array $params )
-	{
-		return $this->call( self::PAYMENT, $token, $params );
-	}
-
-	/**
-	 * Call /payments/status endpoint
-	 *
-	 * @since 	1.1.4
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params
-	 * @return 	void
-	 */
-	public function payment_status( string $token, array $params )
-	{
-		return $this->call( self::PAYMENT_STATUS, $token, $params );
 	}
 
 	/**
@@ -546,18 +519,6 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /auth/marketplace endpoint
-	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @return 	array
-	 */
-    public function validate_token_auth_app( string $token )
-    {
-		return $this->call( self::AUTH_MKT, $token );
-    }
-
-	/**
 	 * Call /users/findUIDsByPhones
 	 *
      * @since   1.1.3
@@ -570,33 +531,34 @@ class Triibo_Api_Node extends Triibo_Api
 		return $this->call( self::USER_FIND_UID, $token, [ "phones" => [ $phone ] ] );
 	}
 
-    /**
-     * Call /authcode
-     *
-	 * @since 	1.5.0 	Added func to format cellphone
-     * @since   1.2.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$data 		Data to pass to parameters for send auth code
-     * @return  array
-     */
-    public function auth_code( string $token, array $data )
-    {
-		$sms    = ( $data[ "type" ] == "sms" ) ? true : false;
-		$wpp    = ( $data[ "type" ] == "wpp" ) ? true : false;
+	/**
+	 * Call /auth endpoint, to get security code for validation
+	 *
+     * @since   1.4.0
+	 * @return 	array
+	 */
+	public function get_security_code()
+	{
+		$response = $this->call( self::AUTH, "", [], "GET" );
 
-		$params = [
-			"cellphone"    => $this->format_cellphone( $data[ "cellphone" ] ),
-			"platform"     => "web",
-			"languageCode" => "pt_BR",
-			"sendType"     => [
-				"sms"      => $sms,
-				"whatsapp" => $wpp,
-				"email"    => false,
-			]
-		];
+		if ( !$response[ "success" ] ) return $response;
 
-		return $this->call( self::AUTH_CODE, $token, $params );
-    }
+		$key64    = get_option( "_triibo_security_code" ); // insert manually in DB
+		$key      = base64_decode( $key64 );
+
+		$code     = $response[ "data" ][ "securityCode" ];
+
+		$decrypt  = $this->decrypt( $code, $key );
+        $decrypt  = json_decode( $decrypt );
+
+        $decrypt->code *= 3;
+
+		$encrypt  = $this->encrypt( json_encode( $decrypt ), $key );
+
+		$response[ "data" ][ "securityCode" ] = $encrypt;
+
+		return $response;
+	}
 
 	/**
 	 * Get user triibo, create if not exists
@@ -627,6 +589,32 @@ class Triibo_Api_Node extends Triibo_Api
 		}
 
 		return $response;
+	}
+
+	/**
+	 * Call /payments/doPayment endpoint
+	 *
+     * @since   1.0.0
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params 	Parameters of payment
+	 * @return 	array
+	 */
+	public function payment( string $token, array $params )
+	{
+		return $this->call( self::PAYMENT, $token, $params );
+	}
+
+	/**
+	 * Call /payments/status endpoint
+	 *
+	 * @since 	1.1.4
+	 * @param 	string 	$token 		Authorization of request
+	 * @param 	array 	$params
+	 * @return 	void
+	 */
+	public function payment_status( string $token, array $params )
+	{
+		return $this->call( self::PAYMENT_STATUS, $token, $params );
 	}
 
 	/**
