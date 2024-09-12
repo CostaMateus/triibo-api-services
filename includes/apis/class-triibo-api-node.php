@@ -552,7 +552,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @param 	string 	$token 		Authorization of request
 	 * @return 	array
 	 */
-    public function validate_token( string $token )
+    public function validate_token_auth_app( string $token )
     {
 		return $this->call( self::AUTH_MKT, $token );
     }

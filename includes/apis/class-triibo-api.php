@@ -178,7 +178,6 @@ class Triibo_Api
 			];
 		}
 
-
 		return $response;
     }
 }
