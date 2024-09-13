@@ -109,6 +109,22 @@ class Triibo_Api_Node extends Triibo_Api
 	const USER_FIND_UID  = "/users/findUIDsByPhones";
 
 	/**
+	 * Endpoint for api /checkout/users/addingUserSignature
+	 *
+	 * @since 	1.9.0
+	 * @var 	string
+	 */
+    const ADD_USER_SUBS  = "/checkout/users/addingUserSignature";
+
+	/**
+     * Endpoint for api /
+	 *
+     * @since 	1.9.0
+     * @var 	string
+	 */
+    const DEL_USER_SUBS  = "/checkout/users/removingUserSignature";
+
+	/**
 	 * Internal ID for log
 	 *
 	 * @since 	1.0.0
@@ -242,7 +258,7 @@ class Triibo_Api_Node extends Triibo_Api
      * FALSE for prod.
      *
      * @since   1.0.0
-     * @return 	boolean|null
+     * @return 	bool|null
      */
 	public function env()
 	{
@@ -364,37 +380,37 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Encrypt a string
 	 *
-     * @since   1.4.0
+	 * @since   1.4.0
 	 * @param 	string $str
 	 * @param 	string $key
 	 * @return	string
 	 */
-    private function encrypt( $str, $key )
+    private function encrypt( string $str, string $key )
     {
-        if ( !$str ) return null;
+		if ( !$str ) return null;
 
-        $iv   = hex2bin( "00000000000000000000000000000000" );
-        $encr = openssl_encrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
+		$iv   = hex2bin( "00000000000000000000000000000000" );
+		$encr = openssl_encrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
 
-        return urlencode( base64_encode( $encr ) );
+		return urlencode( base64_encode( $encr ) );
     }
 
 	/**
 	 * Decrypt a string
 	 *
-     * @since   1.4.0
+	 * @since   1.4.0
 	 * @param 	string $str
 	 * @param 	string $key
 	 * @return 	string
 	 */
-    private function decrypt( $str, $key )
+    private function decrypt( string $str, string $key )
     {
-        if ( !$str ) return null;
+		if ( !$str ) return null;
 
-        $str = base64_decode( urldecode( $str ) );
-        $iv  = hex2bin( "00000000000000000000000000000000" );
+		$str = base64_decode( urldecode( $str ) );
+		$iv  = hex2bin( "00000000000000000000000000000000" );
 
-        return openssl_decrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
+		return openssl_decrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
     }
 
 	/**
@@ -419,6 +435,52 @@ class Triibo_Api_Node extends Triibo_Api
 	private function format_cellphone( string $cellphone )
 	{
         return "+" . preg_replace( "/\D/", "", $cellphone );
+	}
+
+	/**
+	 * Gera token para uso nas chamadas das APIs
+	 *
+	 * @since 	1.9.0
+     * @param   string 	$uid
+     * @param   int 	$user_id
+	 * @return 	string|null
+	 */
+	private function generate_token( string $uid, int $user_id )
+	{
+		$resp = $this->auth( "uid: {$uid}" );
+
+		if ( $resp[ "success" ] )
+		{
+			$token    = $resp[ "data"  ][ "token" ];
+			$validity = ( new DateTime() )->format( "Y-m-d H:i:s" );
+
+			update_user_meta( $user_id, "_triibo_auth_token",    $token    );
+			update_user_meta( $user_id, "_triibo_auth_validity", $validity );
+
+			return $token;
+		}
+		else
+		{
+			$this->log( "INFO - generate_token : " . json_encode( [
+				"code"    => $resp[ "code"    ],
+				"message" => $resp[ "message" ],
+				"error"   => $resp[ "error"   ]
+			] ) );
+
+			return null;
+		}
+	}
+
+	/**
+	 * Add subscription to user.
+	 *
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of subscription, add.
+	 * @return 	array
+	 */
+	public function add_subscription( string $token, array $params )
+	{
+		return $this->call( self::ADD_USER_SUBS, $token, $params );
 	}
 
 	/**
@@ -521,9 +583,9 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Call /users/findUIDsByPhones
 	 *
-     * @since   1.1.3
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	string 	$phone 		Phone number to search
+	 * @since   1.1.3
+	 * @param 	string 	$token 	Authorization of request
+	 * @param 	string 	$phone 	Phone number to search
 	 * @return 	array
 	 */
 	public function find_uid( string $token, string $phone )
@@ -534,7 +596,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Call /auth endpoint, to get security code for validation
 	 *
-     * @since   1.4.0
+	 * @since   1.4.0
 	 * @return 	array
 	 */
 	public function get_security_code()
@@ -549,15 +611,84 @@ class Triibo_Api_Node extends Triibo_Api
 		$code     = $response[ "data" ][ "securityCode" ];
 
 		$decrypt  = $this->decrypt( $code, $key );
-        $decrypt  = json_decode( $decrypt );
+		$decrypt  = json_decode( $decrypt );
 
-        $decrypt->code *= 3;
+		$decrypt->code *= 3;
 
 		$encrypt  = $this->encrypt( json_encode( $decrypt ), $key );
 
 		$response[ "data" ][ "securityCode" ] = $encrypt;
 
 		return $response;
+	}
+
+	/**
+	 * Get valid token.
+	 *
+	 * @since 	1.9.0
+     * @param   int 	$user_id
+	 * @return 	string|null
+	 */
+	public function get_token( $user_id )
+	{
+		$phone    = get_user_meta( $user_id, "_triibo_phone", true );
+		$phone    = $phone ?: get_user_meta( $user_id, "triiboId_phone", true );
+
+		$uid      = get_user_meta( $user_id, "_triibo_id",            true );
+		$token    = get_user_meta( $user_id, "_triibo_auth_token",    true );
+		$validity = get_user_meta( $user_id, "_triibo_auth_validity", true );
+
+		if ( !$uid )
+		{
+			$success       = false;
+			$response_auth = $this->auth( "" );
+
+			if ( $response_auth[ "success" ] && $phone )
+			{
+				$this->log( "INFO - find_uid : search user by phone '{$phone}'" );
+
+				$_token        = $response_auth[ "data"  ][ "token" ];
+				$response_find = $this->find_uid( $_token, $phone );
+
+				if ( $response_find[ "success" ] )
+				{
+					$uid = $response_find[ "data" ][ "usersUid" ][ $phone ];
+
+					$this->log( "INFO - find_uid : user found '{$uid}'" );
+
+					if ( $uid )
+					{
+						$success = true;
+						$token   = null;
+						update_user_meta( $user_id, "_triibo_id", $uid );
+					}
+				}
+			}
+
+			if ( !$success ) return null;
+		}
+
+		if ( !$token )
+		{
+			$this->log( "INFO - validate_token : user without token {$user_id}" );
+
+			return $this->generate_token( $uid, $user_id );
+		}
+		else
+		{
+			$dtval = DateTime::createFromFormat( "Y-m-d H:i:s", $validity );
+			$now   = new DateTime();
+			$diff  = $now->diff( $dtval );
+
+			if ( $diff->d > 0 || $diff->h > 10 )
+			{
+				$this->log( "INFO - validate_token : experied token {$user_id}" );
+
+				return $this->generate_token( $uid, $user_id );
+			}
+		}
+
+		return $token;
 	}
 
 	/**
