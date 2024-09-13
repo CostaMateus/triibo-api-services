@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.9.0 - 2024/09/13 =
+
+- Adicionada APIs '/checkout/users/addingUserSignature' e '/checkout/users/removingUserSignature', Node
+
 = 1.8.0 - 2024/06/27 =
 
 - Adicionada compatibilidade com WooCommerce HPOS
