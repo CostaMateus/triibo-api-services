@@ -6,7 +6,7 @@
  *
  * @author 		Mateus Costa <mateus@costamateus.com.br>
  * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.3.0
+ * @version 	1.10.0
  */
 defined( "ABSPATH" ) || exit;
 
@@ -172,17 +172,10 @@ class Triibo_Api_Gateway extends Triibo_Api
 	 */
     private $chn_tkn    = null;
 
-	/**
-	 * Logger
-	 *
-	 * @since 	1.0.0
-	 * @var 	wc_get_logger|WC_Logger|null
-	 */
-	private $log        = null;
-
     /**
-     * Construct
+     * Construct.
      *
+	 * @since 	1.10.0 	Removed $log class property.
      * @since   1.0.0
      */
     public function __construct()
@@ -212,7 +205,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Returns the php api status
+     * Returns the php api status.
      * TRUE  for active.
      * FALSE for inactive.
      *
@@ -225,7 +218,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 	}
 
     /**
-     * Returns if the php api is configured for homol or prod or disabled
+     * Returns if the php api is configured for homol or prod or disabled.
      * NULL  for disabled API.
      * TRUE  for homol.
      * FALSE for prod.
@@ -246,10 +239,10 @@ class Triibo_Api_Gateway extends Triibo_Api
 	}
 
     /**
-     * Check if $attr is empty
+     * Check if $attr is empty.
      *
      * @since   1.0.0
-     * @param   string $attr
+     * @param   string  $attr
      * @return  bool
      */
 	public function empty( string $attr )
@@ -258,22 +251,32 @@ class Triibo_Api_Gateway extends Triibo_Api
 	}
 
 	/**
-	 * Register logs
+	 * Register logs.
 	 *
-     * @since   1.0.0
-	 * @param   string $message
+	 * @since 	1.10.0 	Changing to the new woocommerce standard.
+	 * 					Added params $level and $is_error.
+	 * @since 	1.0.0
+	 * @param 	string 	$level
+	 * @param 	string 	$message
+	 * @param 	bool 	$is_error
+	 * @return 	void
 	 */
-	private function log( string $message )
+	private function log( string $level, string $message, bool $is_error = false )
 	{
-		$this->log->add( $this->id, $message );
+		$logger  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+
+		$context = [ "source" => $this->id ];
+
+		if ( $is_error || $this->env() === true )
+			$logger->$level( $message, $context );
 	}
 
     /**
-     * Exec api call
+     * Exec api call.
      *
      * @since   1.0.0
-     * @param   string $endpoint
-     * @param   array $params
+     * @param   string  $endpoint
+     * @param   array   $params
      * @return  array
      */
     private function call( string $endpoint, array $params )
@@ -288,7 +291,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 				"data"    => null,
 			];
 
-			$this->log( json_encode( $error ) );
+			$this->log( "critical", json_encode( $error ), true );
 
 			return $error;
 		}
@@ -299,10 +302,10 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Get hash for channel token
+     * Get hash for channel token.
      *
      * @since   1.0.0
-     * @param   string|null $uid
+     * @param   string|null     $uid
      * @return  array
      */
     private function hash( string $uid = null )
@@ -319,7 +322,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Process contact list
+     * Process contact list.
      *
      * @since   1.1.6
      * @param   array   $contact
@@ -375,7 +378,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Process contact
+     * Process contact.
      *
      * @since   1.1.6
      * @param   array   $terms
@@ -415,9 +418,9 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Process org action
+     * Process org action.
      *
-     * @since   1.4.2   Removed parameter $action
+     * @since   1.4.2   Removed parameter $action.
      * @since   1.3.0
      * @param   string  $uid
      * @param   string  $org_id
@@ -429,7 +432,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
             return $response;
         }
 
@@ -447,16 +450,16 @@ class Triibo_Api_Gateway extends Triibo_Api
         $response   = $this->call( $api, $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
 
         return $response;
     }
 
     /**
-     * Get channel token
+     * Get channel token.
      *
      * @since   1.0.0
-     * @param   string|null $uid
+     * @param   string|null     $uid
      * @return  array
      */
     public function get_channel_token( string $uid = null )
@@ -474,14 +477,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Credits points to the user
+     * Credits points to the user.
      *
-     * @since   1.7.0 Added new plans
-     * @since   1.1.2 Added param $event
+     * @since   1.7.0       Added new plans.
+     * @since   1.1.2       Added param $event.
      * @since   1.0.0
-     * @param   string  $triibo_id
-     * @param   integer $value
-     * @param   string $event
+     * @param   string      $triibo_id
+     * @param   integer     $value
+     * @param   string      $event
      * @return  array
      */
     public function credit_points( string $triibo_id, int $value, string $event )
@@ -507,7 +510,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
             if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             {
-                $this->log( json_encode( $response ) );
+                $this->log( "error", json_encode( $response ), true );
                 return $response;
             }
 
@@ -528,13 +531,13 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Update marketplace user
+     * Update marketplace user,
      *
-     * @since   1.5.0 Change param $cellphone to $user
-     * @since   1.1.6 Add param $terms
-     * @since   1.1.5 ContactList email/emailMarketplace no longer verified
-     * @since   1.1.1 Fix array contactList
-     * @since   1.1.0 Add params $name and $nick
+     * @since   1.5.0   Change param $cellphone to $user,
+     * @since   1.1.6   Add param $terms,
+     * @since   1.1.5   ContactList email/emailMarketplace no longer verified,
+     * @since   1.1.1   Fix array contactList,
+     * @since   1.1.0   Add params $name and $nick,
      * @since   1.0.0
      * @param   array   $user
      * @param   string  $email
@@ -561,7 +564,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
             return $response;
         }
 
@@ -591,7 +594,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
             return $response;
         }
 
@@ -601,10 +604,10 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Send code SMS
+     * Send code SMS.
      *
      * @since   1.1.0
-     * @param   string $cellphone
+     * @param   string  $cellphone
      * @return  array
      */
     public function auth_sms( string $cellphone )
@@ -613,7 +616,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
             return $response;
         }
 
@@ -631,18 +634,18 @@ class Triibo_Api_Gateway extends Triibo_Api
         $response   = $this->call( self::AUTH_SMS, $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
 
         return $response;
     }
 
     /**
-     * Validates code SMS
+     * Validates code SMS.
      *
      * @since   1.1.0
-     * @param   string $code
-     * @param   string $cellphone
-     * @param   string $trans_id
+     * @param   string  $code
+     * @param   string  $cellphone
+     * @param   string  $trans_id
      * @return  void
      */
     public function validate_sms( string $code, string $cellphone, string $trans_id )
@@ -651,7 +654,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
             return $response;
         }
 
@@ -670,17 +673,17 @@ class Triibo_Api_Gateway extends Triibo_Api
         $response   = $this->call( self::VAL_SMS, $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
 
         return $response;
     }
 
     /**
-     * Get user info
+     * Get user info.
      *
-     * @since   1.1.7 Add $is_uid param, change $cellphone param to $data
+     * @since   1.1.7   Add $is_uid param, change $cellphone param to $data.
      * @since   1.1.0
-     * @param   string $data
+     * @param   string  $data
      * @return  array
      */
     public function user_info( string $data, bool $is_uid = false )
@@ -689,7 +692,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
             return $response;
         }
 
@@ -722,17 +725,17 @@ class Triibo_Api_Gateway extends Triibo_Api
         $response   = $this->call( self::GET_USER_INFO, $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( json_encode( $response ) );
+            $this->log( "error", json_encode( $response ), true );
 
         return $response;
     }
 
     /**
-     * Add org to user
+     * Add org to user.
      *
      * @since   1.3.0
-     * @param   string $uid
-     * @param   string $org_id
+     * @param   string  $uid
+     * @param   string  $org_id
      * @return  array
      */
     public function add_org( string $uid, string $org_id )
@@ -741,11 +744,11 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Remove org from user
+     * Remove org from user.
      *
      * @since   1.3.0
-     * @param   string $uid
-     * @param   string $org_id
+     * @param   string  $uid
+     * @param   string  $org_id
      * @return  array
      */
     public function del_org( string $uid, string $org_id )
