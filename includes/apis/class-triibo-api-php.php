@@ -6,7 +6,7 @@
  *
  * @author 		Mateus Costa <mateus@costamateus.com.br>
  * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.0.0
+ * @version 	1.10.0
  */
 defined( "ABSPATH" ) || exit;
 
@@ -58,7 +58,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $id         = "triibo-api-php";
+	private $id         = "triibo_api_php";
 
 	/**
 	 * Status of this api
@@ -101,22 +101,13 @@ class Triibo_Api_Php extends Triibo_Api
 	private $tkn        = null;
 
 	/**
-	 * Logger
+	 * Construct.
 	 *
-	 * @since 	1.0.0
-	 * @var 	wc_get_logger|WC_Logger|null
-	 */
-	private $log        = null;
-
-	/**
-	 * Construct
-	 *
+	 * @since 	1.10.0 	Removed $log class property.
 	 * @since 	1.0.0
 	 */
     public function __construct()
     {
-		$this->log    = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
-
         $this->status = get_option( "triibo_api_services_php_status" );
 
         if ( $this->status == "on" )
@@ -130,12 +121,12 @@ class Triibo_Api_Php extends Triibo_Api
     }
 
     /**
-     * Returns the php api status
+     * Returns the php api status.
      * TRUE  for active.
      * FALSE for inactive.
      *
      * @since   1.0.0
-     * @return boolean
+     * @return 	boolean
      */
 	public function status()
 	{
@@ -143,13 +134,13 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
     /**
-     * Returns if the php api is configured for homol or prod or disabled
+     * Returns if the php api is configured for homol or prod or disabled.
      * NULL  for disabled API.
      * TRUE  for homol.
      * FALSE for prod.
      *
      * @since   1.0.0
-     * @return boolean|null
+     * @return 	boolean|null
      */
 	public function env()
 	{
@@ -164,7 +155,7 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
     /**
-     * Check if $attr is empty
+     * Check if $attr is empty.
      *
      * @since   1.0.0
      * @param   string $attr
@@ -176,18 +167,28 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Register logs
+	 * Register logs.
 	 *
+	 * @since 	1.10.0 	Changing to the new woocommerce standard.
+	 * 					Added params $level and $is_error.
 	 * @since 	1.0.0
-	 * @param 	string $message
+	 * @param 	string 	$level
+	 * @param 	string 	$message
+	 * @param 	bool 	$is_error
+	 * @return 	void
 	 */
-	private function log( string $message )
+	private function log( string $level, string $message, bool $is_error = false )
 	{
-		$this->log->add( $this->id, $message );
+		$logger  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+
+		$context = [ "source" => $this->id ];
+
+		if ( $is_error || $this->env() === true )
+			$logger->$level( $message, $context );
 	}
 
 	/**
-	 * Provides basic header for all calls
+	 * Provides basic header for all calls.
 	 *
 	 * @since 	1.0.0
 	 * @return 	array
@@ -203,12 +204,12 @@ class Triibo_Api_Php extends Triibo_Api
     }
 
 	/**
-	 * Prepare header to make request to the API
+	 * Prepare header to make request to the API.
 	 *
 	 * @since 	1.0.0
-	 * @param 	string 	$endpoint 	Endpoint url
-	 * @param 	string 	$url_param 	URL params
-	 * @param 	array 	$params 	Body of request
+	 * @param 	string 	$endpoint 	Endpoint url.
+	 * @param 	string 	$url_param 	URL params.
+	 * @param 	array 	$params 	Body of request.
 	 * @return 	array
 	 */
     private function call( string $endpoint, string $url_param = null, array $params = [] )
@@ -223,7 +224,7 @@ class Triibo_Api_Php extends Triibo_Api
 				"data"    => null,
 			];
 
-			$this->log( json_encode( $error ) );
+			$this->log( "critical", json_encode( $error ), true );
 
 			return $error;
 		}
@@ -237,10 +238,10 @@ class Triibo_Api_Php extends Triibo_Api
     }
 
 	/**
-	 * Call /api/marketplace/wc/freightcalculation endpoint
+	 * Call /api/marketplace/wc/freightcalculation endpoint.
 	 *
 	 * @since 	1.0.0
-	 * @param 	array $params 	Params of request
+	 * @param 	array 	$params 	Params of request.
 	 * @return 	array
 	 */
 	public function fs_freight_calculation( array $params )
@@ -249,10 +250,10 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Call /api/marketplace/wc/updatesku/{sku} endpoint
+	 * Call /api/marketplace/wc/updatesku/{sku} endpoint.
 	 *
 	 * @since 	1.0.0
-	 * @param 	string $sku 	SKU of product
+	 * @param 	string 	$sku 	SKU of product.
 	 * @return 	array
 	 */
 	public function fs_update_sku( string $sku )
@@ -261,10 +262,10 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Call /api/marketplace/wc/ordercreation/{$order_id} endpoint
+	 * Call /api/marketplace/wc/ordercreation/{$order_id} endpoint.
 	 *
 	 * @since 	1.0.0
-	 * @param 	string $order_id 	ID of order
+	 * @param 	string 	$order_id 	ID of order.
 	 * @return 	array
 	 */
 	public function fs_order_creation( string $order_id )
@@ -273,10 +274,10 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Call /api/marketplace/wc/orderapproved/{$order_id} endpoint
+	 * Call /api/marketplace/wc/orderapproved/{$order_id} endpoint.
 	 *
 	 * @since 	1.0.0
-	 * @param 	string $order_id 	ID of order
+	 * @param 	string 	$order_id 	ID of order.
 	 * @return 	array
 	 */
 	public function fs_order_approved( string $order_id )
@@ -285,10 +286,10 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Call /api/marketplace/wc/ordercancelation/{$order_id} endpoint
+	 * Call /api/marketplace/wc/ordercancelation/{$order_id} endpoint.
 	 *
 	 * @since 	1.0.0
-	 * @param 	string $order_id 	ID of order
+	 * @param 	string 	$order_id 	ID of order.
 	 * @return 	array
 	 */
 	public function fs_order_cancelation( string $order_id )
