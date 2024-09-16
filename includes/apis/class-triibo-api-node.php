@@ -207,6 +207,7 @@ class Triibo_Api_Node extends Triibo_Api
     /**
      * Construct
      *
+	 * @since 	1.9.1 	Corrigido URL da API de homologação
      * @since   1.0.0
      */
     public function __construct()
@@ -222,7 +223,9 @@ class Triibo_Api_Node extends Triibo_Api
 			// 					? "http://localhost:3000"
 			// 					: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
 
-			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+			/**
+			 */
+			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml-node" : "" ) . ".triibo.com.br";
 
 			$this->url_mkt = "https://" . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
 

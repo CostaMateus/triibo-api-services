@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.9.1 - 2024/09/16 =
+
+- Correção da URL da API de homologação, Node
+
 = 1.9.0 - 2024/09/13 =
 
 - Adicionada APIs '/checkout/users/addingUserSignature' e '/checkout/users/removingUserSignature', Node
