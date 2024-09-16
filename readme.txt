@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.10.0 - 2024/09/16 =
+
+- Atualização do formato dos logs para o novo padrão do WooCommerce
+
 = 1.9.1 - 2024/09/16 =
 
 - Correção da URL da API de homologação, Node
