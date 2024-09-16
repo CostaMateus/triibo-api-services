@@ -6,7 +6,7 @@
  *
  * @author 		Mateus Costa <mateus@costamateus.com.br>
  * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.0.0
+ * @version 	1.10.0
  */
 defined( "ABSPATH" ) || exit;
 
@@ -117,7 +117,7 @@ class Triibo_Api_Node extends Triibo_Api
     const ADD_USER_SUBS  = "/checkout/users/addingUserSignature";
 
 	/**
-     * Endpoint for api /
+     * Endpoint for api /checkout/users/removingUserSignature
 	 *
      * @since 	1.9.0
      * @var 	string
@@ -130,7 +130,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $id          = "triibo-api-node";
+	private $id          = "triibo_api_node";
 
 	/**
 	 * Status of this api
@@ -196,24 +196,15 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
     private $x_key       = null;
 
-	/**
-	 * Logger
-	 *
-	 * @since 	1.0.0
-	 * @var 	wc_get_logger|WC_Logger
-	 */
-	private $log         = null;
-
     /**
-     * Construct
+     * Construct.
      *
-	 * @since 	1.9.1 	Corrigido URL da API de homologação
+	 * @since 	1.10.0 	Removed $log class property.
+	 * @since 	1.9.1 	Fixed homologation API URL.
      * @since   1.0.0
      */
     public function __construct()
     {
-		$this->log    = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
-
         $this->status = get_option( "triibo_api_services_node_status" );
 		$this->env    = get_option( "triibo_api_services_node_env"    );
 
@@ -223,8 +214,6 @@ class Triibo_Api_Node extends Triibo_Api
 			// 					? "http://localhost:3000"
 			// 					: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
 
-			/**
-			 */
 			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml-node" : "" ) . ".triibo.com.br";
 
 			$this->url_mkt = "https://" . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
@@ -242,7 +231,7 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
     /**
-     * Returns the node api status
+     * Returns the node api status.
      * TRUE  for active.
      * FALSE for inactive.
      *
@@ -255,7 +244,7 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
     /**
-     * Returns if the node api is configured for homol or prod or disabled
+     * Returns if the node api is configured for homol or prod or disabled.
      * NULL  for disabled API.
      * TRUE  for homol.
      * FALSE for prod.
@@ -276,7 +265,7 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
     /**
-     * Check if $attr is empty
+     * Check if $attr is empty.
      *
      * @since   1.0.0
      * @param   string $attr
@@ -288,18 +277,28 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Register logs
+	 * Register logs.
 	 *
-     * @since   1.0.0
-	 * @param   string $message
+	 * @since 	1.10.0 	Changing to the new woocommerce standard.
+	 * 					Added params $level and $is_error.
+	 * @since 	1.0.0
+	 * @param 	string 	$level
+	 * @param 	string 	$message
+	 * @param 	bool 	$is_error
+	 * @return 	void
 	 */
-	private function log( string $message )
+	private function log( string $level, string $message, bool $is_error = false )
 	{
-		$this->log->add( $this->id, $message );
+		$logger  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
+
+		$context = [ "source" => $this->id ];
+
+		if ( $is_error || $this->env() === true )
+			$logger->$level( $message, $context );
 	}
 
 	/**
-	 * Provides basic header for all calls
+	 * Provides basic header for all calls.
 	 *
      * @since   1.0.0
 	 * @return 	array
@@ -310,7 +309,7 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Add header in basic header
+	 * Add header in basic header.
 	 *
      * @since   1.4.0
 	 * @return 	void
@@ -321,14 +320,14 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Prepare header to make request to the API
+	 * Prepare header to make request to the API.
 	 *
-     * @since   1.4.0 	Added $method param
+     * @since   1.4.0 	Added $method param.
      * @since   1.0.0
-	 * @param 	string 	$endpoint 	Endpoint url
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Body of request
-	 * @param 	string 	$method 	Method of request
+	 * @param 	string 	$endpoint 	Endpoint url.
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Body of request.
+	 * @param 	string 	$method 	Method of request.
 	 * @return 	array
 	 */
     private function call( string $endpoint, string $token, array $params = [], string $method = "POST" )
@@ -343,7 +342,7 @@ class Triibo_Api_Node extends Triibo_Api
 				"data"    => null,
 			];
 
-			$this->log( json_encode( $error ) );
+			$this->log( "critical", json_encode( $error ), true );
 
 			return $error;
 		}
@@ -381,7 +380,7 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
-	 * Encrypt a string
+	 * Encrypt a string.
 	 *
 	 * @since   1.4.0
 	 * @param 	string $str
@@ -399,7 +398,7 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
-	 * Decrypt a string
+	 * Decrypt a string.
 	 *
 	 * @since   1.4.0
 	 * @param 	string $str
@@ -417,7 +416,7 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
-	 * Set security code
+	 * Set security code.
 	 *
 	 * @since 	1.5.0
 	 * @param 	$code
@@ -429,7 +428,7 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Format cellphone for +55 DDD number
+	 * Format cellphone for +55 DDD number.
 	 *
 	 * @since 	1.5.0
 	 * @param 	string 	$cellphone
@@ -441,7 +440,7 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Gera token para uso nas chamadas das APIs
+	 * Generates token for use in API calls.
 	 *
 	 * @since 	1.9.0
      * @param   string 	$uid
@@ -464,11 +463,11 @@ class Triibo_Api_Node extends Triibo_Api
 		}
 		else
 		{
-			$this->log( "INFO - generate_token : " . json_encode( [
+			$this->log( "error", "generate_token : " . json_encode( [
 				"code"    => $resp[ "code"    ],
 				"message" => $resp[ "message" ],
 				"error"   => $resp[ "error"   ]
-			] ) );
+			] ), true );
 
 			return null;
 		}
@@ -487,13 +486,13 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /auth endpoint
+	 * Call /auth endpoint.
 	 *
-	 * @since 	1.5.0 	Added func to set security code
-     * @since   1.4.0 	Added param $code
+	 * @since 	1.5.0 	Added func to set security code.
+     * @since   1.4.0 	Added param $code.
      * @since   1.0.0
-	 * @param 	string 	$token 	Authorization of request
-	 * @param 	string 	$code 	Security code
+	 * @param 	string 	$token 	Authorization of request.
+	 * @param 	string 	$code 	Security code.
 	 * @return 	array
 	 */
 	public function auth( string $token, string $code = "" )
@@ -506,10 +505,10 @@ class Triibo_Api_Node extends Triibo_Api
     /**
      * Call /authcode
      *
-	 * @since 	1.5.0 	Added func to format cellphone
+	 * @since 	1.5.0 	Added func to format cellphone.
      * @since   1.2.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$data 		Data to pass to parameters for send auth code
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$data 		Data to pass to parameters for send auth code.
      * @return  array
      */
     public function auth_code( string $token, array $data )
@@ -532,11 +531,11 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
-	 * Call /payments/brand endpoint
+	 * Call /payments/brand endpoint.
 	 *
      * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters of brand
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of brand.
 	 * @return 	array
 	 */
 	public function brand( string $token, array $params )
@@ -545,11 +544,11 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /payments/checkToken endpoint
+	 * Call /payments/checkToken endpoint.
 	 *
      * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters of token, check
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of token, check.
 	 * @return 	array
 	 */
 	public function check_token( string $token, array $params )
@@ -558,11 +557,11 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /payments/createToken endpoint
+	 * Call /payments/createToken endpoint.
 	 *
      * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters of token, create
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of token, create.
 	 * @return 	array
 	 */
 	public function create_token( string $token, array $params )
@@ -571,11 +570,11 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /payments/deleteToken endpoint
+	 * Call /payments/deleteToken endpoint.
 	 *
      * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters of token, delete
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of token, delete.
 	 * @return 	array
 	 */
 	public function delete_token( string $token, array $params )
@@ -587,8 +586,8 @@ class Triibo_Api_Node extends Triibo_Api
 	 * Call /users/findUIDsByPhones
 	 *
 	 * @since   1.1.3
-	 * @param 	string 	$token 	Authorization of request
-	 * @param 	string 	$phone 	Phone number to search
+	 * @param 	string 	$token 	Authorization of request.
+	 * @param 	string 	$phone 	Phone number to search.
 	 * @return 	array
 	 */
 	public function find_uid( string $token, string $phone )
@@ -597,7 +596,7 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /auth endpoint, to get security code for validation
+	 * Call /auth endpoint, to get security code for validation.
 	 *
 	 * @since   1.4.0
 	 * @return 	array
@@ -608,7 +607,7 @@ class Triibo_Api_Node extends Triibo_Api
 
 		if ( !$response[ "success" ] ) return $response;
 
-		$key64    = get_option( "_triibo_security_code" ); // insert manually in DB
+		$key64    = get_option( "_triibo_security_code" ); // insert manually in DB.
 		$key      = base64_decode( $key64 );
 
 		$code     = $response[ "data" ][ "securityCode" ];
@@ -648,7 +647,7 @@ class Triibo_Api_Node extends Triibo_Api
 
 			if ( $response_auth[ "success" ] && $phone )
 			{
-				$this->log( "INFO - find_uid : search user by phone '{$phone}'" );
+				$this->log( "info", "find_uid : search user by phone '{$phone}'" );
 
 				$_token        = $response_auth[ "data"  ][ "token" ];
 				$response_find = $this->find_uid( $_token, $phone );
@@ -657,7 +656,7 @@ class Triibo_Api_Node extends Triibo_Api
 				{
 					$uid = $response_find[ "data" ][ "usersUid" ][ $phone ];
 
-					$this->log( "INFO - find_uid : user found '{$uid}'" );
+					$this->log( "info", "find_uid : user found '{$uid}'" );
 
 					if ( $uid )
 					{
@@ -673,7 +672,7 @@ class Triibo_Api_Node extends Triibo_Api
 
 		if ( !$token )
 		{
-			$this->log( "INFO - validate_token : user without token {$user_id}" );
+			$this->log( "info", "validate_token : user without token {$user_id}" );
 
 			return $this->generate_token( $uid, $user_id );
 		}
@@ -685,7 +684,7 @@ class Triibo_Api_Node extends Triibo_Api
 
 			if ( $diff->d > 0 || $diff->h > 10 )
 			{
-				$this->log( "INFO - validate_token : experied token {$user_id}" );
+				$this->log( "info", "validate_token : experied token {$user_id}" );
 
 				return $this->generate_token( $uid, $user_id );
 			}
@@ -695,10 +694,10 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Get user triibo, create if not exists
+	 * Get user triibo, create if not exists.
 	 *
      * @since 	1.5.0
-	 * @param 	string 	$cellphone 	Cellphone of user
+	 * @param 	string 	$cellphone 	Cellphone of user.
 	 * @return 	array
 	 */
 	public function get_user( string $cellphone )
@@ -726,11 +725,11 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /payments/doPayment endpoint
+	 * Call /payments/doPayment endpoint.
 	 *
      * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
-	 * @param 	array 	$params 	Parameters of payment
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of payment.
 	 * @return 	array
 	 */
 	public function payment( string $token, array $params )
@@ -739,10 +738,10 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /payments/status endpoint
+	 * Call /payments/status endpoint.
 	 *
 	 * @since 	1.1.4
-	 * @param 	string 	$token 		Authorization of request
+	 * @param 	string 	$token 		Authorization of request.
 	 * @param 	array 	$params
 	 * @return 	void
 	 */
@@ -752,10 +751,10 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Validates SMS code
+	 * Validates SMS code.
 	 *
-	 * @since 	1.5.0 	Removed param $token
-	 * @param 	array 	$data 	Data to pass to parameters for validation of SMS code
+	 * @since 	1.5.0 	Removed param $token.
+	 * @param 	array 	$data 	Data to pass to parameters for validation of SMS code.
 	 * @return 	array
 	 */
 	public function validate_sms( array $data )
@@ -785,10 +784,10 @@ class Triibo_Api_Node extends Triibo_Api
 	}
 
 	/**
-	 * Call /auth/marketplace endpoint
+	 * Call /auth/marketplace endpoint.
 	 *
      * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request
+	 * @param 	string 	$token 		Authorization of request.
 	 * @return 	array
 	 */
     public function validate_token_auth_app( string $token )
