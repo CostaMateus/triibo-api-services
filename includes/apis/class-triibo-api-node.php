@@ -122,7 +122,7 @@ class Triibo_Api_Node extends Triibo_Api
      * @since 	1.9.0
      * @var 	string
 	 */
-    const DEL_USER_SUBS  = "/checkout/users/removingUserSignature";
+    const DEL_USER_SUBS  = "/checkout/users/removeUserSignature";
 
 	/**
 	 * Internal ID for log
@@ -476,6 +476,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Add subscription to user.
 	 *
+	 * @since 	1.9.0
 	 * @param 	string 	$token 		Authorization of request.
 	 * @param 	array 	$params 	Parameters of subscription, add.
 	 * @return 	array
@@ -483,6 +484,19 @@ class Triibo_Api_Node extends Triibo_Api
 	public function add_subscription( string $token, array $params )
 	{
 		return $this->call( self::ADD_USER_SUBS, $token, $params );
+	}
+
+	/**
+	 * Delete subscription to user.
+	 *
+	 * @since 	1.9.0
+	 * @param 	string 	$token 		Authorization of request.
+	 * @param 	array 	$params 	Parameters of subscription, del.
+	 * @return 	array
+	 */
+	public function del_subscription( string $token, array $params )
+	{
+		return $this->call( self::DEL_USER_SUBS, $token, $params, "DELETE" );
 	}
 
 	/**

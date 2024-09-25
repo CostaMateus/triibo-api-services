@@ -10,7 +10,7 @@
 
 = 1.9.0 - 2024/09/13 =
 
-- Adicionada APIs '/checkout/users/addingUserSignature' e '/checkout/users/removingUserSignature', Node
+- Adicionada APIs '/checkout/users/addingUserSignature' e '/checkout/users/removeUserSignature', Node
 
 = 1.8.0 - 2024/06/27 =
 
