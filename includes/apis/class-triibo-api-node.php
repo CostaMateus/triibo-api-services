@@ -127,10 +127,11 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Internal ID for log
 	 *
+	 * @since 	1.11.0 	Updated string format.
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $id          = "triibo_api_node";
+	private $id          = "triibo-api-node";
 
 	/**
 	 * Status of this api
