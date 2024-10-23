@@ -55,10 +55,11 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Internal ID for log
 	 *
+	 * @since 	1.11.0 	Updated string format.
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $id         = "triibo_api_php";
+	private $id         = "triibo-api-php";
 
 	/**
 	 * Status of this api
@@ -101,8 +102,17 @@ class Triibo_Api_Php extends Triibo_Api
 	private $tkn        = null;
 
 	/**
+	 * Header for api calls
+	 *
+	 * @since 	1.11.0
+	 * @var 	array|null
+	 */
+    private $header     = null;
+
+	/**
 	 * Construct.
 	 *
+	 * @since 	1.11.0 	Added global header.
 	 * @since 	1.10.0 	Removed $log class property.
 	 * @since 	1.0.0
 	 */
@@ -112,11 +122,21 @@ class Triibo_Api_Php extends Triibo_Api
 
         if ( $this->status == "on" )
         {
-            $this->env = get_option( "triibo_api_services_php_env" );
+            $this->env    = get_option( "triibo_api_services_php_env" );
 
-            $this->url = "http://php" . ( $this->env ? "-hml" : "" ) . ".triibo.com.br";
-            $this->key = $this->env ? get_option( "triibo_api_services_php_hml_key" ) : get_option( "triibo_api_services_php_prd_key" );
-            $this->tkn = $this->env ? get_option( "triibo_api_services_php_hml_tkn" ) : get_option( "triibo_api_services_php_prd_tkn" );
+			$this->url    = ( get_home_url() === "http://shopkeeper.local" )
+							? "http://127.0.0.1:8000"
+							: "http://php" . ( $this->env ? "-hml" : "" ) . ".triibo.com.br";
+
+            $this->key    = $this->env ? get_option( "triibo_api_services_php_hml_key" ) : get_option( "triibo_api_services_php_prd_key" );
+            $this->tkn    = $this->env ? get_option( "triibo_api_services_php_hml_tkn" ) : get_option( "triibo_api_services_php_prd_tkn" );
+
+			$this->header = [
+				"Accept: application/json",
+				"Content-Type: application/json",
+				"api-key: {$this->key}",
+				"api-token: {$this->tkn}",
+			];
         }
     }
 
@@ -190,18 +210,25 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Provides basic header for all calls.
 	 *
+	 * @since 	1.11.0 	Updated to global header.
 	 * @since 	1.0.0
 	 * @return 	array
 	 */
 	private function get_header()
 	{
-        return [
-            "Accept: application/json",
-            "Content-Type: application/json",
-            "api-key: "   . $this->key,
-            "api-token: " . $this->tkn,
-        ];
+		return $this->header;
     }
+
+	/**
+	 * Add header in basic header.
+	 *
+     * @since   1.11.0
+	 * @return 	void
+	 */
+	private function add_to_header( string $add )
+	{
+		array_push( $this->header, $add );
+	}
 
 	/**
 	 * Prepare header to make request to the API.
@@ -240,12 +267,16 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Call /api/marketplace/wc/freightcalculation endpoint.
 	 *
+	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
 	 * @param 	array 	$params 	Params of request.
+	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_freight_calculation( array $params )
+	public function freight_calculation( array $params, string $seller )
 	{
+		$this->add_to_header( "seller: {$seller}" );
+
 		return $this->call( self::FREIGHT_CALC, null, $params );
 	}
 
