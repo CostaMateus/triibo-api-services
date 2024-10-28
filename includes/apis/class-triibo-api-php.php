@@ -297,10 +297,13 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @since 	1.0.0
 	 * @param 	string 	$order_id 	ID of order.
+	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_order_creation( string $order_id )
+	public function fs_order_creation( string $order_id, string $seller )
 	{
+		$this->add_to_header( "seller: {$seller}" );
+
 		return $this->call( self::O_CREATION, $order_id );
 	}
 
@@ -309,10 +312,13 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @since 	1.0.0
 	 * @param 	string 	$order_id 	ID of order.
+	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_order_approved( string $order_id )
+	public function fs_order_approved( string $order_id, string $seller )
 	{
+		$this->add_to_header( "seller: {$seller}" );
+
 		return $this->call( self::O_APPROVED, $order_id );
 	}
 
@@ -321,10 +327,13 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @since 	1.0.0
 	 * @param 	string 	$order_id 	ID of order.
+	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_order_cancelation( string $order_id )
+	public function fs_order_cancelation( string $order_id, string $seller )
 	{
+		$this->add_to_header( "seller: {$seller}" );
+
 		return $this->call( self::O_CANCELATION, $order_id );
 	}
 }
