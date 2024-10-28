@@ -37,12 +37,12 @@ class Triibo_Api_Php extends Triibo_Api
 	const O_CREATION    = "/api/marketplace/wc/ordercreation/";
 
 	/**
-	 * Endpoint for api /orderapproved/
+	 * Endpoint for api /orderapproval/
 	 *
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const O_APPROVED    = "/api/marketplace/wc/orderapproved/";
+	const O_APPROVAL    = "/api/marketplace/wc/orderapproval/";
 
 	/**
 	 * Endpoint for api /ordercancelation/
@@ -313,7 +313,7 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Call /api/marketplace/wc/orderapproved/{$order_id} endpoint.
+	 * Call /api/marketplace/wc/orderapproval/{$order_id} endpoint.
 	 *
 	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
@@ -321,11 +321,11 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function order_approved( string $order_id, string $seller )
+	public function order_approval( string $order_id, string $seller )
 	{
 		$this->add_to_header( "seller: {$seller}" );
 
-		return $this->call( self::O_APPROVED, $order_id );
+		return $this->call( self::O_APPROVAL, $order_id );
 	}
 
 	/**
