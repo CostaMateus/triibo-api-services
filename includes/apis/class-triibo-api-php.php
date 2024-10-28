@@ -283,24 +283,29 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Call /api/marketplace/wc/updatesku/{sku} endpoint.
 	 *
+	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
 	 * @param 	string 	$sku 	SKU of product.
+	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_update_sku( string $sku )
+	public function update_sku( string $sku, string $seller )
 	{
+		$this->add_to_header( "seller: {$seller}" );
+
 		return $this->call( self::UPDATE_SKU, $sku );
 	}
 
 	/**
 	 * Call /api/marketplace/wc/ordercreation/{$order_id} endpoint.
 	 *
+	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
 	 * @param 	string 	$order_id 	ID of order.
 	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_order_creation( string $order_id, string $seller )
+	public function order_creation( string $order_id, string $seller )
 	{
 		$this->add_to_header( "seller: {$seller}" );
 
@@ -310,12 +315,13 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Call /api/marketplace/wc/orderapproved/{$order_id} endpoint.
 	 *
+	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
 	 * @param 	string 	$order_id 	ID of order.
 	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_order_approved( string $order_id, string $seller )
+	public function order_approved( string $order_id, string $seller )
 	{
 		$this->add_to_header( "seller: {$seller}" );
 
@@ -325,12 +331,13 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Call /api/marketplace/wc/ordercancelation/{$order_id} endpoint.
 	 *
+	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
 	 * @param 	string 	$order_id 	ID of order.
 	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function fs_order_cancelation( string $order_id, string $seller )
+	public function order_cancelation( string $order_id, string $seller )
 	{
 		$this->add_to_header( "seller: {$seller}" );
 
