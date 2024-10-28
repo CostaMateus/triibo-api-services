@@ -18,7 +18,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const FREIGHT_CALC  = "/api/marketplace/wc/freightcalculation";
+	const FREIGHT_CALC   = "/api/marketplace/wc/freightcalculation";
 
 	/**
 	 * Endpoint for api /updatesku/
@@ -26,7 +26,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const UPDATE_SKU    = "/api/marketplace/wc/updatesku/";
+	const UPDATE_SKU     = "/api/marketplace/wc/updatesku/";
 
 	/**
 	 * Endpoint for api /ordercreation/
@@ -34,7 +34,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const O_CREATION    = "/api/marketplace/wc/ordercreation/";
+	const O_CREATION     = "/api/marketplace/wc/ordercreation/";
 
 	/**
 	 * Endpoint for api /orderapproval/
@@ -42,15 +42,15 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const O_APPROVAL    = "/api/marketplace/wc/orderapproval/";
+	const O_APPROVAL     = "/api/marketplace/wc/orderapproval/";
 
 	/**
-	 * Endpoint for api /ordercancelation/
+	 * Endpoint for api /ordercancellation/
 	 *
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	const O_CANCELATION = "/api/marketplace/wc/ordercancelation/";
+	const O_CANCELLATION = "/api/marketplace/wc/ordercancellation/";
 
 	/**
 	 * Internal ID for log
@@ -59,7 +59,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $id         = "triibo-api-php";
+	private $id          = "triibo-api-php";
 
 	/**
 	 * Status of this api
@@ -67,7 +67,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $status     = null;
+	private $status      = null;
 
 	/**
 	 * Environment hml/prod
@@ -75,7 +75,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $env        = null;
+	private $env         = null;
 
 	/**
 	 * Endpoint hml/prod
@@ -83,7 +83,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $url        = null;
+	private $url         = null;
 
 	/**
 	 * Key
@@ -91,7 +91,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $key        = null;
+	private $key         = null;
 
 	/**
 	 * Token
@@ -99,7 +99,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.0.0
 	 * @var 	string
 	 */
-	private $tkn        = null;
+	private $tkn         = null;
 
 	/**
 	 * Header for api calls
@@ -107,7 +107,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 	1.11.0
 	 * @var 	array|null
 	 */
-    private $header     = null;
+    private $header      = null;
 
 	/**
 	 * Construct.
@@ -329,7 +329,7 @@ class Triibo_Api_Php extends Triibo_Api
 	}
 
 	/**
-	 * Call /api/marketplace/wc/ordercancelation/{$order_id} endpoint.
+	 * Call /api/marketplace/wc/ordercancellation/{$order_id} endpoint.
 	 *
 	 * @since 	1.11.0 	Added 'seller' param.
 	 * @since 	1.0.0
@@ -337,10 +337,10 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @param 	array 	$seller 	Seller.
 	 * @return 	array
 	 */
-	public function order_cancelation( string $order_id, string $seller )
+	public function order_cancellation( string $order_id, string $seller )
 	{
 		$this->add_to_header( "seller: {$seller}" );
 
-		return $this->call( self::O_CANCELATION, $order_id );
+		return $this->call( self::O_CANCELLATION, $order_id );
 	}
 }
