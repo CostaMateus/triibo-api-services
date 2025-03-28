@@ -92,8 +92,9 @@ class Triibo_Api_Services
 		add_action( "admin_menu", [ $this, "add_admin_menu"            ], 9 );
 		add_action( "admin_init", [ $this, "register_and_build_fields" ]    );
 
-		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links" ] );
-		add_filter( "plugin_row_meta",                                                    [ $this, "plugin_row_meta"     ], 10, 3 );
+		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links"    ] );
+		add_filter( "plugin_row_meta",                                                    [ $this, "plugin_row_meta"        ], 10, 3 );
+		add_filter( "is_protected_meta",                                                  [ $this, "triibo_protected_metas" ], 10, 3 );
 
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php"         );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
@@ -557,6 +558,40 @@ class Triibo_Api_Services
         }
 
         return $plugin_meta;
+	}
+
+	/**
+	 * Registering triibo `meta_keys` as not protected.
+	 *
+	 * @since 	1.12.0
+	 * @param 	bool 	$protected
+	 * @param 	string 	$meta_key
+	 * @param 	string 	$meta_type
+	 * @return 	bool
+	 */
+	public function triibo_protected_metas( $protected, $meta_key, $meta_type )
+	{
+		$triibo_metas = [
+			"triiboId_phone",
+
+			"_triibo_id",
+			"_triibo_phone",
+			"_triibo_auth_token",
+			"_triibo_auth_validity",
+			"_triibo_payments_code",
+			"_triibo_security_code",
+			"_triibo_assinatura_payment_id",
+			"_triibo_assinatura_payment_token",
+
+			"_fs_product_id",
+			"_is_integration",
+			"_fastshop_order_approved"
+		];
+
+		if ( in_array( $meta_key, $triibo_metas ) )
+			return false;
+
+		return $protected;
 	}
 
 	/**

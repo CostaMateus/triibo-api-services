@@ -1,5 +1,13 @@
 == Changelog ==
 
+= 1.12.0 - 2025/03/28 =
+
+- Registrando todas as `meta_keys` utilizadas pelos plugins Triibo, como não protegidos
+
+= 1.11.0 - 2024/10/22 =
+
+- Adicionado parâmetro `$seller` em algumas APIs
+
 = 1.10.0 - 2024/09/16 =
 
 - Atualização do formato dos logs para o novo padrão do WooCommerce

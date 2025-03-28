@@ -5,7 +5,7 @@
  * Description: 			Disponibiliza os serviços de API da Triibo (Gateway/Node/PHP) em um único plugin. Demais plugins dependerão deste.
  * Author: 					Mateus Costa
  * Author URI: 				https://costamateus.com.br/
- * Version: 				1.11.0
+ * Version: 				1.12.0
  * Text Domain: 			triibo-api-services
  * Requires at least: 		6.4
  * Requires PHP: 			7.4
@@ -13,7 +13,7 @@
  * WC tested up to: 		8.2
  *
  * @package 	Triibo_Api_Services
- * @version 	1.11.0
+ * @version 	1.12.0
  */
 defined( "ABSPATH" ) || exit;
 
@@ -23,7 +23,7 @@ if ( !in_array( "woocommerce/woocommerce.php", apply_filters( "active_plugins", 
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
  */
-define( "TRIIBO_API_SERVICES_VERSION", "1.11.0"  );
+define( "TRIIBO_API_SERVICES_VERSION", "1.12.0"  );
 define( "TRIIBO_API_SERVICES_FILE",    __FILE__ );
 
 /**
