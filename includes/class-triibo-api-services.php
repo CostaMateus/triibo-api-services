@@ -75,7 +75,6 @@ class Triibo_Api_Services
 	/**
 	 * Define the core functionality of the plugin.
 	 *
-	 * @since 	1.2.0 Add filter plugin_row_meta
 	 * @since 	1.0.0
 	 */
 	public function __construct()
@@ -89,12 +88,8 @@ class Triibo_Api_Services
 		$this->loader->add_action( "admin_enqueue_scripts", $this, "enqueue_styles"  );
 		$this->loader->add_action( "admin_enqueue_scripts", $this, "enqueue_scripts" );
 
-		add_action( "admin_menu", [ $this, "add_admin_menu"            ], 9 );
-		add_action( "admin_init", [ $this, "register_and_build_fields" ]    );
-
-		add_filter( "plugin_action_links_" . plugin_basename( TRIIBO_API_SERVICES_FILE ), [ $this, "plugin_action_links"    ] );
-		add_filter( "plugin_row_meta",                                                    [ $this, "plugin_row_meta"        ], 10, 3 );
-		add_filter( "is_protected_meta",                                                  [ $this, "triibo_protected_metas" ], 10, 3 );
+		$this->add_actions();
+		$this->add_filters();
 
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php"         );
 		require_once( plugin_dir_path( dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
@@ -137,6 +132,35 @@ class Triibo_Api_Services
 	public function enqueue_scripts()
 	{
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( dirname( __FILE__ ) ) . "assets/js/admin.js", [ "jquery" ], $this->version, false );
+	}
+
+	/**
+	 * Actions
+	 *
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
+	public function add_actions() : void
+	{
+		add_action( "admin_menu", [ $this, "add_admin_menu"            ], 9 );
+		add_action( "admin_init", [ $this, "register_and_build_fields" ]    );
+	}
+
+	/**
+	 * Filters
+	 *
+	 * @since 	1.12.0 	Add filter 'is_protected_meta'
+	 * @since 	1.2.0 	Add filter 'plugin_row_meta'
+	 * @since 	1.0.0
+	 * @return 	void
+	 */
+	public function add_filters()
+	{
+		$basename = plugin_basename( TRIIBO_API_SERVICES_FILE );
+
+		add_filter( "plugin_action_links_{$basename}", [ $this, "plugin_action_links"    ]        );
+		add_filter( "plugin_row_meta",                 [ $this, "plugin_row_meta"        ], 10, 3 );
+		add_filter( "is_protected_meta",               [ $this, "triibo_protected_metas" ], 10, 3 );
 	}
 
 	/**
