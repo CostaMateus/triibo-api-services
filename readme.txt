@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 1.13.0 - 2025/03/28 =
+
+- Adicionado função que anexa produtos recém criados as respectivas imagens
+
 = 1.12.0 - 2025/03/28 =
 
 - Registrando todas as `meta_keys` utilizadas pelos plugins Triibo, como não protegidos

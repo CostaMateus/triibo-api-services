@@ -137,13 +137,15 @@ class Triibo_Api_Services
 	/**
 	 * Actions
 	 *
+	 * @since 	1.13.0 	Add action 'woocommerce_new_product'
 	 * @since 	1.0.0
 	 * @return 	void
 	 */
 	public function add_actions() : void
 	{
-		add_action( "admin_menu", [ $this, "add_admin_menu"            ], 9 );
-		add_action( "admin_init", [ $this, "register_and_build_fields" ]    );
+		add_action( "admin_menu",              [ $this, "add_admin_menu"            ], 9     );
+		add_action( "admin_init",              [ $this, "register_and_build_fields" ]        );
+		add_action( "woocommerce_new_product", [ $this, "attach_product_images"     ], 10, 2 );
 	}
 
 	/**
@@ -616,6 +618,31 @@ class Triibo_Api_Services
 			return false;
 
 		return $protected;
+	}
+
+	/**
+	 * Updates the post_parent of images associated with a product.
+	 *
+	 * @since 	1.13.0
+	 * @param 	int 	$product_id
+	 * @param 	object 	$product
+	 * @return 	void
+	 */
+	public function attach_product_images( $product_id, $product )
+	{
+		$thumbnail_id = get_post_meta( $product_id, "_thumbnail_id", true );
+		$gallery      = get_post_meta( $product_id, "_product_image_gallery", true );
+
+		if ( $thumbnail_id )
+			wp_update_post( [ "ID" => $thumbnail_id, "post_parent" => $product_id, ] );
+
+		if ( !empty( $gallery ) )
+		{
+			$gallery_ids = explode( ",", $gallery );
+
+			foreach ( $gallery_ids as $gallery_id )
+				wp_update_post( [ "ID" => $gallery_id, "post_parent" => $product_id, ] );
+		}
 	}
 
 	/**
