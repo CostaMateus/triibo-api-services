@@ -180,8 +180,6 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function __construct()
     {
-		$this->log    = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
-
         $this->status = get_option( "triibo_api_services_gate_status" );
         $this->env    = get_option( "triibo_api_services_gate_env"    );
 
