@@ -609,9 +609,12 @@ class Triibo_Api_Services
 			"_triibo_assinatura_payment_id",
 			"_triibo_assinatura_payment_token",
 
+			"_fastshop_hub",
+			"_fastshop_order_id",
+			"_fastshop_order_approved",
+
 			"_fs_product_id",
 			"_is_integration",
-			"_fastshop_order_approved"
 		];
 
 		if ( in_array( $meta_key, $triibo_metas ) )
