@@ -156,12 +156,12 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @since 1.0.0
 	 *
 	 * @param string 	$endpoint 	Endpoint url
-	 * @param string 	$query 		Query params
 	 * @param array 	$params 	Body of request
+	 * @param string 	$query 		Query params
 	 *
 	 * @return array
 	 */
-    private function call( string $endpoint, string $query = "", array $params = [] ) : array
+    private function call( string $endpoint, array $params = [], string $query = "" ) : array
     {
 		if ( ! $this->status() )
 		{
