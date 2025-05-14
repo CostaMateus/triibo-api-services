@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The file that defines the Triibo Gateway API
  *
@@ -12,171 +13,197 @@ defined( "ABSPATH" ) || exit;
 
 class Triibo_Api_Gateway extends Triibo_Api
 {
-	/**
-	 * GROUP/NAME composition of $header
-	 *
-	 * @since 	1.0.0
-	 * @var 	string
-	 */
-    const GP_NM         = "triibo-webapp"; // GROUP/NAME
+    /**
+     * GROUP/NAME composition of $header.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
+    const GP_NM         = "triibo-webapp";
 
-	/**
-	 * Default header of all calls. Can be incremented
-	 *
-	 * @since 	1.0.0
-	 * @var 	array
-	 */
-    const HEADER        = [ "Content-type: application/json" ];
+    /**
+     * Default header of all calls. Can be incremented.
+     *
+     * @since 1.0.0
+     *
+     * @var array
+     */
+    const HEADER        = ["Content-type: application/json"];
 
-	/**
-	 * Endpoint for api /getChannelToken_v1
-	 *
-	 * @since 	1.0.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /getChannelToken_v1.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
     const CHN_TKN_ID    = "/getChannelToken_v1";
 
-	/**
-	 * Endpoint for api /creditPoints
-	 *
-	 * @since 	1.0.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /creditPoints.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
     const CREDIT_POINTS = "/creditPoints";
 
-	/**
-	 * Endpoint for api /login
-	 *
-	 * @since 	1.0.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /login.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
     const LOGIN         = "/login";
 
-	/**
-	 * Endpoint for api /setUserInfo_v1
-	 *
-	 * @since 	1.0.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /setUserInfo_v1.
+     *
+     * @since 1.0.0
+     *
+     * @var string
+     */
     const SET_USER_INFO = "/setUserInfo_v1";
 
-	/**
-	 * Endpoint for api /authSMS_v1
-	 *
-	 * @since 	1.1.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /authSMS_v1.
+     *
+     * @since 1.1.0
+     *
+     * @var string
+     */
     const AUTH_SMS      = "/authSMS_v1";
 
-	/**
-	 * Endpoint for api /validateSMS_v1
-	 *
-	 * @since 	1.1.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /validateSMS_v1.
+     *
+     * @since 1.1.0
+     *
+     * @var string
+     */
     const VAL_SMS       = "/validateSMS_v1";
 
-	/**
-	 * Endpoint for api /getUserInfo_v1
-	 *
-	 * @since 	1.1.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /getUserInfo_v1.
+     *
+     * @since 1.1.0
+     *
+     * @var string
+     */
     const GET_USER_INFO = "/getUserInfo_v1";
 
-	/**
-	 * Endpoint for api /insertUserOrgs
-	 *
-	 * @since 	1.3.0
-	 * @var 	string
-	 */
+    /**
+     * Endpoint for api /insertUserOrgs.
+     *
+     * @since 1.3.0
+     *
+     * @var string
+     */
     const ADD_USER_ORG  = "/insertUserOrgs";
 
-	/**
-     * Endpoint for api /removeUserOrgs
-	 *
-     * @since 	1.3.0
-     * @var 	string
-	 */
+    /**
+     * Endpoint for api /removeUserOrgs.
+     *
+     * @since 1.3.0
+     *
+     * @var string
+     */
     const DEL_USER_ORG  = "/removeUserOrgs";
 
     /**
-     * System uId
+     * Option name for system UID.
      *
-     * @since   1.4.2
-     * @var     string
+     * @since 1.14.0
+     *
+     * @var string
      */
-    const SYS_UID       = "J4NjCHtvxuRojrXb29whbsNPAy33"; // +5510999991477
+    const SYS_UID_OPTION = "gateway_sys_uid";
+
+    /**
+	 * Internal ID for log.
+	 *
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.11.0 	Updated string format.
+	 * @since 1.0.0
+     *
+	 * @var string
+	 */
+	protected string $id = "triibo-api-gateway";
 
 	/**
-	 * Internal ID for log
+	 * Environment hml/prod.
+     *
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.0.0
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @var null|string
 	 */
-	private $id         = "triibo-api-gateway";
+	protected ?string $env = null;
 
 	/**
-	 * Header of this api calls
+	 * Status of this api.
 	 *
-	 * @since 	1.0.0
-	 * @var 	array|null
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.0.0
+	 *
+	 * @var null|string
 	 */
-    private $header     = null;
+	protected ?string $status = null;
 
 	/**
-	 * Status of this api
+     * Token.
+     *
+	 * @since 2.0.0 	Same visibility as the parent
+     * @since 1.0.0
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @var null|string
 	 */
-    private $status     = null;
+	protected ?string $token = null;
 
 	/**
-	 * Environment hml/prod
+	 * Endpoint hml/prod.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @since 2.0.0
+	 *
+	 * @var null|string
 	 */
-    private $env        = null;
+	protected ?string $url = null;
 
 	/**
-	 * Endpoint hml/prod
+	 * Header for api calls.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.0.0
+	 *
+	 * @var null|array
 	 */
-    private $url        = null;
+    protected ?array $header = null;
 
-	/**
-	 * Token
-	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
-	 */
-    private $token      = null;
+    /**
+     * Channel ID.
+     *
+     * @since 1.0.0
+     *
+	 * @var null|string
+     */
+    private ?string $chn_id = null;
 
-	/**
-	 * Channel ID
-	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
-	 */
-    private $chn_id     = null;
-
-	/**
-	 * Channel Token
-	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
-	 */
-    private $chn_tkn    = null;
+    /**
+     * Channel Token.
+     *
+     * @since 1.0.0
+     *
+	 * @var null|string
+     */
+    private ?string $chn_tkn = null;
 
     /**
      * Construct.
      *
-	 * @since 	1.10.0 	Removed $log class property.
-     * @since   1.0.0
+     * @since 1.10.0 	Removed $log class property
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -203,81 +230,16 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Returns the php api status.
-     * TRUE  for active.
-     * FALSE for inactive.
-     *
-     * @since   1.0.0
-     * @return  boolean
-     */
-	public function status()
-	{
-		return $this->status == "on" ? true : false;
-	}
-
-    /**
-     * Returns if the php api is configured for homol or prod or disabled.
-     * NULL  for disabled API.
-     * TRUE  for homol.
-     * FALSE for prod.
-     *
-     * @since   1.0.0
-     * @return  boolean|null
-     */
-	public function env()
-	{
-		if ( $this->env === null )
-			return null;
-
-		else if ( $this->env === "on" )
-			return true;
-
-		else
-			return false;
-	}
-
-    /**
-     * Check if $attr is empty.
-     *
-     * @since   1.0.0
-     * @param   string  $attr
-     * @return  bool
-     */
-	public function empty( string $attr )
-	{
-		return empty( $this->{$attr} ) ? true : false;
-	}
-
-	/**
-	 * Register logs.
-	 *
-	 * @since 	1.10.0 	Changing to the new woocommerce standard.
-	 * 					Added params $level and $is_error.
-	 * @since 	1.0.0
-	 * @param 	string 	$level
-	 * @param 	string 	$message
-	 * @param 	bool 	$is_error
-	 * @return 	void
-	 */
-	private function log( string $level, string $message, bool $is_error = false )
-	{
-		$logger  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
-
-		$context = [ "source" => $this->id ];
-
-		if ( $is_error || $this->env() === true )
-			$logger->$level( $message, $context );
-	}
-
-    /**
      * Exec api call.
      *
-     * @since   1.0.0
-     * @param   string  $endpoint
-     * @param   array   $params
-     * @return  array
+     * @since 1.0.0
+     *
+     * @param string  $endpoint
+     * @param array   $params
+     *
+     * @return array
      */
-    private function call( string $endpoint, array $params )
+    private function call( string $endpoint, array $params ) : array
     {
 		if ( !$this->status() )
 		{
@@ -303,10 +265,12 @@ class Triibo_Api_Gateway extends Triibo_Api
      * Get hash for channel token.
      *
      * @since   1.0.0
-     * @param   string|null     $uid
+     *
+     * @param   null|string $uid
+     *
      * @return  array
      */
-    private function hash( string $uid = null )
+    private function hash( ?string $uid = null ) : array
     {
         $passPhrase = floor( rand( 1000000000, 9999999999 ) ) . $uid . floor( rand( 1000000000, 9999999999 ) );
 
@@ -322,13 +286,15 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Process contact list.
      *
-     * @since   1.1.6
-     * @param   array   $contact
-     * @param   string  $email
-     * @param   string  $action
-     * @return  array
+     * @since 1.1.6
+     *
+     * @param array   $contact
+     * @param string  $email
+     * @param string  $action
+     *
+     * @return array
      */
-    private function process_contact_list( array $contact, string $email, string $action )
+    private function process_contact_list( array $contact, string $email, string $action ) : array
     {
         $key      = array_search( "emailMarketplace", array_column( $contact, "type" ) );
         $verified = false;
@@ -378,11 +344,13 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Process contact.
      *
-     * @since   1.1.6
-     * @param   array   $terms
-     * @return  array
+     * @since 1.1.6
+     *
+     * @param array   $terms
+     *
+     * @return array
      */
-    private function process_terms( array $terms )
+    private function process_terms( array $terms ) : array
     {
         $id   = "-Kzj_F6wDcfHkLMO_q4c";
         $term = [
@@ -418,13 +386,15 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Process org action.
      *
-     * @since   1.4.2   Removed parameter $action.
-     * @since   1.3.0
-     * @param   string  $uid
-     * @param   string  $org_id
-     * @return  array
+     * @since 1.4.2   Removed parameter $action
+     * @since 1.3.0
+     *
+     * @param string  $uid
+     * @param string  $org_id
+     *
+     * @return array
      */
-    private function process_org( string $api, string $uid, string $org_id )
+    private function process_org( string $api, string $uid, string $org_id ) : array
     {
         $response   = $this->get_channel_token( self::SYS_UID );
 
@@ -456,11 +426,13 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Get channel token.
      *
-     * @since   1.0.0
-     * @param   string|null     $uid
-     * @return  array
+     * @since 1.0.0
+     *
+     * @param null|string   $uid
+     *
+     * @return array
      */
-    public function get_channel_token( string $uid = null )
+    public function get_channel_token( ?string $uid = null ) : array
     {
         $hash   = $this->hash( $uid );
         $params = [
@@ -477,15 +449,17 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Credits points to the user.
      *
-     * @since   1.7.0       Added new plans.
-     * @since   1.1.2       Added param $event.
-     * @since   1.0.0
-     * @param   string      $triibo_id
-     * @param   integer     $value
-     * @param   string      $event
-     * @return  array
+     * @since 1.7.0       Added new plans
+     * @since 1.1.2       Added param $event
+     * @since 1.0.0
+     *
+     * @param string      $triibo_id
+     * @param integer     $value
+     * @param string      $event
+     *
+     * @return array
      */
-    public function credit_points( string $triibo_id, int $value, string $event )
+    public function credit_points( string $triibo_id, int $value, string $event ) : array
     {
         $events = [
             "Compra_Marketplace",
@@ -529,23 +503,25 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Update marketplace user,
+     * Update marketplace user.
      *
-     * @since   1.5.0   Change param $cellphone to $user,
-     * @since   1.1.6   Add param $terms,
-     * @since   1.1.5   ContactList email/emailMarketplace no longer verified,
-     * @since   1.1.1   Fix array contactList,
-     * @since   1.1.0   Add params $name and $nick,
-     * @since   1.0.0
-     * @param   array   $user
-     * @param   string  $email
-     * @param   string  $action
-     * @param   string  $name
-     * @param   string  $nick
-     * @param   bool    $terms
-     * @return  array
+     * @since 1.5.0   Change param $cellphone to $user
+     * @since 1.1.6   Add param $terms
+     * @since 1.1.5   ContactList email/emailMarketplace no longer verified
+     * @since 1.1.1   Fix array contactList
+     * @since 1.1.0   Add params $name and $nick
+     * @since 1.0.0
+     *
+     * @param array         $user
+     * @param string        $email
+     * @param string        $action
+     * @param string        $name
+     * @param string        $nick
+     * @param null|bool     $terms
+     *
+     * @return array
      */
-    public function update_user_mkt( array $user, string $email, string $action, string $name = "", string $nick = "", bool $terms = null )
+    public function update_user_mkt( array $user, string $email, string $action, string $name = "", string $nick = "", ?bool $terms = null ) : array
     {
         // $response = [
         // 	"code"    => $info[ "http_code" ],
@@ -604,11 +580,13 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Send code SMS.
      *
-     * @since   1.1.0
-     * @param   string  $cellphone
-     * @return  array
+     * @since 1.1.0
+     *
+     * @param string  $cellphone
+     *
+     * @return array
      */
-    public function auth_sms( string $cellphone )
+    public function auth_sms( string $cellphone ) : array
     {
         $response   = $this->get_channel_token();
 
@@ -640,13 +618,15 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Validates code SMS.
      *
-     * @since   1.1.0
-     * @param   string  $code
-     * @param   string  $cellphone
-     * @param   string  $trans_id
-     * @return  void
+     * @since 1.1.0
+     *
+     * @param string  $code
+     * @param string  $cellphone
+     * @param string  $trans_id
+     *
+     * @return array
      */
-    public function validate_sms( string $code, string $cellphone, string $trans_id )
+    public function validate_sms( string $code, string $cellphone, string $trans_id ) : array
     {
         $response   = $this->get_channel_token();
 
@@ -679,12 +659,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Get user info.
      *
-     * @since   1.1.7   Add $is_uid param, change $cellphone param to $data.
-     * @since   1.1.0
-     * @param   string  $data
-     * @return  array
+     * @since 1.1.7   Add $is_uid param, change $cellphone param to $data
+     * @since 1.1.0
+     *
+     * @param string  $data
+     *
+     * @return array
      */
-    public function user_info( string $data, bool $is_uid = false )
+    public function user_info( string $data, bool $is_uid = false ) : array
     {
         $response   = $this->get_channel_token();
 
@@ -731,12 +713,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Add org to user.
      *
-     * @since   1.3.0
-     * @param   string  $uid
-     * @param   string  $org_id
-     * @return  array
+     * @since 1.3.0
+     *
+     * @param string  $uid
+     * @param string  $org_id
+     *
+     * @return array
      */
-    public function add_org( string $uid, string $org_id )
+    public function add_org( string $uid, string $org_id ) : array
     {
         return $this->process_org( self::ADD_USER_ORG, $uid, $org_id );
     }
@@ -744,12 +728,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Remove org from user.
      *
-     * @since   1.3.0
-     * @param   string  $uid
-     * @param   string  $org_id
-     * @return  array
+     * @since 1.3.0
+     *
+     * @param string  $uid
+     * @param string  $org_id
+     *
+     * @return array
      */
-    public function del_org( string $uid, string $org_id )
+    public function del_org( string $uid, string $org_id ) : array
     {
         return $this->process_org( self::DEL_USER_ORG, $uid, $org_id );
     }
