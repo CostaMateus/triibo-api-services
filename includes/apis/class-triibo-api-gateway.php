@@ -29,7 +29,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @var array
      */
-    const HEADER        = ["Content-type: application/json"];
+    const HEADER        = [ "Content-type: application/json" ];
 
     /**
      * Endpoint for api /getChannelToken_v1.
@@ -241,24 +241,30 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function call( string $endpoint, array $params ) : array
     {
-		if ( !$this->status() )
+		if ( ! $this->status() )
 		{
-			$error = [
-				"code"    => "500.4",
+			$message = "API is disabled.";
+
+			$this->log(
+				is_error: true,
+				level   : "critical",
+				message : $message,
+			);
+
+			return [
+				"code"    => 401, // "500.4",
 				"success" => false,
 				"message" => "API está desabilitada.",
-				"error"   => "API is disabled.",
+				"error"   => $message,
 				"data"    => null,
 			];
-
-			$this->log( "critical", json_encode( $error ), true );
-
-			return $error;
 		}
 
-		$url = $this->url . $endpoint;
-
-		return self::exec( $url, self::HEADER, $params );
+		return $this->exec(
+			endpoint: $this->url . $endpoint,
+			header  : self::HEADER,
+			params  : $params
+		);
     }
 
     /**
