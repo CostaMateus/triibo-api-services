@@ -201,7 +201,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @return array
 	 */
-	public function freight_calculation( array $params )
+	public function freight_calculation( array $params ) : array
 	{
 		return $this->call( endpoint: self::FREIGHT_CALC, params: $params );
 	}
@@ -217,7 +217,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @return 	array
 	 */
-	public function update_sku( string $sku )
+	public function update_sku( string $sku ) : array
 	{
 		return $this->call( endpoint: self::UPDATE_SKU, query: $sku );
 	}
@@ -231,7 +231,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 * @param 	string 	$order_id 	Id of order.
 	 * @return 	array
 	 */
-	public function order_creation( string $order_id )
+	public function order_creation( string $order_id ) : array
 	{
 		return $this->call( endpoint: self::O_CREATION, query: $order_id );
 	}
@@ -247,7 +247,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @return array
 	 */
-	public function order_approval( string $order_id )
+	public function order_approval( string $order_id ) : array
 	{
 		return $this->call( endpoint: self::O_APPROVAL, query: $order_id );
 	}
@@ -263,7 +263,7 @@ class Triibo_Api_Php extends Triibo_Api
 	 *
 	 * @return array
 	 */
-	public function order_cancellation( string $order_id )
+	public function order_cancellation( string $order_id ) : array
 	{
 		return $this->call( endpoint: self::O_CANCELLATION, query: $order_id );
 	}
