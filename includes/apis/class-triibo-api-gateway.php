@@ -230,8 +230,9 @@ class Triibo_Api_Gateway extends Triibo_Api
     }
 
     /**
-     * Exec api call.
+	 * Make request.
      *
+     * @since 2.0.0     Refactored
      * @since 1.0.0
      *
      * @param string  $endpoint
@@ -359,6 +360,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     private function process_terms( array $terms ) : array
     {
         $id   = "-Kzj_F6wDcfHkLMO_q4c";
+
         $term = [
             "accept"         => true,
             "dateAcceptance" => time() * 1000,
@@ -373,7 +375,7 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
         else
         {
-            $key   = array_search( $id, array_column( $terms, "optInId" ) );
+            $key = array_search( $id, array_column( $terms, "optInId" ) );
 
             if ( $key !== false )
             {
@@ -410,10 +412,12 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header( [
-            "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
-            "uId"            => self::SYS_UID,
-        ] );
+        $this->add_header(
+            add: [
+                "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
+                "uId"            => self::SYS_UID,
+            ]
+        );
 
         $params     = [
             "triiboHeader" => $this->get_header(),
@@ -421,7 +425,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             "uId"          => $uid,
         ];
 
-        $response   = $this->call( $api, $params );
+        $response   = $this->call( endpoint: $api, params: $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             $this->log( "error", json_encode( $response ), true );
@@ -440,17 +444,17 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function get_channel_token( ?string $uid = null ) : array
     {
-        $hash   = $this->hash( $uid );
+        $hash = $this->hash( uid: $uid );
 
-        $this->add_header( [
-            "uId"        => $uid,
-            "passPhrase" => $hash[ "passPhrase" ],
-            "challenge"  => $hash[ "challenge"  ]
-        ] );
+        $this->add_header(
+            add: [
+                "uId"        => $uid,
+                "passPhrase" => $hash[ "passPhrase" ],
+                "challenge"  => $hash[ "challenge"  ]
+            ]
+        );
 
-        $params = [ "triiboHeader" => $this->get_header() ];
-
-        return $this->call( self::CHN_TKN_ID, $params );
+        return $this->call( endpoint: self::CHN_TKN_ID, params: [ "triiboHeader" => $this->get_header() ] );
     }
 
     /**
@@ -493,7 +497,7 @@ class Triibo_Api_Gateway extends Triibo_Api
                 return $response;
             }
 
-            $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+            $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
             $params     = [
                 "triiboHeader"   => $this->get_header(),
@@ -502,7 +506,7 @@ class Triibo_Api_Gateway extends Triibo_Api
                 "recursionValue" => $value,
             ];
 
-            $response   = $this->call( self::CREDIT_POINTS, $params );
+            $response   = $this->call( endpoint: self::CREDIT_POINTS, params: $params );
         }
 
         return $response;
@@ -548,10 +552,12 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header( [
-            "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
-            "uId"            => $uid
-        ] );
+        $this->add_header(
+            add: [
+                "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
+                "uId"            => $uid
+            ]
+        );
 
         $params     = [
             "triiboHeader"    => $this->get_header(),
@@ -571,7 +577,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             $params[ "userInfo" ][ "optInList" ] = [ ... $this->process_terms( $user_terms ) ];
         }
 
-        $response   = $this->call( self::SET_USER_INFO, $params );
+        $response   = $this->call( endpoint: self::SET_USER_INFO, params: $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
@@ -605,7 +611,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
 
-        $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
         $params     = [
             "triiboHeader" => $this->get_header(),
@@ -613,7 +619,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             "cellphone"    => $cellphone,
         ];
 
-        $response   = $this->call( self::AUTH_SMS, $params );
+        $response   = $this->call( endpoint: self::AUTH_SMS, params: $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             $this->log( "error", json_encode( $response ), true );
@@ -644,7 +650,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
 
-        $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
         $params     = [
             "triiboHeader"  => $this->get_header(),
@@ -653,7 +659,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             "transactionId" => $trans_id,
         ];
 
-        $response   = $this->call( self::VAL_SMS, $params );
+        $response   = $this->call( endpoint: self::VAL_SMS, params: $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             $this->log( "error", json_encode( $response ), true );
@@ -681,7 +687,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
         if ( $is_uid )
         {
@@ -705,7 +711,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             "userInfo"        => $user_info,
         ];
 
-        $response   = $this->call( self::GET_USER_INFO, $params );
+        $response   = $this->call( endpoint: self::GET_USER_INFO, params: $params );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
             $this->log( "error", json_encode( $response ), true );
