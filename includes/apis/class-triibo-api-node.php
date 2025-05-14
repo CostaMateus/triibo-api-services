@@ -228,72 +228,107 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Add header in basic header.
 	 *
-     * @since   1.4.0
-	 * @return 	void
+	 * @since 2.0.0 	Renamed to add_header from set_header, param $add added type array
+     * @since 1.4.0
+	 *
+	 * @param string|array 	$add 	Header to add
+	 *
+	 * @return void
 	 */
-	private function set_header( string $add )
+	private function add_header( string|array $add ) : void
 	{
-		array_push( $this->header, $add );
+		if ( is_string( $add ) )
+			$add = [ $add ];
+
+		$this->header = array_merge( $this->header, $add );
 	}
 
 	/**
-	 * Prepare header to make request to the API.
+	 * Make request.
 	 *
-     * @since   1.4.0 	Added $method param.
-     * @since   1.0.0
-	 * @param 	string 	$endpoint 	Endpoint url.
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Body of request.
-	 * @param 	string 	$method 	Method of request.
-	 * @return 	array
+     * @since 2.0.0     Refactored
+     * @since 1.4.0 	Added $method param
+     * @since 1.0.0
+	 *
+	 * @param string 	$endpoint 	Endpoint url
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Body of request
+	 * @param string 	$method 	Method of request
+	 *
+	 * @return array
 	 */
-    private function call( string $endpoint, string $token, array $params = [], string $method = "POST" )
+    // private function call( string $endpoint, array $params = [], string $token = "", string $method = "POST" ) : array
+    private function call( string $endpoint, string $token = "", array $params = [], string $method = "POST" ) : array
     {
-		if ( !$this->status() )
+		if ( ! $this->status() )
 		{
-			$error = [
-				"code"    => "500.4",
+			$message = "API is disabled.";
+
+			$this->log(
+				is_error: true,
+				level   : "critical",
+				message : $message,
+			);
+
+			return [
+				"code"    => 401, // "500.4",
 				"success" => false,
-				"message" => "API está desabilitada. {$endpoint}",
-				"error"   => "API is disabled.",
+				"message" => "API está desabilitada.",
+				"error"   => $message,
 				"data"    => null,
 			];
-
-			$this->log( "critical", json_encode( $error ), true );
-
-			return $error;
 		}
-
-		$url    = $this->url_api . $endpoint;
-		$header = $this->get_header();
 
 		if ( $endpoint === self::AUTH )
 		{
-			$basic  = base64_encode( $this->user . ":" . $this->pass );
+			$username = ( $this->env() )
+				? get_option( option: "triibo_api_services_node_hml_user" )
+				: get_option( option: "triibo_api_services_node_prd_user" );
 
-			$aux    = [];
-			$aux[]  = "Authorization: Basic {$basic}";
+			$password = ( $this->env() )
+				? get_option( option: "triibo_api_services_node_hml_pass" )
+				: get_option( option: "triibo_api_services_node_prd_pass" );
 
-			if ( $token ) $aux[] = $token;
+			$basic    = base64_encode( "{$username}:{$password}" );
 
-			$header = array_merge( $header, $aux );
+			$aux      = [ "Authorization: Basic {$basic}" ];
+
+			if ( $token )
+				$aux[] = $token;
+
+			$this->add_header( add: $aux );
+
+			return $this->exec(
+				endpoint: $this->url . $endpoint,
+				header  : $this->get_header(),
+				method  : $method,
+			);
 		}
-		else if ( $endpoint === self::AUTH_MKT )
+
+		if ( $endpoint === self::AUTH_MKT )
 		{
-			$aux    = [
+			// TODO transformar em 'option'
+			$key = ( $this->env() ) ? "652e0505-f010-48a4-a9a5-ce12783777ea" : "xp8bqzil-b15e-da2v-3jcm-25pniix0y859";
+
+			$this->add_header( add: [
 				"Authorization: {$token}",
-				"x-api-key: {$this->x_key}"
-			];
+				"x-api-key: {$key}"
+			] );
 
-			$header = array_merge( $header, $aux );
-		}
-		else
-		{
-			$token  = "Authorization: Bearer $token";
-			array_push( $header, $token );
+			return $this->exec(
+				endpoint: $this->url . $endpoint,
+				header  : $this->get_header()
+			);
 		}
 
-		return self::exec( $url, $header, $params, $method );
+		$this->add_header( add: "Authorization: Bearer {$token}" );
+
+		return $this->exec(
+			endpoint: $this->url . $endpoint,
+			header  : $this->get_header(),
+			params  : $params,
+			method  : $method
+		);
     }
 
 	/**
