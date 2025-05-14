@@ -13,189 +13,180 @@ defined( "ABSPATH" ) || exit;
 class Triibo_Api_Node extends Triibo_Api
 {
 	/**
-	 * Endpoint for api /auth
+	 * Endpoint for api /auth.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const AUTH           = "/auth";
 
 	/**
-	 * Endpoint for api /auth/marketplace
+	 * Endpoint for api /auth/marketplace.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const AUTH_MKT       = "/auth/marketplace";
 
 	/**
-	 * Endpoint for api /authcode
+	 * Endpoint for api /authcode.
 	 *
-	 * @since 	1.2.0
-	 * @var 	string
+	 * @since 1.2.0
+	 *
+	 * @var string
 	 */
 	const AUTH_CODE      = "/authCode";
 
 	/**
-	 * Endpoint for api /login
+	 * Endpoint for api /login.
 	 *
-	 * @since 	1.5.0
-	 * @var 	string
+	 * @since 1.5.0
+	 *
+	 * @var string
 	 */
     const LOGIN          = "/login";
 
 	/**
-	 * Endpoint for api /payments/brand
+	 * Endpoint for api /payments/brand.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const PAY_BRAND      = "/payments/brand";
 
 	/**
-	 * Endpoint for api /payments/doPayment
+	 * Endpoint for api /payments/doPayment.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const PAYMENT        = "/payments/doPayment";
 
 	/**
-	 * Endpoint for api /payments/status
+	 * Endpoint for api /payments/status.
 	 *
-	 * @since 	1.1.4
-	 * @var 	string
+	 * @since 1.1.4
+	 *
+	 * @var string
 	 */
 	const PAYMENT_STATUS = "/payments/status";
 
 	/**
-	 * Endpoint for api /payments/checkToken
+	 * Endpoint for api /payments/checkToken.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const PAY_TKN_CHECK  = "/payments/checkToken";
 
 	/**
-	 * Endpoint for api /payments/createToken
+	 * Endpoint for api /payments/createToken.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const PAY_TKN_CREATE = "/payments/createToken";
 
 	/**
-	 * Endpoint for api /payments/deleteToken
+	 * Endpoint for api /payments/deleteToken.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
 	const PAY_TKN_DELETE = "/payments/deleteToken";
 
 	/**
-	 * Endpoint for api /sms/validateSMS
+	 * Endpoint for api /sms/validateSMS.
 	 *
-	 * @since 	1.5.0
-	 * @var 	string
+	 * @since 1.5.0
+	 *
+	 * @var string
 	 */
 	const SMS_VALIDATE   = "/sms/validateSMS";
 
 	/**
-	 * Endpoint for api /users/findUIDsByPhones
+	 * Endpoint for api /users/findUIDsByPhones.
 	 *
-	 * @since 	1.1.3
-	 * @var 	string
+	 * @since 1.1.3
+	 *
+	 * @var string
 	 */
 	const USER_FIND_UID  = "/users/findUIDsByPhones";
 
 	/**
-	 * Endpoint for api /checkout/users/addingUserSignature
+	 * Endpoint for api /checkout/users/addingUserSignature.
 	 *
-	 * @since 	1.9.0
-	 * @var 	string
+	 * @since 1.9.0
+	 *
+	 * @var string
 	 */
     const ADD_USER_SUBS  = "/checkout/users/addingUserSignature";
 
 	/**
-     * Endpoint for api /checkout/users/removingUserSignature
+     * Endpoint for api /checkout/users/removingUserSignature.
 	 *
-     * @since 	1.9.0
-     * @var 	string
+	 * @since 1.9.0
+	 *
+	 * @var string
 	 */
     const DEL_USER_SUBS  = "/checkout/users/removeUserSignature";
 
 	/**
 	 * Internal ID for log
 	 *
-	 * @since 	1.11.0 	Updated string format.
-	 * @since 	1.0.0
-	 * @var 	string
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.11.0 	Updated string format
+	 * @since 1.0.0
+	 *
+	 * @var string
 	 */
-	private $id          = "triibo-api-node";
+	protected string $id = "triibo-api-node";
 
 	/**
-	 * Status of this api
+	 * Environment hml/prod.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.0.0
+	 *
+	 * @var null|string
 	 */
-    private $status      = null;
+	protected ?string $env = null;
 
 	/**
-	 * Environment hml/prod
+	 * Status of this api.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.0.0
+	 *
+	 * @var null|string
 	 */
-    private $env         = null;
+	protected ?string $status = null;
 
 	/**
-	 * Endpoint hml/prod of api
+	 * Endpoint hml/prod.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @since 2.0.0
+	 *
+	 * @var null|string
 	 */
-    private $url_api     = null;
+	protected ?string $url = null;
 
 	/**
-	 * Endpoint hml/prod of marketplace
+	 * Header for api calls.
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
-	 */
-    private $url_mkt     = null;
-
-	/**
-	 * User hml/prod to make the api calls
+	 * @since 2.0.0 	Same visibility as the parent
+	 * @since 1.4.0
 	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
+	 * @var null|array
 	 */
-    private $user        = null;
-
-	/**
-	 * Password hml/prod of user
-	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
-	 */
-    private $pass        = null;
-
-	/**
-	 * Header for api calls
-	 *
-	 * @since 	1.4.0
-	 * @var 	array|null
-	 */
-    private $header      = null;
-
-	/**
-	 * Extra token hml/prod for /auth/marketplace api call
-	 *
-	 * @since 	1.0.0
-	 * @var 	string|null
-	 */
-    private $x_key       = null;
+    protected ?array $header = null;
 
     /**
      * Construct.
