@@ -191,111 +191,36 @@ class Triibo_Api_Node extends Triibo_Api
     /**
      * Construct.
      *
-	 * @since 	1.10.0 	Removed $log class property.
-	 * @since 	1.9.1 	Fixed homologation API URL.
+	 * @since 	1.10.0 	Removed $log class property
+	 * @since 	1.9.1 	Fixed homologation API URL
      * @since   1.0.0
      */
     public function __construct()
     {
-        $this->status = get_option( "triibo_api_services_node_status" );
-		$this->env    = get_option( "triibo_api_services_node_env"    );
+        $this->status = get_option( option: "triibo_api_services_node_status" );
+		$this->env    = get_option( option: "triibo_api_services_node_env"    );
 
-        if ( $this->status == "on" )
+        if ( $this->status() )
         {
-			// $this->url_api = ( get_home_url() === "http://localhost:8000" )
-			// 					? "http://localhost:3000"
-			// 					: "https://api" . ( $this->env == "on" ? "-hml" : "" ) . ".triibo.com.br";
+			$this->url    = ( get_home_url() === "http://localhost:8000" )
+							? "http://localhost:3000"
+							: "https://api" . ( $this->env() ? "-hml-node" : "" ) . ".triibo.com.br";
 
-			$this->url_api = "https://api" . ( $this->env == "on" ? "-hml-node" : "" ) . ".triibo.com.br";
-
-			$this->url_mkt = "https://" . ( $this->env == "on" ? "dev-" : "" ) . "marketplace.triibo.com.br";
-
-			$this->user    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_user" ) : get_option( "triibo_api_services_node_prd_user" );
-			$this->pass    = ( $this->env == "on" ) ? get_option( "triibo_api_services_node_hml_pass" ) : get_option( "triibo_api_services_node_prd_pass" );
-
-			$this->x_key   = ( $this->env == "on" ) ? "652e0505-f010-48a4-a9a5-ce12783777ea" : "xp8bqzil-b15e-da2v-3jcm-25pniix0y859";
-
-			$this->header  = [
-				"origin: {$this->url_mkt}",
+			$this->header = [
+				"origin: https://" . ( $this->env() ? "dev-" : "" ) . "marketplace.triibo.com.br",
 				"content-type: application/json",
 			];
         }
     }
 
-    /**
-     * Returns the node api status.
-     * TRUE  for active.
-     * FALSE for inactive.
-     *
-     * @since   1.0.0
-     * @return  boolean
-     */
-	public function status()
-	{
-		return $this->status == "on" ? true : false;
-	}
-
-    /**
-     * Returns if the node api is configured for homol or prod or disabled.
-     * NULL  for disabled API.
-     * TRUE  for homol.
-     * FALSE for prod.
-     *
-     * @since   1.0.0
-     * @return 	bool|null
-     */
-	public function env()
-	{
-		if ( $this->env === null )
-			return null;
-
-		else if ( $this->env === "on" )
-			return true;
-
-		else
-			return false;
-	}
-
-    /**
-     * Check if $attr is empty.
-     *
-     * @since   1.0.0
-     * @param   string $attr
-     * @return  bool
-     */
-	public function empty( string $attr )
-	{
-		return empty( $this->{$attr} ) ? true : false;
-	}
-
-	/**
-	 * Register logs.
-	 *
-	 * @since 	1.10.0 	Changing to the new woocommerce standard.
-	 * 					Added params $level and $is_error.
-	 * @since 	1.0.0
-	 * @param 	string 	$level
-	 * @param 	string 	$message
-	 * @param 	bool 	$is_error
-	 * @return 	void
-	 */
-	private function log( string $level, string $message, bool $is_error = false )
-	{
-		$logger  = ( function_exists( "wc_get_logger" ) ) ? wc_get_logger() : new WC_Logger();
-
-		$context = [ "source" => $this->id ];
-
-		if ( $is_error || $this->env() === true )
-			$logger->$level( $message, $context );
-	}
-
 	/**
 	 * Provides basic header for all calls.
 	 *
-     * @since   1.0.0
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @return array
 	 */
-	private function get_header()
+	private function get_header() : array
 	{
 		return $this->header;
 	}
