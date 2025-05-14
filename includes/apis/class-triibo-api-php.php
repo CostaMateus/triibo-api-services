@@ -117,8 +117,8 @@ class Triibo_Api_Php extends Triibo_Api
 	 */
     public function __construct( string $seller = "fast_shop" )
     {
-        $this->status = get_option( "triibo_api_services_php_status" );
-		$this->env    = get_option( "triibo_api_services_php_env"    );
+        $this->status = get_option( option: "triibo_api_services_php_status" );
+		$this->env    = get_option( option: "triibo_api_services_php_env"    );
 
         if ( $this->status() )
         {
@@ -129,8 +129,8 @@ class Triibo_Api_Php extends Triibo_Api
 			$this->header = [
 				"Accept: application/json",
 				"Content-Type: application/json",
-				"api-key: "   . get_option( $this->env() ? "triibo_api_services_php_hml_key" : "triibo_api_services_php_prd_key" ),
-				"api-token: " . get_option( $this->env() ? "triibo_api_services_php_hml_tkn" : "triibo_api_services_php_prd_tkn" ),
+				"api-key: "   . get_option( option: ( $this->env() ? "triibo_api_services_php_hml_key" : "triibo_api_services_php_prd_key" ) ),
+				"api-token: " . get_option( option: ( $this->env() ? "triibo_api_services_php_hml_tkn" : "triibo_api_services_php_prd_tkn" ) ),
 				"seller: {$seller}"
 			];
         }
