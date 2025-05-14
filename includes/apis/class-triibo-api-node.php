@@ -216,36 +216,6 @@ class Triibo_Api_Node extends Triibo_Api
     }
 
 	/**
-	 * Provides basic header for all calls.
-	 *
-     * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	private function get_header() : array
-	{
-		return $this->header;
-	}
-
-	/**
-	 * Add header in basic header.
-	 *
-     * @since 2.0.0     Refactored, renamed to add_header from set_header, param $add added type array
-     * @since 1.4.0
-	 *
-	 * @param string|array 	$add 	Header to add
-	 *
-	 * @return void
-	 */
-	private function add_header( string|array $add ) : void
-	{
-		if ( is_string( $add ) )
-			$add = [ $add ];
-
-		$this->header = array_merge( $this->header, $add );
-	}
-
-	/**
 	 * Make request.
 	 *
      * @since 2.0.0     Refactored

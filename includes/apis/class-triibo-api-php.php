@@ -138,19 +138,6 @@ class Triibo_Api_Php extends Triibo_Api
     }
 
 	/**
-	 * Provides basic header for all calls.
-	 *
-	 * @since 1.11.0 	Updated to global header
-	 * @since 1.0.0
-	 *
-	 * @return array
-	 */
-	private function get_header() : array
-	{
-		return $this->header;
-    }
-
-	/**
 	 * Make request.
 	 *
 	 * @since 2.0.0 	Refactored and changed parameter to $query from $url_params
