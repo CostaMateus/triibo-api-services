@@ -152,7 +152,7 @@ class Triibo_Api_Php extends Triibo_Api
 	/**
 	 * Make request.
 	 *
-	 * @since 2.0.0 	Change parameter to $query from $url_params
+	 * @since 2.0.0 	Refactored and changed parameter to $query from $url_params
 	 * @since 1.0.0
 	 *
 	 * @param string 	$endpoint 	Endpoint url
