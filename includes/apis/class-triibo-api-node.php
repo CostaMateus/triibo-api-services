@@ -538,91 +538,103 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Call /payments/brand endpoint.
 	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of brand.
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of brand
+	 *
+	 * @return array
 	 */
-	public function brand( string $token, array $params )
+	public function brand( string $token, array $params ) : array
 	{
-		return $this->call( self::PAY_BRAND, $token, $params );
+		return $this->call( endpoint: self::PAY_BRAND, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /payments/checkToken endpoint.
 	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of token, check.
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of token, check
+	 *
+	 * @return array
 	 */
-	public function check_token( string $token, array $params )
+	public function check_token( string $token, array $params ) : array
 	{
-		return $this->call( self::PAY_TKN_CHECK, $token, $params );
+		return $this->call( endpoint: self::PAY_TKN_CHECK, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /payments/createToken endpoint.
 	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of token, create.
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of token, create
+	 *
+	 * @return array
 	 */
-	public function create_token( string $token, array $params )
+	public function create_token( string $token, array $params ) : array
 	{
-		return $this->call( self::PAY_TKN_CREATE, $token, $params );
+		return $this->call( endpoint: self::PAY_TKN_CREATE, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /payments/deleteToken endpoint.
 	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of token, delete.
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of token, delete
+	 *
+	 * @return array
 	 */
-	public function delete_token( string $token, array $params )
+	public function delete_token( string $token, array $params ) : array
 	{
-		return $this->call( self::PAY_TKN_DELETE, $token, $params );
+		return $this->call( endpoint: self::PAY_TKN_DELETE, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /users/findUIDsByPhones
 	 *
-	 * @since   1.1.3
-	 * @param 	string 	$token 	Authorization of request.
-	 * @param 	string 	$phone 	Phone number to search.
-	 * @return 	array
+	 * @since 1.1.3
+	 *
+	 * @param string 	$token 	Authorization of request
+	 * @param string 	$phone 	Phone number to search
+	 *
+	 * @return array
 	 */
-	public function find_uid( string $token, string $phone )
+	public function find_uid( string $token, string $phone ) : array
 	{
-		return $this->call( self::USER_FIND_UID, $token, [ "phones" => [ $phone ] ] );
+		return $this->call( endpoint: self::USER_FIND_UID, params: [ "phones" => [ $phone ] ], token: $token );
 	}
 
 	/**
 	 * Call /auth endpoint, to get security code for validation.
 	 *
-	 * @since   1.4.0
-	 * @return 	array
+	 * @since 1.4.0
+	 *
+	 * @return array
 	 */
-	public function get_security_code()
+	public function get_security_code() : array
 	{
-		$response = $this->call( self::AUTH, "", [], "GET" );
+		$response = $this->call( endpoint: self::AUTH, method: "GET" );
 
-		if ( !$response[ "success" ] ) return $response;
+		if ( ! $response[ "success" ] )
+			return $response;
 
-		$key64    = get_option( "_triibo_security_code" ); // insert manually in DB.
+		$key64    = get_option( option: "_triibo_security_code" ); // inserted manually in DB.
 		$key      = base64_decode( $key64 );
 
 		$code     = $response[ "data" ][ "securityCode" ];
 
-		$decrypt  = $this->decrypt( $code, $key );
+		$decrypt  = $this->decrypt( str: $code, key: $key );
 		$decrypt  = json_decode( $decrypt );
 
 		$decrypt->code *= 3;
 
-		$encrypt  = $this->encrypt( json_encode( $decrypt ), $key );
+		$encrypt  = $this->encrypt( str: json_encode( $decrypt ), key: $key );
 
 		$response[ "data" ][ "securityCode" ] = $encrypt;
 
@@ -632,67 +644,86 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Get valid token.
 	 *
-	 * @since 	1.9.0
-     * @param   int 	$user_id
-	 * @return 	string|null
+	 * @since 1.9.0
+	 *
+     * @param int 	$user_id
+	 *
+	 * @return null|string
 	 */
-	public function get_token( $user_id )
+	public function get_token( int $user_id ) : ?string
 	{
-		$phone    = get_user_meta( $user_id, "_triibo_phone", true );
-		$phone    = $phone ?: get_user_meta( $user_id, "triiboId_phone", true );
+		$phone    = get_user_meta( user_id: $user_id, key: "_triibo_phone", single: true );
+		$phone    = $phone ?: get_user_meta( user_id: $user_id, key: "triiboId_phone", single: true );
 
-		$uid      = get_user_meta( $user_id, "_triibo_id",            true );
-		$token    = get_user_meta( $user_id, "_triibo_auth_token",    true );
-		$validity = get_user_meta( $user_id, "_triibo_auth_validity", true );
+		$uid      = get_user_meta( user_id: $user_id, key: "_triibo_id",            single: true );
+		$token    = get_user_meta( user_id: $user_id, key: "_triibo_auth_token",    single: true );
+		$validity = get_user_meta( user_id: $user_id, key: "_triibo_auth_validity", single: true );
 
-		if ( !$uid )
+		if ( ! $uid )
 		{
 			$success       = false;
-			$response_auth = $this->auth( "" );
+			$response_auth = $this->auth();
 
 			if ( $response_auth[ "success" ] && $phone )
 			{
-				$this->log( "info", "find_uid : search user by phone '{$phone}'" );
+				$this->log(
+					message: "find_uid : search user by phone '{$phone}'",
+					context: $response_auth
+				);
 
-				$_token        = $response_auth[ "data"  ][ "token" ];
-				$response_find = $this->find_uid( $_token, $phone );
+				$response_find = $this->find_uid( token: $response_auth[ "data"  ][ "token" ], phone: $phone );
 
 				if ( $response_find[ "success" ] )
 				{
 					$uid = $response_find[ "data" ][ "usersUid" ][ $phone ];
 
-					$this->log( "info", "find_uid : user found '{$uid}'" );
+					$this->log(
+						message: "find_uid : user found '{$uid}'",
+						context: $response_find
+					);
 
 					if ( $uid )
 					{
 						$success = true;
 						$token   = null;
-						update_user_meta( $user_id, "_triibo_id", $uid );
+
+						update_user_meta( user_id: $user_id, meta_key: "_triibo_id", meta_value: $uid );
 					}
 				}
 			}
 
-			if ( !$success ) return null;
+			if ( ! $success )
+				return null;
 		}
 
-		if ( !$token )
+		if ( ! $token )
 		{
-			$this->log( "info", "validate_token : user without token {$user_id}" );
+			$this->log(
+				message: "validate_token : user without token {$user_id}",
+				context: [
+					"uid"   => $uid,
+					"phone" => $phone,
+				]
+			);
 
-			return $this->generate_token( $uid, $user_id );
+			return $this->generate_token( uid: $uid, user_id: $user_id );
 		}
-		else
+
+		$dtval = DateTime::createFromFormat( format: "Y-m-d H:i:s", datetime: $validity );
+		$now   = new DateTime();
+		$diff  = $now->diff( targetObject: $dtval );
+
+		if ( $diff->d > 0 || $diff->h > 10 )
 		{
-			$dtval = DateTime::createFromFormat( "Y-m-d H:i:s", $validity );
-			$now   = new DateTime();
-			$diff  = $now->diff( $dtval );
+			$this->log(
+				message: "validate_token : expired token {$user_id}",
+				context: [
+					"uid"   => $uid,
+					"phone" => $phone,
+				]
+			);
 
-			if ( $diff->d > 0 || $diff->h > 10 )
-			{
-				$this->log( "info", "validate_token : experied token {$user_id}" );
-
-				return $this->generate_token( $uid, $user_id );
-			}
+			return $this->generate_token( uid: $uid, user_id: $user_id );
 		}
 
 		return $token;
@@ -701,102 +732,102 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Get user triibo, create if not exists.
 	 *
-     * @since 	1.5.0
-	 * @param 	string 	$cellphone 	Cellphone of user.
-	 * @return 	array
+     * @since 1.5.0
+	 *
+	 * @param string 	$cellphone 	Cellphone of user
+	 *
+	 * @return array
 	 */
-	public function get_user( string $cellphone )
+	public function get_user( string $cellphone ) : array
 	{
         $response = $this->get_security_code();
 
-        if ( $response[ "success" ] )
-        {
-			$code     = $response[ "data" ][ "securityCode" ];
-			$response = $this->auth( "", $code );
+        if ( ! $response[ "success" ] )
+			return $response;
 
-            if ( $response[ "success" ] )
-			{
-                $token  = $response[ "data"  ][ "token" ];
+		$response = $this->auth( code: $response[ "data" ][ "securityCode" ] );
 
-				$params = [
-					"cellphone" => $this->format_cellphone( $cellphone ),
-				];
+        if ( ! $response[ "success" ] )
+			return $response;
 
-				return $this->call( self::LOGIN, $token, $params );
-			}
-		}
+		$params   = [ "cellphone" => $this->format_cellphone( cellphone: $cellphone ) ];
+		$token    = $response[ "data" ][ "token" ];
 
-		return $response;
+		return $this->call( endpoint: self::LOGIN, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /payments/doPayment endpoint.
 	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of payment.
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of payment
+	 *
+	 * @return array
 	 */
-	public function payment( string $token, array $params )
+	public function payment( string $token, array $params ) : array
 	{
-		return $this->call( self::PAYMENT, $token, $params );
+		return $this->call( endpoint: self::PAYMENT, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /payments/status endpoint.
 	 *
-	 * @since 	1.1.4
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params
-	 * @return 	void
+	 * @since 1.1.4
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params
+	 *
+	 * @return array
 	 */
-	public function payment_status( string $token, array $params )
+	public function payment_status( string $token, array $params ) : array
 	{
-		return $this->call( self::PAYMENT_STATUS, $token, $params );
+		return $this->call( endpoint: self::PAYMENT_STATUS, params: $params, token: $token );
 	}
 
 	/**
 	 * Validates SMS code.
 	 *
-	 * @since 	1.5.0 	Removed param $token.
-	 * @param 	array 	$data 	Data to pass to parameters for validation of SMS code.
-	 * @return 	array
+	 * @since 1.5.0 	Removed param $token
+	 *
+	 * @param array 	$data 	Data to pass to parameters for validation of SMS code
+	 *
+	 * @return array
 	 */
-	public function validate_sms( array $data )
+	public function validate_sms( array $data ) : array
 	{
         $response = $this->get_security_code();
 
-        if ( $response[ "success" ] )
-        {
-			$code     = $response[ "data" ][ "securityCode" ];
-			$response = $this->auth( "", $code );
+        if ( ! $response[ "success" ] )
+			return $response;
 
-            if ( $response[ "success" ] )
-			{
-                $token  = $response[ "data"  ][ "token" ];
+		$response = $this->auth( code: $response[ "data" ][ "securityCode" ] );
 
-				$params = [
-					"code"          => $data[ "code"     ],
-					"transactionId" => $data[ "trans_id" ],
-					"cellphone"     => $this->format_cellphone( $data[ "cellphone" ] ),
-				];
+        if ( ! $response[ "success" ] )
+			return $response;
 
-				return $this->call( self::SMS_VALIDATE, $token, $params );
-			}
-		}
+		$params = [
+			"code"          => $data[ "code"     ],
+			"transactionId" => $data[ "trans_id" ],
+			"cellphone"     => $this->format_cellphone( cellphone: $data[ "cellphone" ] ),
+		];
+		$token  = $response[ "data"  ][ "token" ];
 
-		return $response;
+		return $this->call( endpoint: self::SMS_VALIDATE, params: $params, token: $token );
 	}
 
 	/**
 	 * Call /auth/marketplace endpoint.
 	 *
-     * @since   1.0.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @return 	array
+     * @since 1.0.0
+	 *
+	 * @param string 	$token 		Authorization of request.
+	 *
+	 * @return array
 	 */
-    public function validate_token_auth_app( string $token )
+    public function validate_token_auth_app( string $token ) : array
     {
-		return $this->call( self::AUTH_MKT, $token );
+		return $this->call( endpoint: self::AUTH_MKT, token: $token );
     }
 }
