@@ -202,7 +202,7 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Construct.
      *
-     * @since 1.10.0 	Removed $log class property
+     * @since 1.10.0    Removed $log class property
      * @since 1.0.0
      */
     public function __construct()
@@ -235,8 +235,8 @@ class Triibo_Api_Gateway extends Triibo_Api
      * @since 2.0.0     Refactored
      * @since 1.0.0
      *
-     * @param string  $endpoint
-     * @param array   $params
+     * @param string    $endpoint
+     * @param array     $params
      *
      * @return array
      */
@@ -273,7 +273,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @since   1.0.0
      *
-     * @param   null|string $uid
+     * @param   null|string     $uid
      *
      * @return  array
      */
@@ -295,9 +295,9 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @since 1.1.6
      *
-     * @param array   $contact
-     * @param string  $email
-     * @param string  $action
+     * @param array     $contact
+     * @param string    $email
+     * @param string    $action
      *
      * @return array
      */
@@ -353,7 +353,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @since 1.1.6
      *
-     * @param array   $terms
+     * @param array     $terms
      *
      * @return array
      */
@@ -394,21 +394,33 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Process org action.
      *
-     * @since 1.4.2   Removed parameter $action
+     * @since 2.0.0     Refactored log
+     * @since 1.4.2     Removed parameter $action
      * @since 1.3.0
      *
-     * @param string  $uid
-     * @param string  $org_id
+     * @param string    $uid
+     * @param string    $org_id
      *
      * @return array
      */
-    private function process_org( string $api, string $uid, string $org_id ) : array
+    private function process_org( string $endpoint, string $uid, string $org_id ) : array
     {
-        $response   = $this->get_channel_token( self::SYS_UID );
+        $response = $this->get_channel_token( uid: self::SYS_UID );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( "error", json_encode( $response ), true );
+            $this->log(
+                is_error: true,
+                level   : "critical",
+                message : "Error to get channel token.",
+                context :   [
+                    "endpoint" => $endpoint,
+                    "uid"      => $uid,
+                    "org_id"   => $org_id,
+                    "response" => $response,
+                ]
+            );
+
             return $response;
         }
 
@@ -419,16 +431,27 @@ class Triibo_Api_Gateway extends Triibo_Api
             ]
         );
 
-        $params     = [
+        $params   = [
             "triiboHeader" => $this->get_header(),
             "orgID"        => $org_id,
             "uId"          => $uid,
         ];
 
-        $response   = $this->call( endpoint: $api, params: $params );
+        $response = $this->call( endpoint: $endpoint, params: $params );
 
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( "error", json_encode( $response ), true );
+        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+
+        $this->log(
+            is_error: $error,
+            level   : $error ? "critical" : "info",
+            message : $error ? "Error to process org." : "Org processed.",
+            context :   [
+                "endpoint" => $endpoint,
+                "uid"      => $uid,
+                "org_id"   => $org_id,
+                "response" => $response,
+            ]
+        );
 
         return $response;
     }
@@ -460,13 +483,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Credits points to the user.
      *
-     * @since 1.7.0       Added new plans
-     * @since 1.1.2       Added param $event
+     * @since 2.0.0     Refactored log
+     * @since 1.7.0     Added new plans
+     * @since 1.1.2     Added param $event
      * @since 1.0.0
      *
-     * @param string      $triibo_id
-     * @param integer     $value
-     * @param string      $event
+     * @param string    $triibo_id
+     * @param integer   $value
+     * @param string    $event
      *
      * @return array
      */
@@ -485,41 +509,52 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( !in_array( $event, $events ) )
         {
-            $response   = [ "success" => false, "event" => "Not found" ];
-        }
-        else
-        {
-            $response   = $this->get_channel_token();
-
-            if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            {
-                $this->log( "error", json_encode( $response ), true );
-                return $response;
-            }
-
-            $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
-
-            $params     = [
-                "triiboHeader"   => $this->get_header(),
-                "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
-                "eventType"      => $event,
-                "recursionValue" => $value,
+            return [
+                "success" => false,
+                "event"   => "Not found"
             ];
-
-            $response   = $this->call( endpoint: self::CREDIT_POINTS, params: $params );
         }
 
-        return $response;
+        $response = $this->get_channel_token();
+
+        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
+        {
+            $this->log(
+                is_error: true,
+                level   : "critical",
+                message : "Error to get channel token.",
+                context :   [
+                    "triibo_id" => $triibo_id,
+                    "value"     => $value,
+                    "event"     => $event,
+                    "response"  => $response,
+                ]
+            );
+
+            return $response;
+        }
+
+        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+
+        $params = [
+            "triiboHeader"   => $this->get_header(),
+            "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
+            "eventType"      => $event,
+            "recursionValue" => $value,
+        ];
+
+        return $this->call( endpoint: self::CREDIT_POINTS, params: $params );
     }
 
     /**
      * Update marketplace user.
      *
-     * @since 1.5.0   Change param $cellphone to $user
-     * @since 1.1.6   Add param $terms
-     * @since 1.1.5   ContactList email/emailMarketplace no longer verified
-     * @since 1.1.1   Fix array contactList
-     * @since 1.1.0   Add params $name and $nick
+     * @since 2.0.0     Refactored log
+     * @since 1.5.0     Change param $cellphone to $user
+     * @since 1.1.6     Add param $terms
+     * @since 1.1.5     ContactList email/emailMarketplace no longer verified
+     * @since 1.1.1     Fix array contactList
+     * @since 1.1.0     Add params $name and $nick
      * @since 1.0.0
      *
      * @param array         $user
@@ -542,13 +577,23 @@ class Triibo_Api_Gateway extends Triibo_Api
         // ];
 
         $uid        = $user[ "uId" ];
-        $contact    = $this->process_contact_list( $user[ "contactList" ], $email, $action );
 
-        $response   = $this->get_channel_token( $uid );
+        $contact    = $this->process_contact_list( contact: $user[ "contactList" ], email: $email, action: $action );
+
+        $response   = $this->get_channel_token( uid: $uid );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( "error", json_encode( $response ), true );
+            $this->log(
+                is_error: true,
+                level   : "critical",
+                message : "Error to get channel token.",
+                context :   [
+                    "uid"      => $uid,
+                    "response" => $response,
+                ]
+            );
+
             return $response;
         }
 
@@ -574,18 +619,24 @@ class Triibo_Api_Gateway extends Triibo_Api
         if ( $terms )
         {
             $user_terms                          = ( isset( $user[ "optInList" ] ) ) ? $user[ "optInList" ] : [];
-            $params[ "userInfo" ][ "optInList" ] = [ ... $this->process_terms( $user_terms ) ];
+            $params[ "userInfo" ][ "optInList" ] = [ ... $this->process_terms( terms: $user_terms ) ];
         }
 
-        $response   = $this->call( endpoint: self::SET_USER_INFO, params: $params );
+        $response = $this->call( endpoint: self::SET_USER_INFO, params: $params );
 
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-        {
-            $this->log( "error", json_encode( $response ), true );
-            return $response;
-        }
+        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
 
         $response[ "uid" ] = $uid;
+
+        $this->log(
+            is_error: $error,
+            level   : $error ? "critical" : "info",
+            message : $error ? "Error to update user." : "User updated.",
+            context :   [
+                "uid"      => $uid,
+                "response" => $response,
+            ]
+        );
 
         return $response;
     }
@@ -593,36 +644,55 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Send code SMS.
      *
+     * @since 2.0.0     Refactored log
      * @since 1.1.0
      *
-     * @param string  $cellphone
+     * @param string    $cellphone
      *
      * @return array
      */
     public function auth_sms( string $cellphone ) : array
     {
-        $response   = $this->get_channel_token();
+        $response = $this->get_channel_token();
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( "error", json_encode( $response ), true );
+            $this->log(
+                is_error: true,
+                level   : "critical",
+                message : "Error to get channel token.",
+                context :   [
+                    "cellphone" => $cellphone,
+                    "response"  => $response,
+                ]
+            );
+
             return $response;
         }
 
-        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
         $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
-        $params     = [
+        $params   = [
             "triiboHeader" => $this->get_header(),
             "platform"     => "web",
             "cellphone"    => $cellphone,
         ];
 
-        $response   = $this->call( endpoint: self::AUTH_SMS, params: $params );
+        $response = $this->call( endpoint: self::AUTH_SMS, params: $params );
 
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( "error", json_encode( $response ), true );
+        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+
+        $this->log(
+            is_error: $error,
+            level   : $error ? "critical" : "info",
+            message : $error ? "Error to send code." : "Code sent.",
+            context :   [
+                "cellphone" => $cellphone,
+                "response"  => $response,
+            ]
+        );
 
         return $response;
     }
@@ -630,39 +700,60 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Validates code SMS.
      *
+     * @since 2.0.0     Refactored log
      * @since 1.1.0
      *
-     * @param string  $code
-     * @param string  $cellphone
-     * @param string  $trans_id
+     * @param string    $code
+     * @param string    $cellphone
+     * @param string    $trans_id
      *
      * @return array
      */
     public function validate_sms( string $code, string $cellphone, string $trans_id ) : array
     {
-        $response   = $this->get_channel_token();
+        $response = $this->get_channel_token();
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( "error", json_encode( $response ), true );
+            $this->log(
+                is_error: true,
+                level   : "critical",
+                message : "Error to get channel token.",
+                context :   [
+                    "code"      => $code,
+                    "cellphone" => $cellphone,
+                    "trans_id"  => $trans_id,
+                ]
+            );
+
             return $response;
         }
 
-        $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
 
         $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
-        $params     = [
+        $params   = [
             "triiboHeader"  => $this->get_header(),
             "code"          => $code,
             "cellphone"     => $cellphone,
             "transactionId" => $trans_id,
         ];
 
-        $response   = $this->call( endpoint: self::VAL_SMS, params: $params );
+        $response = $this->call( endpoint: self::VAL_SMS, params: $params );
 
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( "error", json_encode( $response ), true );
+        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+
+        $this->log(
+            is_error: $error,
+            level   : $error ? "critical" : "info",
+            message : $error ? "Error to validate code." : "Code validated.",
+            context :   [
+                "code"      => $code,
+                "cellphone" => $cellphone,
+                "trans_id"  => $trans_id,
+            ]
+        );
 
         return $response;
     }
@@ -670,20 +761,31 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Get user info.
      *
-     * @since 1.1.7   Add $is_uid param, change $cellphone param to $data
+     * @since 2.0.0     Refactored log
+     * @since 1.1.7     Add $is_uid param, change $cellphone param to $data
      * @since 1.1.0
      *
-     * @param string  $data
+     * @param string    $data
      *
      * @return array
      */
     public function user_info( string $data, bool $is_uid = false ) : array
     {
-        $response   = $this->get_channel_token();
+        $response = $this->get_channel_token();
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
-            $this->log( "error", json_encode( $response ), true );
+            $this->log(
+                is_error: true,
+                level   : "critical",
+                message : "Error to get channel token.",
+                context :   [
+                    "data"     => $data,
+                    "is_uid"   => $is_uid,
+                    "response" => $response,
+                ]
+            );
+
             return $response;
         }
 
@@ -705,16 +807,26 @@ class Triibo_Api_Gateway extends Triibo_Api
             ];
         }
 
-        $params     = [
+        $params   = [
             "triiboHeader"    => $this->get_header(),
             "queryPartnerAPI" => [ "getUserInfo" ],
             "userInfo"        => $user_info,
         ];
 
-        $response   = $this->call( endpoint: self::GET_USER_INFO, params: $params );
+        $response = $this->call( endpoint: self::GET_USER_INFO, params: $params );
 
-        if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
-            $this->log( "error", json_encode( $response ), true );
+        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+
+        $this->log(
+            is_error: $error,
+            level   : $error ? "critical" : "info",
+            message : $error ? "Error to get user info." : "User info retrieved.",
+            context :   [
+                "data"     => $data,
+                "is_uid"   => $is_uid,
+                "response" => $response,
+            ]
+        );
 
         return $response;
     }
@@ -724,14 +836,14 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @since 1.3.0
      *
-     * @param string  $uid
-     * @param string  $org_id
+     * @param string    $uid
+     * @param string    $org_id
      *
      * @return array
      */
     public function add_org( string $uid, string $org_id ) : array
     {
-        return $this->process_org( self::ADD_USER_ORG, $uid, $org_id );
+        return $this->process_org( endpoint: self::ADD_USER_ORG, uid: $uid, org_id: $org_id );
     }
 
     /**
@@ -739,13 +851,13 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @since 1.3.0
      *
-     * @param string  $uid
-     * @param string  $org_id
+     * @param string    $uid
+     * @param string    $org_id
      *
      * @return array
      */
     public function del_org( string $uid, string $org_id ) : array
     {
-        return $this->process_org( self::DEL_USER_ORG, $uid, $org_id );
+        return $this->process_org( endpoint: self::DEL_USER_ORG, uid: $uid, org_id: $org_id );
     }
 }
