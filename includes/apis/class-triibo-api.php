@@ -4,19 +4,21 @@
  *
  * A class definition that includes attributes and functions used for access the Triibo API.
  *
- * @author 		Mateus Costa <mateus@costamateus.com.br>
- * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.0.0
+ * @author 	Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 	1.0.0
+ * @version 2.0.0
  */
 defined( "ABSPATH" ) || exit;
 
-class Triibo_Api
+abstract class Triibo_Api
 {
 	/**
 	 * Http codes
 	 *
-	 * @since 	1.0.0
-	 * @var 	array
+	 * @since 1.0.0
+	 *
+	 * @var array
 	 */
 	const HTTP_CODES = [
 		// [Informational 1xx]
@@ -72,41 +74,154 @@ class Triibo_Api
 	];
 
 	/**
+	 * @since 2.0.0
+	 *
+	 * @var string
+	 */
+    protected string $id = "triibo-api";
+
+	/**
+	 * @since 2.0.0
+	 *
+	 * @var null|string
+	 */
+    protected ?string $env = null;
+
+	/**
+	 * @since 2.0.0
+	 *
+	 * @var null|string
+	 */
+	protected ?string $key = null;
+
+	/**
+	 * @since 2.0.0
+	 *
+	 * @var null|string
+	 */
+	protected ?string $status = null;
+
+	/**
+	 * @since 2.0.0
+	 *
+	 * @var null|string
+	 */
+	protected ?string $token = null;
+
+	/**
+	 * @since 2.0.0
+	 *
+	 * @var null|string
+	 */
+	protected ?string $url = null;
+
+	/**
+	 * @since 2.0.0
+	 *
+	 * @var null|array
+	 */
+    protected ?array $header = null;
+
+    /**
+     * Check if $attr is empty.
+     *
+	 * @since 2.0.0
+	 *
+     * @param string $attr
+	 *
+     * @return bool
+     */
+	public function empty( string $attr ) : bool
+	{
+		if ( ! property_exists( $this, $attr ) )
+			return false;
+
+		if ( ! isset( $this->{$attr} ) )
+			return false;
+
+		if ( is_array( $this->{$attr} ) )
+			return empty( $this->{$attr} );
+
+		if ( is_string( $this->{$attr} ) )
+			return empty( trim( $this->{$attr} ) );
+
+		if ( is_bool( $this->{$attr} ) )
+			return empty( $this->{$attr} );
+
+		return empty( $this->{$attr} );
+	}
+
+    /**
+     * Returns if the php api is configured for homol or prod.
+     * TRUE  for homol.
+     * FALSE for prod.
+     *
+     * @since 2.0.0
+	 *
+     * @return boolean
+     */
+	public function env() : bool
+	{
+		return $this->env === "on";
+	}
+
+	/**
 	 * Make request to the API
 	 *
-	 * @since 	1.6.0 	Added try-catch
-	 * @since 	1.4.0 	Added $method parameter
-	 * @since 	1.0.0
-	 * @param 	string 	$endpoint 	Endpoint url
-	 * @param 	array 	$header		Header of request
-	 * @param 	array 	$params 	Body of request
-	 * @param 	string 	$method 	Method of request
-	 * @return 	array
+     * @since 2.0.0     Refactored to be a non-static method, utilizing the `$this->log()` method and the `$id` and `$env` properties.
+	 * @since 1.6.0 	Added try-catch
+	 * @since 1.4.0 	Added $method parameter
+	 * @since 1.0.0
+	 *
+	 * @param string 	$endpoint 	Endpoint url
+	 * @param array 	$header		Header of request
+	 * @param array 	$params 	Body of request
+	 * @param string 	$method 	Method of request
+	 *
+	 * @return array
 	 */
-    public static function exec( string $endpoint, array $header, array $params = [], string $method = "POST" )
+    public function exec( string $endpoint, array $header, array $params = [], string $method = "POST" ) : array
     {
+		$default_message = "Falha na comunicação com a API.";
+
+		$data_log = [
+			"method"   => $method,
+			"endpoint" => $endpoint,
+			"header"   => $header,
+			"params"   => $params,
+		];
+
 		try
 		{
-			$curl     = curl_init();
+			$curl = curl_init();
 
-			if ( !$curl )
+			if ( ! $curl )
 			{
+				$message = "cURL initialization failed";
+
+				$this->log(
+					is_error: true,
+					level   : "error",
+					message : $message,
+					context : [ "data" => $data_log ]
+				);
+
 				return [
-					"code"    => "500.1",
+					"code"    => 500, // "500.1",
 					"success" => false,
-					"message" => "Falha na comunicação com a API.",
-					"error"   => "Couldn't initialize a cURL handle",
+					"message" => $default_message,
+					"error"   => $message,
 				];
 			}
 
-			$params   = ( !empty( $params ) ) ? json_encode( $params ) : null;
+			$params = ( ! empty( $params ) ) ? json_encode( $params ) : null;
 
 			curl_setopt_array( $curl, [
 				CURLOPT_URL            => $endpoint,
 				CURLOPT_RETURNTRANSFER => TRUE,
 				CURLOPT_ENCODING       => "",
-				CURLOPT_MAXREDIRS      => 0,
-				CURLOPT_TIMEOUT        => 0,
+				CURLOPT_MAXREDIRS      => 5,
+				CURLOPT_TIMEOUT        => 60,
 				CURLOPT_FOLLOWLOCATION => TRUE,
 				CURLOPT_SSL_VERIFYPEER => TRUE,
 				CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
@@ -116,68 +231,156 @@ class Triibo_Api
 			] );
 
 			$response = curl_exec( $curl );
+			$info     = curl_getinfo( $curl );
+
+			$data_log[ "info" ] = $info;
 
 			if ( empty( $response ) )
 			{
-				// some kind of an error happened
-				$err      = curl_error( $curl );
-				$response = [
-					"code"    => "500.2",
+				$message = "cURL Error: " . curl_error( $curl );
+
+				$this->log(
+					is_error: true,
+					level   : "error",
+					message : $message,
+					context : [ "data" => $data_log ]
+				);
+
+				curl_close( $curl );
+
+				return [
+					"code"    => 400, // "500.2",
 					"success" => false,
-					"message" => "Falha na comunicação com a API.",
-					"error"   => $err,
+					"message" => $default_message,
+					"error"   => $message,
 					"data"    => null,
 				];
 			}
-			else
-			{
-				$info = curl_getinfo( $curl );
 
-				if ( empty( $info[ "http_code" ] ) )
-				{
-					$response = [
-						"code"    => "500.3",
-						"success" => false,
-						"message" => "Falha na comunicação com a API.",
-						"error"   => "No HTTP code was returned.",
-						"data"    => json_decode( $response, true ),
-					];
-				}
-				else if ( $info[ "http_code" ] < 200 || $info[ "http_code" ] >= 300 )
-				{
-					$response = [
-						"code"    => $info[ "http_code" ],
-						"success" => false,
-						"message" => "Falha na comunicação com a API.",
-						"error"   => self::HTTP_CODES[ $info[ "http_code" ] ],
-						"data"    => json_decode( $response, true ),
-					];
-				}
-				else
-				{
-					$response = [
-						"code"    => $info[ "http_code" ],
-						"success" => true,
-						"message" => "ok",
-						"error"   => null,
-						"data"    => json_decode( $response, true ),
-					];
-				}
-			}
+			$decoded  = json_decode( $response, true );
+
+			$data_log[ "response" ] = $decoded;
 
 			curl_close( $curl );
+
+			if ( empty( $info[ "http_code" ] ) )
+			{
+				$message = "cURL Error: No HTTP code was returned.";
+
+				$this->log(
+					is_error: true,
+					level   : "error",
+					message : $message,
+					context : [ "data" => $data_log ]
+				);
+
+				return [
+					"code"    => 400, // "500.3",
+					"success" => false,
+					"message" => $default_message,
+					"error"   => $message,
+					"data"    => $decoded,
+				];
+			}
+
+			$code = $info[ "http_code" ];
+			$url  = $info[ "url"       ];
+
+			if ( ! isset( self::HTTP_CODES[ $code ] ) || $code < 200 || $code >= 300 )
+			{
+				$error   = self::HTTP_CODES[ $code ] ?? "Código HTTP desconhecido: {$code}";
+				$message = "cURL Error: {$code} - {$url} - {$error}";
+
+				$this->log(
+					is_error: true,
+					level   : "error",
+					message : $message,
+					context : [ "data" => $data_log ]
+				);
+
+				return [
+					"code"    => $code,
+					"success" => false,
+					"message" => $default_message,
+					"error"   => $message,
+					"data"    => $decoded,
+				];
+			}
+
+			$message = "cURL Success: {$code} - {$url}";
+
+			$this->log(
+				message: $message,
+				context: [ "data" => $data_log ]
+			);
+
+			return [
+				"code"    => $code,
+				"success" => true,
+				"message" => "OK - {$message}",
+				"error"   => null,
+				"data"    => $decoded,
+			];
 		}
 		catch ( Exception $e )
 		{
+			$data_log[ "trace" ] = $e->getTrace();
+			$message = "cURL Exception: {$e->getMessage()}";
+
+			$this->log(
+				is_error: true,
+				level   : "error",
+				message : $message,
+				context : [ "data" => $data_log ]
+			);
+
 			return [
-				"code"    => "500",
+				"code"    => 500, // "500",
 				"success" => false,
 				"message" => "Falha na comunicação com a API. Exception.",
-				"error"   => "Couldn't initialize a cURL handle",
+				"error"   => $message,
 				"data"    => null,
 			];
 		}
+    }
 
-		return $response;
+    /**
+     * Returns the api status.
+     * TRUE  for active.
+     * FALSE for inactive.
+     *
+     * @since 2.0.0
+	 *
+     * @return boolean
+     */
+	public function status() : bool
+	{
+		return $this->status === "on";
+	}
+
+	/**
+     * Log.
+     *
+     * @since 2.0.0
+	 *
+     * @param string 	$level 		The log level (e.g., 'error', 'info')
+     * @param string 	$message 	The log message
+	 * @param array 	$context 	Additional context for the log message
+     * @param bool 		$is_error 	Whether the log is an error
+	 *
+     * @return void
+     */
+    public function log( string $level = "info", string $message, array $context = [], bool $is_error = false ) : void
+    {
+		// Use WooCommerce logger if available
+        $logger  = function_exists( "wc_get_logger" )
+			? wc_get_logger()
+			: new WC_Logger();
+
+        $context = array_merge( $context, [ "source" => $this->id ] );
+
+        // Log only errors or if the environment is set to "on" (homologation)
+        if ( $is_error || $this->env === "on" )
+            $logger->$level( $message, $context );
     }
 }
