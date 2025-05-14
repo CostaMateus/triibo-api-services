@@ -278,7 +278,7 @@ class Triibo_Api_Node extends Triibo_Api
 
 		if ( $endpoint === self::AUTH_MKT )
 		{
-			// TODO transformar em 'option'
+			// TODO: transformar em 'option'
 			$key = ( $this->env() ) ? "652e0505-f010-48a4-a9a5-ce12783777ea" : "xp8bqzil-b15e-da2v-3jcm-25pniix0y859";
 
 			$this->add_header( add: [

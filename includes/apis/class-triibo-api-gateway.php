@@ -359,13 +359,15 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function process_terms( array $terms ) : array
     {
-        $id   = "-Kzj_F6wDcfHkLMO_q4c";
+        // TODO: transformar em 'option'
+        $id        = "-Kzj_F6wDcfHkLMO_q4c";
+        $term_text = "Termos de Uso da Triibo";
 
-        $term = [
+        $term      = [
             "accept"         => true,
             "dateAcceptance" => time() * 1000,
             "optInId"        => $id,
-            "type"           => "Termos de Uso da Triibo",
+            "type"           => $term_text,
             "version"        => 1
         ];
 
@@ -496,6 +498,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function credit_points( string $triibo_id, int $value, string $event ) : array
     {
+        // TODO: transformar em 'option'
         $events = [
             "Compra_Marketplace",
             "Assinatura_Triibo_Vip",
@@ -568,19 +571,11 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function update_user_mkt( array $user, string $email, string $action, string $name = "", string $nick = "", ?bool $terms = null ) : array
     {
-        // $response = [
-        // 	"code"    => $info[ "http_code" ],
-        // 	"success" => true,
-        // 	"message" => "ok",
-        // 	"error"   => null,
-        // 	"data"    => json_decode( $response, true ),
-        // ];
+        $uid      = $user[ "uId" ];
 
-        $uid        = $user[ "uId" ];
+        $contact  = $this->process_contact_list( contact: $user[ "contactList" ], email: $email, action: $action );
 
-        $contact    = $this->process_contact_list( contact: $user[ "contactList" ], email: $email, action: $action );
-
-        $response   = $this->get_channel_token( uid: $uid );
+        $response = $this->get_channel_token( uid: $uid );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
@@ -604,7 +599,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             ]
         );
 
-        $params     = [
+        $params   = [
             "triiboHeader"    => $this->get_header(),
             "queryPartnerAPI" => [ "setUserInfo" ],
             "userInfo"        => [
