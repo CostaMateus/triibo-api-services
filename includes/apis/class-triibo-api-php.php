@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The file that defines the Triibo PHP API.
  *
