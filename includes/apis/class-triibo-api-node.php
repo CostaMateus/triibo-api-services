@@ -191,9 +191,10 @@ class Triibo_Api_Node extends Triibo_Api
     /**
      * Construct.
      *
-	 * @since 	1.10.0 	Removed $log class property
-	 * @since 	1.9.1 	Fixed homologation API URL
-     * @since   1.0.0
+     * @since 2.0.0 	Refactored
+	 * @since 1.10.0 	Removed $log class property
+	 * @since 1.9.1 	Fixed homologation API URL
+     * @since 1.0.0
      */
     public function __construct()
     {
@@ -228,7 +229,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Add header in basic header.
 	 *
-	 * @since 2.0.0 	Renamed to add_header from set_header, param $add added type array
+     * @since 2.0.0     Refactored, renamed to add_header from set_header, param $add added type array
      * @since 1.4.0
 	 *
 	 * @param string|array 	$add 	Header to add
@@ -257,8 +258,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 *
 	 * @return array
 	 */
-    // private function call( string $endpoint, array $params = [], string $token = "", string $method = "POST" ) : array
-    private function call( string $endpoint, string $token = "", array $params = [], string $method = "POST" ) : array
+    private function call( string $endpoint, array $params = [], string $token = "", string $method = "POST" ) : array
     {
 		if ( ! $this->status() )
 		{
@@ -405,6 +405,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Generates token for use in API calls.
 	 *
+     * @since 2.0.0     Refactored
 	 * @since 1.9.0
 	 *
      * @param string 	$uid
@@ -416,44 +417,44 @@ class Triibo_Api_Node extends Triibo_Api
 	{
 		$response = $this->auth( token: "uid: {$uid}" );
 
-		if ( $response[ "success" ] )
+        if ( ! $response[ "success" ] )
 		{
-			$token    = $response[ "data" ][ "token" ];
-
-			$validity = ( new DateTime() )->format( format: "Y-m-d H:i:s" );
-
-			update_user_meta(
-				user_id   : $user_id,
-				meta_key  : "_triibo_auth_token",
-				meta_value: $token
-			);
-
-			update_user_meta(
-				user_id   : $user_id,
-				meta_key  : "_triibo_auth_validity",
-				meta_value: $validity
-			);
-
 			$this->log(
-				message: "Token generated successfully.",
-				context: $response
+				is_error: true,
+				level   : "error",
+				message : "generate_token : Token not generated.",
+				context : [
+					"code"    => $response[ "code"    ],
+					"message" => $response[ "message" ],
+					"error"   => $response[ "error"   ]
+				]
 			);
 
-			return $token;
+			return null;
 		}
 
-		$this->log(
-			is_error: true,
-			level   : "error",
-			message : "generate_token : ",
-			context : [
-				"code"    => $response[ "code"    ],
-				"message" => $response[ "message" ],
-				"error"   => $response[ "error"   ]
-			]
+		$token    = $response[ "data" ][ "token" ];
+
+		$validity = ( new DateTime() )->format( format: "Y-m-d H:i:s" );
+
+		update_user_meta(
+			user_id   : $user_id,
+			meta_key  : "_triibo_auth_token",
+			meta_value: $token
 		);
 
-		return null;
+		update_user_meta(
+			user_id   : $user_id,
+			meta_key  : "_triibo_auth_validity",
+			meta_value: $validity
+		);
+
+		$this->log(
+			message: "Token generated successfully.",
+			context: $response
+		);
+
+		return $token;
 	}
 
 	/**
@@ -732,6 +733,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Get user triibo, create if not exists.
 	 *
+     * @since 2.0.0     Refactored
      * @since 1.5.0
 	 *
 	 * @param string 	$cellphone 	Cellphone of user
@@ -789,6 +791,7 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Validates SMS code.
 	 *
+     * @since 2.0.0     Refactored
 	 * @since 1.5.0 	Removed param $token
 	 *
 	 * @param array 	$data 	Data to pass to parameters for validation of SMS code
@@ -822,7 +825,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 *
      * @since 1.0.0
 	 *
-	 * @param string 	$token 		Authorization of request.
+	 * @param string 	$token 		Authorization of request
 	 *
 	 * @return array
 	 */
