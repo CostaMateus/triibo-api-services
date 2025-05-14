@@ -118,11 +118,10 @@ class Triibo_Api_Php extends Triibo_Api
     public function __construct( string $seller = "fast_shop" )
     {
         $this->status = get_option( "triibo_api_services_php_status" );
+		$this->env    = get_option( "triibo_api_services_php_env"    );
 
         if ( $this->status() )
         {
-            $this->env    = get_option( "triibo_api_services_php_env" );
-
 			$this->url    = ( get_home_url() === "http://shopkeeper.local" )
 							? "http://127.0.0.1:8000"
 							: "http://php" . ( $this->env() ? "-hml" : "" ) . ".triibo.com.br";
