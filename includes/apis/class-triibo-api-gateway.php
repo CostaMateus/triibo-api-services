@@ -210,23 +210,23 @@ class Triibo_Api_Gateway extends Triibo_Api
         $this->status = get_option( "triibo_api_services_gate_status" );
         $this->env    = get_option( "triibo_api_services_gate_env"    );
 
-        if ( $this->status == "on" )
+        if ( $this->status() )
         {
-            $this->url     = "https://triibo-api-gateway" . ( $this->env ? "-hml" : "" ) . ".triibo.com.br";
+            $this->url     = "https://triibo-api-gateway" . ( $this->env() ? "-hml" : "" ) . ".triibo.com.br";
 
-            $this->token   = $this->env ? get_option( "triibo_api_services_gate_hml_tkn"     ) : get_option( "triibo_api_services_gate_prd_tkn"     );
-            $this->chn_id  = $this->env ? get_option( "triibo_api_services_gate_hml_chn_id"  ) : get_option( "triibo_api_services_gate_prd_chn_id"  );
-            $this->chn_tkn = $this->env ? get_option( "triibo_api_services_gate_hml_chn_tkn" ) : get_option( "triibo_api_services_gate_prd_chn_tkn" );
+            $this->token   = $this->env() ? get_option( "triibo_api_services_gate_hml_tkn"     ) : get_option( "triibo_api_services_gate_prd_tkn"     );
+            $this->chn_id  = $this->env() ? get_option( "triibo_api_services_gate_hml_chn_id"  ) : get_option( "triibo_api_services_gate_prd_chn_id"  );
+            $this->chn_tkn = $this->env() ? get_option( "triibo_api_services_gate_hml_chn_tkn" ) : get_option( "triibo_api_services_gate_prd_chn_tkn" );
+
+            $this->header  = [
+                "channelName"   => self::GP_NM,
+                "channelGroup"  => self::GP_NM,
+                "apiToken"      => $this->token,
+                "channelId"     => $this->chn_id,
+                "sessionId"     => "001",
+                "transactionId" => "002",
+            ];
         }
-
-        $this->header = [
-            "channelName"   => self::GP_NM,
-            "channelGroup"  => self::GP_NM,
-            "apiToken"      => $this->token,
-            "channelId"     => $this->chn_id,
-            "sessionId"     => "001",
-            "transactionId" => "002",
-        ];
     }
 
     /**
@@ -404,13 +404,13 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+        $this->add_header( [
+            "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
+            "uId"            => self::SYS_UID,
+        ] );
 
         $params     = [
-            "triiboHeader" => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id,
-                "uId"            => self::SYS_UID,
-            ] ),
+            "triiboHeader" => $this->get_header(),
             "orgID"        => $org_id,
             "uId"          => $uid,
         ];
@@ -435,13 +435,14 @@ class Triibo_Api_Gateway extends Triibo_Api
     public function get_channel_token( ?string $uid = null ) : array
     {
         $hash   = $this->hash( $uid );
-        $params = [
-            "triiboHeader" => array_merge( $this->header, [
-                "uId"        => $uid,
-                "passPhrase" => $hash[ "passPhrase" ],
-                "challenge"  => $hash[ "challenge"  ]
-            ] ),
-        ];
+
+        $this->add_header( [
+            "uId"        => $uid,
+            "passPhrase" => $hash[ "passPhrase" ],
+            "challenge"  => $hash[ "challenge"  ]
+        ] );
+
+        $params = [ "triiboHeader" => $this->get_header() ];
 
         return $this->call( self::CHN_TKN_ID, $params );
     }
@@ -486,11 +487,10 @@ class Triibo_Api_Gateway extends Triibo_Api
                 return $response;
             }
 
-            $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+            $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+
             $params     = [
-                "triiboHeader"   => array_merge( $this->header, [
-                    "channelTokenId" => $chn_tkn_id,
-                ] ),
+                "triiboHeader"   => $this->get_header(),
                 "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
                 "eventType"      => $event,
                 "recursionValue" => $value,
@@ -542,12 +542,13 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+        $this->add_header( [
+            "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
+            "uId"            => $uid
+        ] );
+
         $params     = [
-            "triiboHeader"    => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id,
-                "uId"            => $uid
-            ] ),
+            "triiboHeader"    => $this->get_header(),
             "queryPartnerAPI" => [ "setUserInfo" ],
             "userInfo"        => [
                 "syncType"    => "override",
@@ -597,12 +598,11 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
 
         $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
         $params     = [
-            "triiboHeader" => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id
-            ] ),
+            "triiboHeader" => $this->get_header(),
             "platform"     => "web",
             "cellphone"    => $cellphone,
         ];
@@ -637,12 +637,11 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
 
         $cellphone  = "+" . preg_replace( "/\D/", "", $cellphone );
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+
+        $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
         $params     = [
-            "triiboHeader"  => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id
-            ] ),
+            "triiboHeader"  => $this->get_header(),
             "code"          => $code,
             "cellphone"     => $cellphone,
             "transactionId" => $trans_id,
@@ -676,7 +675,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $chn_tkn_id = $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ];
+        $this->add_header( [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
         if ( $is_uid )
         {
@@ -695,9 +694,7 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
 
         $params     = [
-            "triiboHeader"    => array_merge( $this->header, [
-                "channelTokenId" => $chn_tkn_id
-            ] ),
+            "triiboHeader"    => $this->get_header(),
             "queryPartnerAPI" => [ "getUserInfo" ],
             "userInfo"        => $user_info,
         ];
