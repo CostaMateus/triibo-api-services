@@ -334,14 +334,17 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Encrypt a string.
 	 *
-	 * @since   1.4.0
-	 * @param 	string $str
-	 * @param 	string $key
-	 * @return	string
+	 * @since 1.4.0
+	 *
+	 * @param string 	$str
+	 * @param string 	$key
+	 *
+	 * @return null|string
 	 */
-    private function encrypt( string $str, string $key )
+    private function encrypt( string $str, string $key ) : ?string
     {
-		if ( !$str ) return null;
+		if ( ! $str )
+			return null;
 
 		$iv   = hex2bin( "00000000000000000000000000000000" );
 		$encr = openssl_encrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
@@ -352,14 +355,17 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Decrypt a string.
 	 *
-	 * @since   1.4.0
-	 * @param 	string $str
-	 * @param 	string $key
-	 * @return 	string
+	 * @since 1.4.0
+	 *
+	 * @param string 	$str
+	 * @param string 	$key
+	 *
+	 * @return null|string
 	 */
-    private function decrypt( string $str, string $key )
+    private function decrypt( string $str, string $key ) : ?string
     {
-		if ( !$str ) return null;
+		if ( ! $str )
+			return null;
 
 		$str = base64_decode( urldecode( $str ) );
 		$iv  = hex2bin( "00000000000000000000000000000000" );
@@ -370,23 +376,28 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Set security code.
 	 *
-	 * @since 	1.5.0
-	 * @param 	$code
-	 * @return 	void
+	 * @since 1.5.0
+	 *
+	 * @param null|string 	$code
+	 *
+	 * @return void
 	 */
-	private function set_security_code( string $code )
+	private function set_security_code( ?string $code = null ) : void
 	{
-		if ( $code ) $this->set_header( "securitycode: {$code}" );
+		if ( $code )
+			$this->add_header( add: "securitycode: {$code}" );
 	}
 
 	/**
 	 * Format cellphone for +55 DDD number.
 	 *
-	 * @since 	1.5.0
-	 * @param 	string 	$cellphone
-	 * @return 	string
+	 * @since 1.5.0
+	 *
+	 * @param string 	$cellphone
+	 *
+	 * @return string
 	 */
-	private function format_cellphone( string $cellphone )
+	private function format_cellphone( string $cellphone ) : string
 	{
         return "+" . preg_replace( "/\D/", "", $cellphone );
 	}
@@ -394,96 +405,124 @@ class Triibo_Api_Node extends Triibo_Api
 	/**
 	 * Generates token for use in API calls.
 	 *
-	 * @since 	1.9.0
-     * @param   string 	$uid
-     * @param   int 	$user_id
-	 * @return 	string|null
+	 * @since 1.9.0
+	 *
+     * @param string 	$uid
+     * @param int 		$user_id
+	 *
+	 * @return null|string
 	 */
-	private function generate_token( string $uid, int $user_id )
+	private function generate_token( string $uid, int $user_id ) : ?string
 	{
-		$resp = $this->auth( "uid: {$uid}" );
+		$response = $this->auth( token: "uid: {$uid}" );
 
-		if ( $resp[ "success" ] )
+		if ( $response[ "success" ] )
 		{
-			$token    = $resp[ "data"  ][ "token" ];
-			$validity = ( new DateTime() )->format( "Y-m-d H:i:s" );
+			$token    = $response[ "data" ][ "token" ];
 
-			update_user_meta( $user_id, "_triibo_auth_token",    $token    );
-			update_user_meta( $user_id, "_triibo_auth_validity", $validity );
+			$validity = ( new DateTime() )->format( format: "Y-m-d H:i:s" );
+
+			update_user_meta(
+				user_id   : $user_id,
+				meta_key  : "_triibo_auth_token",
+				meta_value: $token
+			);
+
+			update_user_meta(
+				user_id   : $user_id,
+				meta_key  : "_triibo_auth_validity",
+				meta_value: $validity
+			);
+
+			$this->log(
+				message: "Token generated successfully.",
+				context: $response
+			);
 
 			return $token;
 		}
-		else
-		{
-			$this->log( "error", "generate_token : " . json_encode( [
-				"code"    => $resp[ "code"    ],
-				"message" => $resp[ "message" ],
-				"error"   => $resp[ "error"   ]
-			] ), true );
 
-			return null;
-		}
+		$this->log(
+			is_error: true,
+			level   : "error",
+			message : "generate_token : ",
+			context : [
+				"code"    => $response[ "code"    ],
+				"message" => $response[ "message" ],
+				"error"   => $response[ "error"   ]
+			]
+		);
+
+		return null;
 	}
 
 	/**
 	 * Add subscription to user.
 	 *
-	 * @since 	1.9.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of subscription, add.
-	 * @return 	array
+	 * @since 1.9.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of subscription, add
+	 *
+	 * @return array
 	 */
-	public function add_subscription( string $token, array $params )
+	public function add_subscription( string $token, array $params ) : array
 	{
-		return $this->call( self::ADD_USER_SUBS, $token, $params );
+		return $this->call( endpoint: self::ADD_USER_SUBS, params: $params, token: $token );
 	}
 
 	/**
 	 * Delete subscription to user.
 	 *
-	 * @since 	1.9.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$params 	Parameters of subscription, del.
-	 * @return 	array
+	 * @since 1.9.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$params 	Parameters of subscription, del
+	 *
+	 * @return array
 	 */
-	public function del_subscription( string $token, array $params )
+	public function del_subscription( string $token, array $params ) : array
 	{
-		return $this->call( self::DEL_USER_SUBS, $token, $params, "DELETE" );
+		return $this->call( endpoint: self::DEL_USER_SUBS, params: $params, token: $token, method: "DELETE" );
 	}
 
 	/**
 	 * Call /auth endpoint.
 	 *
-	 * @since 	1.5.0 	Added func to set security code.
-     * @since   1.4.0 	Added param $code.
-     * @since   1.0.0
-	 * @param 	string 	$token 	Authorization of request.
-	 * @param 	string 	$code 	Security code.
-	 * @return 	array
+	 * @since 1.5.0 	Added func to set security code
+     * @since 1.4.0 	Added param $code
+     * @since 1.0.0
+	 *
+	 * @param string 		$token 	Authorization of request
+	 * @param null|string 	$code 	Security code
+	 *
+	 * @return array
 	 */
-	public function auth( string $token, string $code = "" )
+	public function auth( string $token = "", ?string $code = null ) : array
 	{
-		$this->set_security_code( $code );
+		$this->set_security_code( code: $code );
 
-		return $this->call( self::AUTH, $token );
+		return $this->call( endpoint: self::AUTH, token: $token );
 	}
 
     /**
      * Call /authcode
      *
-	 * @since 	1.5.0 	Added func to format cellphone.
-     * @since   1.2.0
-	 * @param 	string 	$token 		Authorization of request.
-	 * @param 	array 	$data 		Data to pass to parameters for send auth code.
-     * @return  array
+	 * @since 1.5.0 	Added func to format cellphone
+     * @since 1.2.0
+	 *
+	 * @param string 	$token 		Authorization of request
+	 * @param array 	$data 		Data to pass to parameters for send auth code
+	 *
+     * @return array
      */
-    public function auth_code( string $token, array $data )
+    public function auth_code( string $token, array $data ) : array
     {
-		$sms    = ( $data[ "type" ] == "sms" ) ? true : false;
-		$wpp    = ( $data[ "type" ] == "wpp" ) ? true : false;
+		$sms    = ( $data[ "type" ] === "sms" ) ? true : false;
+		$wpp    = ( $data[ "type" ] === "wpp" ) ? true : false;
 
 		$params = [
-			"cellphone"    => $this->format_cellphone( $data[ "cellphone" ] ),
+			"cellphone"    => $this->format_cellphone( cellphone: $data[ "cellphone" ] ),
 			"platform"     => "web",
 			"languageCode" => "pt_BR",
 			"sendType"     => [
@@ -493,7 +532,7 @@ class Triibo_Api_Node extends Triibo_Api
 			]
 		];
 
-		return $this->call( self::AUTH_CODE, $token, $params );
+		return $this->call( endpoint: self::AUTH_CODE, params: $params, token: $token );
     }
 
 	/**
