@@ -3,9 +3,10 @@
 /**
  * Register all actions and filters for the plugin
  *
- * @author 		Mateus Costa <mateus@costamateus.com.br>
+ * @author 	Mateus Costa <mateus@costamateus.com.br>
  *
- * @version 	1.0.0
+ * @since 1.0.0
+ * @version 2.0.0
  */
 defined( "ABSPATH" ) || exit;
 

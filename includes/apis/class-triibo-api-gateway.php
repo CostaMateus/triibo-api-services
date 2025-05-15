@@ -5,9 +5,10 @@
  *
  * A class definition that includes attributes and functions used for access the Triibo Gateway API.
  *
- * @author 		Mateus Costa <mateus@costamateus.com.br>
- * @package 	Triibo_Api_Services/Classes/Api
- * @version 	1.10.0
+ * @author 	Mateus Costa <mateus@costamateus.com.br>
+ *
+ * @since 1.0.0
+ * @version 2.0.0
  */
 defined( "ABSPATH" ) || exit;
 

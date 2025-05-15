@@ -4,9 +4,10 @@
  * The file that defines the core plugin class
  * A class definition that includes attributes and functions used in the admin area.
  *
- * @author 		Mateus Costa <mateus@costamateus.com.br>
+ * @author 	Mateus Costa <mateus@costamateus.com.br>
  *
- * @version 	1.0.0
+ * @since 1.0.0
+ * @version 2.0.0
  */
 defined( "ABSPATH" ) || exit;
 
