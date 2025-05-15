@@ -2,395 +2,102 @@
 {
 	"use strict";
 
-	function hideShowGate( checked, env = null )
+	function toggleFields( prefix, checked, env )
 	{
-		let hml_tkn______ = $( "#triibo_api_services_gate_hml_tkn"       ),
-			hml_chn_id___ = $( "#triibo_api_services_gate_hml_chn_id"    ),
-			hml_chn_tkn__ = $( "#triibo_api_services_gate_hml_chn_tkn"   ),
-			hml_optin_id_ = $( "#triibo_api_services_gate_hml_optin_id"  ),
-			hml_optin_txt = $( "#triibo_api_services_gate_hml_optin_txt" ),
+		const fields = [
+			// gateway
+			"tkn", // php too
+			"chn_id",
+			"chn_tkn",
+			"optin_id",
+			"optin_txt",
 
-			prd_tkn______ = $( "#triibo_api_services_gate_prd_tkn"       ),
-			prd_chn_id___ = $( "#triibo_api_services_gate_prd_chn_id"    ),
-			prd_chn_tkn__ = $( "#triibo_api_services_gate_prd_chn_tkn"   ),
-			prd_optin_id_ = $( "#triibo_api_services_gate_prd_optin_id"  ),
-			prd_optin_txt = $( "#triibo_api_services_gate_prd_optin_txt" );
+			// node
+			"user",
+			"pass",
+			"auth_key",
 
-		switch ( checked )
+			// php
+			"key"
+		];
+
+		const envs = [ "hml", "prd" ];
+
+		envs.forEach( currentEnv =>
 		{
-			// homol enabled
-			case 1:
-				hml_tkn______.closest( "tr" ).show();
-				hml_chn_id___.closest( "tr" ).show();
-				hml_chn_tkn__.closest( "tr" ).show();
-				hml_optin_id_.closest( "tr" ).show();
-				hml_optin_txt.closest( "tr" ).show();
-				prd_tkn______.closest( "tr" ).hide();
-				prd_chn_id___.closest( "tr" ).hide();
-				prd_chn_tkn__.closest( "tr" ).hide();
-				prd_optin_id_.closest( "tr" ).hide();
-				prd_optin_txt.closest( "tr" ).hide();
+			const isCurrentEnvEnabled = checked === ( currentEnv === "hml" ? 1 : 2 );
+			const shouldShow          = isCurrentEnvEnabled || checked === 3 && env === ( currentEnv === "hml" ? 1 : 2 );
+			const shouldRequire       = isCurrentEnvEnabled && env;
 
-				prd_tkn______.removeAttr( "required" );
-				prd_chn_id___.removeAttr( "required" );
-				prd_chn_tkn__.removeAttr( "required" );
-				prd_optin_id_.removeAttr( "required" );
-				prd_optin_txt.removeAttr( "required" );
+			fields.forEach( field =>
+			{
+				const elementId = `#triibo_api_services_${prefix}_${currentEnv}_${field}`;
+				const $element  = $( elementId );
 
-				if ( env )
+				if ( $element.length )
 				{
-					hml_tkn______.prop( "required", true );
-					hml_chn_id___.prop( "required", true );
-					hml_chn_tkn__.prop( "required", true );
-					hml_optin_id_.prop( "required", true );
-					hml_optin_txt.prop( "required", true );
+					$element.closest( "tr" ).toggle( shouldShow );
+					$element.prop( "required", shouldRequire );
 				}
-				else
-				{
-					hml_tkn______.removeAttr( "required" );
-					hml_chn_id___.removeAttr( "required" );
-					hml_chn_tkn__.removeAttr( "required" );
-					hml_optin_id_.removeAttr( "required" );
-					hml_optin_txt.removeAttr( "required" );
-				}
-			break;
-
-			// prod enabled
-			case 2:
-				hml_tkn______.closest( "tr" ).hide();
-				hml_chn_id___.closest( "tr" ).hide();
-				hml_chn_tkn__.closest( "tr" ).hide();
-				hml_optin_id_.closest( "tr" ).hide();
-				hml_optin_txt.closest( "tr" ).hide();
-				prd_tkn______.closest( "tr" ).show();
-				prd_chn_id___.closest( "tr" ).show();
-				prd_chn_tkn__.closest( "tr" ).show();
-				prd_optin_id_.closest( "tr" ).show();
-				prd_optin_txt.closest( "tr" ).show();
-
-				hml_tkn______.removeAttr( "required" );
-				hml_chn_id___.removeAttr( "required" );
-				hml_chn_tkn__.removeAttr( "required" );
-				hml_optin_id_.removeAttr( "required" );
-				hml_optin_txt.removeAttr( "required" );
-
-				if ( env )
-				{
-					prd_tkn______.prop( "required", true );
-					prd_chn_id___.prop( "required", true );
-					prd_chn_tkn__.prop( "required", true );
-					prd_optin_id_.prop( "required", true );
-					prd_optin_txt.prop( "required", true );
-				}
-				else
-				{
-					prd_tkn______.removeAttr( "required" );
-					prd_chn_id___.removeAttr( "required" );
-					prd_chn_tkn__.removeAttr( "required" );
-					prd_optin_id_.removeAttr( "required" );
-					prd_optin_txt.removeAttr( "required" );
-				}
-			break;
-
-			// api disabled (homol and prod)
-			case 3:
-				hml_tkn______.removeAttr( "required" );
-				hml_chn_id___.removeAttr( "required" );
-				hml_chn_tkn__.removeAttr( "required" );
-				hml_optin_id_.removeAttr( "required" );
-				hml_optin_txt.removeAttr( "required" );
-				prd_tkn______.removeAttr( "required" );
-				prd_chn_id___.removeAttr( "required" );
-				prd_chn_tkn__.removeAttr( "required" );
-				prd_optin_id_.removeAttr( "required" );
-				prd_optin_txt.removeAttr( "required" );
-
-				if ( env == 1 )
-				{
-					hml_tkn______.closest( "tr" ).show();
-					hml_chn_id___.closest( "tr" ).show();
-					hml_chn_tkn__.closest( "tr" ).show();
-					hml_optin_id_.closest( "tr" ).show();
-					hml_optin_txt.closest( "tr" ).show();
-					prd_tkn______.closest( "tr" ).hide();
-					prd_chn_id___.closest( "tr" ).hide();
-					prd_chn_tkn__.closest( "tr" ).hide();
-					prd_optin_id_.closest( "tr" ).hide();
-					prd_optin_txt.closest( "tr" ).hide();
-				}
-				else // 2
-				{
-					hml_tkn______.closest( "tr" ).hide();
-					hml_chn_id___.closest( "tr" ).hide();
-					hml_chn_tkn__.closest( "tr" ).hide();
-					hml_optin_id_.closest( "tr" ).hide();
-					hml_optin_txt.closest( "tr" ).hide();
-					prd_tkn______.closest( "tr" ).show();
-					prd_chn_id___.closest( "tr" ).show();
-					prd_chn_tkn__.closest( "tr" ).show();
-					prd_optin_id_.closest( "tr" ).show();
-					prd_optin_txt.closest( "tr" ).show();
-				}
-			break;
-		}
+			} );
+		} );
 	}
 
-	function handlerGate()
+	function handler( service )
 	{
-		let gate_stt = $( "#triibo_api_services_gate_status" ).is( ":checked" );
-		let gate_env = $( "#triibo_api_services_gate_env"    ).is( ":checked" );
+		const statusId     = `#triibo_api_services_${service}_status`;
+		const envId        = `#triibo_api_services_${service}_env`;
+		const isEnabled    = $( statusId ).is( ":checked" );
+		const isHomol      = $( envId    ).is( ":checked" );
+		const checkedValue = isEnabled ? (isHomol ? 1 : 2) : 3;
+		const envValue     = isHomol ? 1 : 2;
 
-		if ( !gate_stt )
-			hideShowGate( 3, gate_env ? 1 : 2 );
-		else
-			hideShowGate( gate_env ? 1 : 2, gate_stt );
+		toggleFields( service, checkedValue, ( isEnabled ? isHomol : envValue ) );
 	}
 
-	function hideShowNode( checked, env = null )
+	$( document ).on( "change", "#triibo_api_services_gate_env", function ()
 	{
-		let hml_user = $( "#triibo_api_services_node_hml_user"     ),
-			hml_pass = $( "#triibo_api_services_node_hml_pass"     ),
-			hml_akey = $( "#triibo_api_services_node_hml_auth_key" ),
-			prd_user = $( "#triibo_api_services_node_prd_user"     ),
-			prd_pass = $( "#triibo_api_services_node_prd_pass"     ),
-			prd_akey = $( "#triibo_api_services_node_prd_auth_key" );
+		const checked   = $( this ).is( ":checked" ) ? 1 : 2;
+		const isEnabled = $( "#triibo_api_services_gate_status" ).is( ":checked" );
 
-		switch ( checked )
-		{
-			// homol enabled
-			case 1:
-				hml_user.closest( "tr" ).show();
-				hml_pass.closest( "tr" ).show();
-				hml_akey.closest( "tr" ).show();
-				prd_user.closest( "tr" ).hide();
-				prd_pass.closest( "tr" ).hide();
-				prd_akey.closest( "tr" ).hide();
-
-				prd_user.removeAttr( "required" );
-				prd_pass.removeAttr( "required" );
-				prd_akey.removeAttr( "required" );
-
-				if ( env )
-				{
-					hml_user.prop( "required", true );
-					hml_pass.prop( "required", true );
-					hml_akey.prop( "required", true );
-				}
-				else
-				{
-					hml_user.removeAttr( "required" );
-					hml_pass.removeAttr( "required" );
-					hml_akey.removeAttr( "required" );
-				}
-			break;
-
-			// prod enabled
-			case 2:
-				hml_user.closest( "tr" ).hide();
-				hml_pass.closest( "tr" ).hide();
-				hml_akey.closest( "tr" ).hide();
-				prd_user.closest( "tr" ).show();
-				prd_pass.closest( "tr" ).show();
-				prd_akey.closest( "tr" ).show();
-
-				hml_user.removeAttr( "required" );
-				hml_pass.removeAttr( "required" );
-				hml_akey.removeAttr( "required" );
-
-				if ( env )
-				{
-					prd_user.prop( "required", true );
-					prd_pass.prop( "required", true );
-					prd_akey.prop( "required", true );
-				}
-				else
-				{
-					prd_user.removeAttr( "required" );
-					prd_pass.removeAttr( "required" );
-					prd_akey.removeAttr( "required" );
-				}
-			break;
-
-			// api disabled (homol and prod)
-			case 3:
-				hml_user.removeAttr( "required" );
-				hml_pass.removeAttr( "required" );
-				hml_akey.removeAttr( "required" );
-				prd_user.removeAttr( "required" );
-				prd_pass.removeAttr( "required" );
-				prd_akey.removeAttr( "required" );
-
-				if ( env == 1 )
-				{
-					hml_user.closest( "tr" ).show();
-					hml_pass.closest( "tr" ).show();
-					hml_akey.closest( "tr" ).show();
-					prd_user.closest( "tr" ).hide();
-					prd_pass.closest( "tr" ).hide();
-					prd_akey.closest( "tr" ).hide();
-				}
-				else // 2
-				{
-					hml_user.closest( "tr" ).hide();
-					hml_pass.closest( "tr" ).hide();
-					hml_akey.closest( "tr" ).hide();
-					prd_user.closest( "tr" ).show();
-					prd_pass.closest( "tr" ).show();
-					prd_akey.closest( "tr" ).show();
-				}
-			break;
-		}
-	}
-
-	function handlerNode()
-	{
-		let node_stt = $( "#triibo_api_services_node_status" ).is( ":checked" );
-		let node_env = $( "#triibo_api_services_node_env"    ).is( ":checked" );
-
-		if ( !node_stt )
-			hideShowNode( 3, node_env ? 1 : 2 );
-		else
-			hideShowNode( node_env ? 1 : 2, node_stt );
-	}
-
-	function hideShowPhp( checked, env = null )
-	{
-		let hml_key = $( "#triibo_api_services_php_hml_key" ),
-			hml_tkn = $( "#triibo_api_services_php_hml_tkn" ),
-			prd_key = $( "#triibo_api_services_php_prd_key" ),
-			prd_tkn = $( "#triibo_api_services_php_prd_tkn" );
-
-		switch ( checked )
-		{
-			// homol enabled
-			case 1:
-				hml_key.closest( "tr" ).show();
-				hml_tkn.closest( "tr" ).show();
-				prd_key.closest( "tr" ).hide();
-				prd_tkn.closest( "tr" ).hide();
-
-				prd_key.removeAttr( "required" );
-				prd_tkn.removeAttr( "required" );
-
-				if ( env )
-				{
-					hml_key.prop( "required", true );
-					hml_tkn.prop( "required", true );
-				}
-				else
-				{
-					hml_key.removeAttr( "required" );
-					hml_tkn.removeAttr( "required" );
-				}
-			break;
-
-			// prod enabled
-			case 2:
-				hml_key.closest( "tr" ).hide();
-				hml_tkn.closest( "tr" ).hide();
-				prd_key.closest( "tr" ).show();
-				prd_tkn.closest( "tr" ).show();
-
-				hml_key.removeAttr( "required" );
-				hml_tkn.removeAttr( "required" );
-
-				if ( env )
-				{
-					prd_key.prop( "required", true );
-					prd_tkn.prop( "required", true );
-				}
-				else
-				{
-					prd_key.removeAttr( "required" );
-					prd_tkn.removeAttr( "required" );
-				}
-			break;
-
-			// api disabled (homol and prod)
-			case 3:
-				hml_key.removeAttr( "required" );
-				hml_tkn.removeAttr( "required" );
-				prd_key.removeAttr( "required" );
-				prd_tkn.removeAttr( "required" );
-
-				if ( env == 1 )
-				{
-					hml_key.closest( "tr" ).show();
-					hml_tkn.closest( "tr" ).show();
-					prd_key.closest( "tr" ).hide();
-					prd_tkn.closest( "tr" ).hide();
-				}
-				else // 2
-				{
-					hml_key.closest( "tr" ).hide();
-					hml_tkn.closest( "tr" ).hide();
-					prd_key.closest( "tr" ).show();
-					prd_tkn.closest( "tr" ).show();
-				}
-			break;
-		}
-	}
-
-	function handlerPhp()
-	{
-		let php_stt = $( "#triibo_api_services_php_status" ).is( ":checked" );
-		let php_env = $( "#triibo_api_services_php_env"    ).is( ":checked" );
-
-		if ( !php_stt )
-			hideShowPhp( 3, php_env ? 1 : 2 );
-		else
-			hideShowPhp( php_env ? 1 : 2, php_stt );
-	}
-
-	$( document ).on( "change", "#triibo_api_services_gate_env", function()
-	{
-		let checked  = $( this ).is( ":checked" ) ? 1 : 2;
-		let gate_stt = $( "#triibo_api_services_gate_status" ).is( ":checked" );
-		hideShowGate( checked, gate_stt );
+		toggleFields( "gate", checked, isEnabled );
 	} );
 
-	$( document ).on( "change", "#triibo_api_services_node_env", function()
+	$( document ).on( "change", "#triibo_api_services_node_env", function ()
 	{
-		let checked  = $( this ).is( ":checked" ) ? 1 : 2;
-		let node_stt = $( "#triibo_api_services_node_status" ).is( ":checked" );
-		hideShowNode( checked, node_stt );
+		const checked   = $( this ).is( ":checked" ) ? 1 : 2;
+		const isEnabled = $( "#triibo_api_services_node_status" ).is( ":checked" );
+
+		toggleFields( "node", checked, isEnabled );
 	} );
 
-	$( document ).on( "change", "#triibo_api_services_php_env", function()
+	$( document ).on( "change", "#triibo_api_services_php_env", function ()
 	{
-		let checked = $( this ).is( ":checked" ) ? 1 : 2;
-		let php_stt = $( "#triibo_api_services_php_status" ).is( ":checked" );
-		hideShowPhp( checked, php_stt );
+		const checked   = $( this ).is( ":checked" ) ? 1 : 2;
+		const isEnabled = $( "#triibo_api_services_php_status" ).is( ":checked" );
+
+		toggleFields( "php", checked, isEnabled );
 	} );
 
-	$( document ).on( "change", "#triibo_api_services_gate_status", function()
-	{
-		handlerGate();
-	} );
+	$( document ).on( "change", "#triibo_api_services_gate_status", function () { handler( "gate" ); } );
+	$( document ).on( "change", "#triibo_api_services_node_status", function () { handler( "node" ); } );
+	$( document ).on( "change", "#triibo_api_services_php_status",  function () { handler( "php"  ); } );
 
-	$( document ).on( "change", "#triibo_api_services_node_status", function()
+	$( document ).ready( function ()
 	{
-		handlerNode();
-	} );
+		handler( "gate" );
+		handler( "node" );
+		handler( "php"  );
 
-	$( document ).on( "change", "#triibo_api_services_php_status", function()
-	{
-		handlerPhp();
-	} );
-
-	$( document ).ready( function()
-	{
-		handlerGate();
-		handlerNode();
-		handlerPhp();
-
-		let els = $( "#triibo_api_services_gate_status" ).parent().parent().parent().parent().siblings( "h2" );
+		const els = $( "#triibo_api_services_gate_status" ).closest( "table" ).siblings( "h2" );
 
 		els.each( ( i, e ) =>
 		{
 			if ( i > 0 )
-				$( e ).css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+				$( e ).css( {
+					"border-top": "1px solid #CCC",
+					"padding-top": "2rem"
+				} );
 		} );
 	} );
-
 } )( jQuery );
