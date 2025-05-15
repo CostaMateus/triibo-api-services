@@ -1,5 +1,9 @@
 == Changelog ==
 
+= 2.0.0 - 2025/05/15 =
+
+- Serviços de APIs refatorados
+
 = 1.13.0 - 2025/03/28 =
 
 - Adicionado função que anexa produtos recém criados as respectivas imagens
