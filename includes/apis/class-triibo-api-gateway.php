@@ -467,7 +467,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      *
      * @return array
      */
-    public function get_channel_token( ?string $uid = null ) : array
+    private function get_channel_token( ?string $uid = null ) : array
     {
         $hash = $this->hash( uid: $uid );
 
@@ -639,7 +639,9 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Send code SMS.
      *
-     * @since 2.0.0     Refactored log
+     * @deprecated 2.0.0    Use Triibo_Api_Node::auth() && Triibo_Api_Node::auth_code() instead
+     * @see                 Triibo_Api_Node::auth() && Triibo_Api_Node::auth_code()
+     *
      * @since 1.1.0
      *
      * @param string    $cellphone
@@ -695,7 +697,9 @@ class Triibo_Api_Gateway extends Triibo_Api
     /**
      * Validates code SMS.
      *
-     * @since 2.0.0     Refactored log
+     * @deprecated 2.0.0    Use Triibo_Api_Node::validate_sms() instead
+     * @see                 Triibo_Api_Node::validate_sms()
+     *
      * @since 1.1.0
      *
      * @param string    $code
