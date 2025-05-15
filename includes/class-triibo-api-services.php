@@ -348,11 +348,17 @@ class Triibo_Api_Services
 				"key"   => "node_hml_pass",
 				"title" => "Senha (homol)",
 			],[
+				"key"   => "node_hml_auth_key",
+				"title" => "Auth Key (homol)",
+			],[
 				"key"   => "node_prd_user",
 				"title" => "Usuário",
 			],[
 				"key"   => "node_prd_pass",
 				"title" => "Senha",
+			],[
+				"key"   => "node_prd_auth_key",
+				"title" => "Auth Key",
 			],
 		];
 

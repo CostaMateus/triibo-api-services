@@ -93,10 +93,12 @@
 			break;
 		}
 	}
+
 	function handlerGate()
 	{
 		let gate_stt = $( "#triibo_api_services_gate_status" ).is( ":checked" );
-		let gate_env = $( "#triibo_api_services_gate_env" ).is( ":checked" );
+		let gate_env = $( "#triibo_api_services_gate_env"    ).is( ":checked" );
+
 		if ( !gate_stt )
 			hideShowGate( 3, gate_env ? 1 : 2 );
 		else
@@ -106,82 +108,105 @@
 
 	function hideShowNode( checked, env = null )
 	{
-		let hml_user = $( "#triibo_api_services_node_hml_user" ),
-			hml_pass = $( "#triibo_api_services_node_hml_pass" ),
-			prd_user = $( "#triibo_api_services_node_prd_user" ),
-			prd_pass = $( "#triibo_api_services_node_prd_pass" );
+		let hml_user = $( "#triibo_api_services_node_hml_user"     ),
+			hml_pass = $( "#triibo_api_services_node_hml_pass"     ),
+			hml_akey = $( "#triibo_api_services_node_hml_auth_key" ),
+			prd_user = $( "#triibo_api_services_node_prd_user"     ),
+			prd_pass = $( "#triibo_api_services_node_prd_pass"     ),
+			prd_akey = $( "#triibo_api_services_node_prd_auth_key" );
 
 		switch ( checked )
 		{
+			// homol enabled
 			case 1:
 				hml_user.closest( "tr" ).show();
 				hml_pass.closest( "tr" ).show();
+				hml_akey.closest( "tr" ).show();
 				prd_user.closest( "tr" ).hide();
 				prd_pass.closest( "tr" ).hide();
+				prd_akey.closest( "tr" ).hide();
 
 				prd_user.removeAttr( "required" );
 				prd_pass.removeAttr( "required" );
+				prd_akey.removeAttr( "required" );
 
 				if ( env )
 				{
 					hml_user.prop( "required", true );
 					hml_pass.prop( "required", true );
+					hml_akey.prop( "required", true );
 				}
 				else
 				{
 					hml_user.removeAttr( "required" );
 					hml_pass.removeAttr( "required" );
+					hml_akey.removeAttr( "required" );
 				}
 			break;
 
+			// prod enabled
 			case 2:
 				hml_user.closest( "tr" ).hide();
 				hml_pass.closest( "tr" ).hide();
+				hml_akey.closest( "tr" ).hide();
 				prd_user.closest( "tr" ).show();
 				prd_pass.closest( "tr" ).show();
+				prd_akey.closest( "tr" ).show();
 
 				hml_user.removeAttr( "required" );
 				hml_pass.removeAttr( "required" );
+				hml_akey.removeAttr( "required" );
 
 				if ( env )
 				{
 					prd_user.prop( "required", true );
 					prd_pass.prop( "required", true );
+					prd_akey.prop( "required", true );
 				}
 				else
 				{
 					prd_user.removeAttr( "required" );
 					prd_pass.removeAttr( "required" );
+					prd_akey.removeAttr( "required" );
 				}
 			break;
 
+			// api disabled (homol and prod)
 			case 3:
 				hml_user.removeAttr( "required" );
 				hml_pass.removeAttr( "required" );
+				hml_akey.removeAttr( "required" );
 				prd_user.removeAttr( "required" );
 				prd_pass.removeAttr( "required" );
+				prd_akey.removeAttr( "required" );
 
 				if ( env == 1 )
 				{
 					hml_user.closest( "tr" ).show();
 					hml_pass.closest( "tr" ).show();
+					hml_akey.closest( "tr" ).show();
 					prd_user.closest( "tr" ).hide();
 					prd_pass.closest( "tr" ).hide();
+					prd_akey.closest( "tr" ).hide();
 				}
 				else // 2
 				{
 					hml_user.closest( "tr" ).hide();
 					hml_pass.closest( "tr" ).hide();
+					hml_akey.closest( "tr" ).hide();
 					prd_user.closest( "tr" ).show();
 					prd_pass.closest( "tr" ).show();
+					prd_akey.closest( "tr" ).show();
 				}
 			break;
 		}
 	}
+
 	function handlerNode()
 	{
 		let node_stt = $( "#triibo_api_services_node_status" ).is( ":checked" );
 		let node_env = $( "#triibo_api_services_node_env"    ).is( ":checked" );
+
 		if ( !node_stt )
 			hideShowNode( 3, node_env ? 1 : 2 );
 		else
@@ -263,10 +288,12 @@
 			break;
 		}
 	}
+
 	function handlerPhp()
 	{
 		let php_stt = $( "#triibo_api_services_php_status" ).is( ":checked" );
 		let php_env = $( "#triibo_api_services_php_env"    ).is( ":checked" );
+
 		if ( !php_stt )
 			hideShowPhp( 3, php_env ? 1 : 2 );
 		else
@@ -274,41 +301,53 @@
 	}
 
 
-	$( document ).on( "change", "#triibo_api_services_gate_env", function() {
+	$( document ).on( "change", "#triibo_api_services_gate_env", function()
+	{
 		let checked  = $( this ).is( ":checked" ) ? 1 : 2;
 		let gate_stt = $( "#triibo_api_services_gate_status" ).is( ":checked" );
 		hideShowGate( checked, gate_stt );
 	} );
-	$( document ).on( "change", "#triibo_api_services_node_env", function() {
+
+	$( document ).on( "change", "#triibo_api_services_node_env", function()
+	{
 		let checked  = $( this ).is( ":checked" ) ? 1 : 2;
 		let node_stt = $( "#triibo_api_services_node_status" ).is( ":checked" );
 		hideShowNode( checked, node_stt );
 	} );
-	$( document ).on( "change", "#triibo_api_services_php_env", function() {
+
+	$( document ).on( "change", "#triibo_api_services_php_env", function()
+	{
 		let checked = $( this ).is( ":checked" ) ? 1 : 2;
 		let php_stt = $( "#triibo_api_services_php_status" ).is( ":checked" );
 		hideShowPhp( checked, php_stt );
 	} );
 
-	$( document ).on( "change", "#triibo_api_services_gate_status", function() {
+	$( document ).on( "change", "#triibo_api_services_gate_status", function()
+	{
 		handlerGate();
 	} );
-	$( document ).on( "change", "#triibo_api_services_node_status", function() {
+	$( document ).on( "change", "#triibo_api_services_node_status", function()
+	{
 		handlerNode();
 	} );
-	$( document ).on( "change", "#triibo_api_services_php_status", function() {
+	$( document ).on( "change", "#triibo_api_services_php_status", function()
+	{
 		handlerPhp();
 	} );
 
-	$( document ).ready( function() {
+	$( document ).ready( function()
+	{
 		handlerGate();
 		handlerNode();
 		handlerPhp();
 
 		let els = $( "#triibo_api_services_gate_status" ).parent().parent().parent().parent().siblings( "h2" );
-		els.each( ( i, e ) => {
-			if ( i > 0 ) $( e ).css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
-		});
+
+		els.each( ( i, e ) =>
+		{
+			if ( i > 0 )
+				$( e ).css( "border-top", "1px solid #CCC" ).css( "padding-top", "2rem" );
+		} );
 	} );
 
 } )( jQuery );
