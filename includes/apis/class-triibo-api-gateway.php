@@ -360,15 +360,14 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function process_terms( array $terms ) : array
     {
-        // TODO: transformar em 'option'
-        $id        = "-Kzj_F6wDcfHkLMO_q4c";
-        $term_text = "Termos de Uso da Triibo";
+        $option_id   = ( $this->env() ) ? "triibo_api_services_gate_hml_optin_id"  : "triibo_api_services_gate_prd_optin_id";
+        $option_text = ( $this->env() ) ? "triibo_api_services_gate_hml_optin_txt" : "triibo_api_services_gate_prd_optin_txt";
 
-        $term      = [
+        $term        = [
             "accept"         => true,
             "dateAcceptance" => time() * 1000,
-            "optInId"        => $id,
-            "type"           => $term_text,
+            "optInId"        => get_option( option: $option_id   ),
+            "type"           => get_option( option: $option_text ),
             "version"        => 1
         ];
 

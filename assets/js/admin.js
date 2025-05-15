@@ -1,94 +1,135 @@
-( function ( $ ) {
+( function ( $ )
+{
 	"use strict";
 
 	function hideShowGate( checked, env = null )
 	{
-		let hml_tkn____ = $( "#triibo_api_services_gate_hml_tkn"     ),
-			hml_chn_id_ = $( "#triibo_api_services_gate_hml_chn_id"  ),
-			hml_chn_tkn = $( "#triibo_api_services_gate_hml_chn_tkn" ),
-			prd_tkn____ = $( "#triibo_api_services_gate_prd_tkn"     ),
-			prd_chn_id_ = $( "#triibo_api_services_gate_prd_chn_id"  ),
-			prd_chn_tkn = $( "#triibo_api_services_gate_prd_chn_tkn" );
+		let hml_tkn______ = $( "#triibo_api_services_gate_hml_tkn"       ),
+			hml_chn_id___ = $( "#triibo_api_services_gate_hml_chn_id"    ),
+			hml_chn_tkn__ = $( "#triibo_api_services_gate_hml_chn_tkn"   ),
+			hml_optin_id_ = $( "#triibo_api_services_gate_hml_optin_id"  ),
+			hml_optin_txt = $( "#triibo_api_services_gate_hml_optin_txt" ),
+
+			prd_tkn______ = $( "#triibo_api_services_gate_prd_tkn"       ),
+			prd_chn_id___ = $( "#triibo_api_services_gate_prd_chn_id"    ),
+			prd_chn_tkn__ = $( "#triibo_api_services_gate_prd_chn_tkn"   ),
+			prd_optin_id_ = $( "#triibo_api_services_gate_prd_optin_id"  ),
+			prd_optin_txt = $( "#triibo_api_services_gate_prd_optin_txt" );
 
 		switch ( checked )
 		{
+			// homol enabled
 			case 1:
-				hml_tkn____.closest( "tr" ).show();
-				hml_chn_id_.closest( "tr" ).show();
-				hml_chn_tkn.closest( "tr" ).show();
-				prd_tkn____.closest( "tr" ).hide();
-				prd_chn_id_.closest( "tr" ).hide();
-				prd_chn_tkn.closest( "tr" ).hide();
+				hml_tkn______.closest( "tr" ).show();
+				hml_chn_id___.closest( "tr" ).show();
+				hml_chn_tkn__.closest( "tr" ).show();
+				hml_optin_id_.closest( "tr" ).show();
+				hml_optin_txt.closest( "tr" ).show();
+				prd_tkn______.closest( "tr" ).hide();
+				prd_chn_id___.closest( "tr" ).hide();
+				prd_chn_tkn__.closest( "tr" ).hide();
+				prd_optin_id_.closest( "tr" ).hide();
+				prd_optin_txt.closest( "tr" ).hide();
 
-				prd_tkn____.removeAttr( "required" );
-				prd_chn_id_.removeAttr( "required" );
-				prd_chn_tkn.removeAttr( "required" );
+				prd_tkn______.removeAttr( "required" );
+				prd_chn_id___.removeAttr( "required" );
+				prd_chn_tkn__.removeAttr( "required" );
+				prd_optin_id_.removeAttr( "required" );
+				prd_optin_txt.removeAttr( "required" );
 
 				if ( env )
 				{
-					hml_tkn____.prop( "required", true );
-					hml_chn_id_.prop( "required", true );
-					hml_chn_tkn.prop( "required", true );
+					hml_tkn______.prop( "required", true );
+					hml_chn_id___.prop( "required", true );
+					hml_chn_tkn__.prop( "required", true );
+					hml_optin_id_.prop( "required", true );
+					hml_optin_txt.prop( "required", true );
 				}
 				else
 				{
-					hml_tkn____.removeAttr( "required" );
-					hml_chn_id_.removeAttr( "required" );
-					hml_chn_tkn.removeAttr( "required" );
+					hml_tkn______.removeAttr( "required" );
+					hml_chn_id___.removeAttr( "required" );
+					hml_chn_tkn__.removeAttr( "required" );
+					hml_optin_id_.removeAttr( "required" );
+					hml_optin_txt.removeAttr( "required" );
 				}
 			break;
 
+			// prod enabled
 			case 2:
-				hml_tkn____.closest( "tr" ).hide();
-				hml_chn_id_.closest( "tr" ).hide();
-				hml_chn_tkn.closest( "tr" ).hide();
-				prd_tkn____.closest( "tr" ).show();
-				prd_chn_id_.closest( "tr" ).show();
-				prd_chn_tkn.closest( "tr" ).show();
+				hml_tkn______.closest( "tr" ).hide();
+				hml_chn_id___.closest( "tr" ).hide();
+				hml_chn_tkn__.closest( "tr" ).hide();
+				hml_optin_id_.closest( "tr" ).hide();
+				hml_optin_txt.closest( "tr" ).hide();
+				prd_tkn______.closest( "tr" ).show();
+				prd_chn_id___.closest( "tr" ).show();
+				prd_chn_tkn__.closest( "tr" ).show();
+				prd_optin_id_.closest( "tr" ).show();
+				prd_optin_txt.closest( "tr" ).show();
 
-				hml_tkn____.removeAttr( "required" );
-				hml_chn_id_.removeAttr( "required" );
-				hml_chn_tkn.removeAttr( "required" );
+				hml_tkn______.removeAttr( "required" );
+				hml_chn_id___.removeAttr( "required" );
+				hml_chn_tkn__.removeAttr( "required" );
+				hml_optin_id_.removeAttr( "required" );
+				hml_optin_txt.removeAttr( "required" );
 
 				if ( env )
 				{
-					prd_tkn____.prop( "required", true );
-					prd_chn_id_.prop( "required", true );
-					prd_chn_tkn.prop( "required", true );
+					prd_tkn______.prop( "required", true );
+					prd_chn_id___.prop( "required", true );
+					prd_chn_tkn__.prop( "required", true );
+					prd_optin_id_.prop( "required", true );
+					prd_optin_txt.prop( "required", true );
 				}
 				else
 				{
-					prd_tkn____.removeAttr( "required" );
-					prd_chn_id_.removeAttr( "required" );
-					prd_chn_tkn.removeAttr( "required" );
+					prd_tkn______.removeAttr( "required" );
+					prd_chn_id___.removeAttr( "required" );
+					prd_chn_tkn__.removeAttr( "required" );
+					prd_optin_id_.removeAttr( "required" );
+					prd_optin_txt.removeAttr( "required" );
 				}
 			break;
 
+			// api disabled (homol and prod)
 			case 3:
-				hml_tkn____.removeAttr( "required" );
-				hml_chn_id_.removeAttr( "required" );
-				hml_chn_tkn.removeAttr( "required" );
-				prd_tkn____.removeAttr( "required" );
-				prd_chn_id_.removeAttr( "required" );
-				prd_chn_tkn.removeAttr( "required" );
+				hml_tkn______.removeAttr( "required" );
+				hml_chn_id___.removeAttr( "required" );
+				hml_chn_tkn__.removeAttr( "required" );
+				hml_optin_id_.removeAttr( "required" );
+				hml_optin_txt.removeAttr( "required" );
+				prd_tkn______.removeAttr( "required" );
+				prd_chn_id___.removeAttr( "required" );
+				prd_chn_tkn__.removeAttr( "required" );
+				prd_optin_id_.removeAttr( "required" );
+				prd_optin_txt.removeAttr( "required" );
 
 				if ( env == 1 )
 				{
-					hml_tkn____.closest( "tr" ).show();
-					hml_chn_id_.closest( "tr" ).show();
-					hml_chn_tkn.closest( "tr" ).show();
-					prd_tkn____.closest( "tr" ).hide();
-					prd_chn_id_.closest( "tr" ).hide();
-					prd_chn_tkn.closest( "tr" ).hide();
+					hml_tkn______.closest( "tr" ).show();
+					hml_chn_id___.closest( "tr" ).show();
+					hml_chn_tkn__.closest( "tr" ).show();
+					hml_optin_id_.closest( "tr" ).show();
+					hml_optin_txt.closest( "tr" ).show();
+					prd_tkn______.closest( "tr" ).hide();
+					prd_chn_id___.closest( "tr" ).hide();
+					prd_chn_tkn__.closest( "tr" ).hide();
+					prd_optin_id_.closest( "tr" ).hide();
+					prd_optin_txt.closest( "tr" ).hide();
 				}
 				else // 2
 				{
-					hml_tkn____.closest( "tr" ).hide();
-					hml_chn_id_.closest( "tr" ).hide();
-					hml_chn_tkn.closest( "tr" ).hide();
-					prd_tkn____.closest( "tr" ).show();
-					prd_chn_id_.closest( "tr" ).show();
-					prd_chn_tkn.closest( "tr" ).show();
+					hml_tkn______.closest( "tr" ).hide();
+					hml_chn_id___.closest( "tr" ).hide();
+					hml_chn_tkn__.closest( "tr" ).hide();
+					hml_optin_id_.closest( "tr" ).hide();
+					hml_optin_txt.closest( "tr" ).hide();
+					prd_tkn______.closest( "tr" ).show();
+					prd_chn_id___.closest( "tr" ).show();
+					prd_chn_tkn__.closest( "tr" ).show();
+					prd_optin_id_.closest( "tr" ).show();
+					prd_optin_txt.closest( "tr" ).show();
 				}
 			break;
 		}
@@ -104,7 +145,6 @@
 		else
 			hideShowGate( gate_env ? 1 : 2, gate_stt );
 	}
-
 
 	function hideShowNode( checked, env = null )
 	{
@@ -213,7 +253,6 @@
 			hideShowNode( node_env ? 1 : 2, node_stt );
 	}
 
-
 	function hideShowPhp( checked, env = null )
 	{
 		let hml_key = $( "#triibo_api_services_php_hml_key" ),
@@ -223,6 +262,7 @@
 
 		switch ( checked )
 		{
+			// homol enabled
 			case 1:
 				hml_key.closest( "tr" ).show();
 				hml_tkn.closest( "tr" ).show();
@@ -244,6 +284,7 @@
 				}
 			break;
 
+			// prod enabled
 			case 2:
 				hml_key.closest( "tr" ).hide();
 				hml_tkn.closest( "tr" ).hide();
@@ -265,6 +306,7 @@
 				}
 			break;
 
+			// api disabled (homol and prod)
 			case 3:
 				hml_key.removeAttr( "required" );
 				hml_tkn.removeAttr( "required" );
@@ -300,7 +342,6 @@
 			hideShowPhp( php_env ? 1 : 2, php_stt );
 	}
 
-
 	$( document ).on( "change", "#triibo_api_services_gate_env", function()
 	{
 		let checked  = $( this ).is( ":checked" ) ? 1 : 2;
@@ -326,10 +367,12 @@
 	{
 		handlerGate();
 	} );
+
 	$( document ).on( "change", "#triibo_api_services_node_status", function()
 	{
 		handlerNode();
 	} );
+
 	$( document ).on( "change", "#triibo_api_services_php_status", function()
 	{
 		handlerPhp();

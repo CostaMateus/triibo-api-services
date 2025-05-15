@@ -320,6 +320,12 @@ class Triibo_Api_Services
 				"key"   => "gate_hml_chn_tkn",
 				"title" => "Channel Token (homol)",
 			],[
+				"key"   => "gate_hml_optin_id",
+				"title" => "OptIn ID (homol)",
+			],[
+				"key"   => "gate_hml_optin_txt",
+				"title" => "OptIn Texto (homol)",
+			],[
 				"key"   => "gate_prd_tkn",
 				"title" => "Token",
 			],[
@@ -328,6 +334,12 @@ class Triibo_Api_Services
 			],[
 				"key"   => "gate_prd_chn_tkn",
 				"title" => "Channel Token",
+			],[
+				"key"   => "gate_prd_optin_id",
+				"title" => "OptIn ID",
+			],[
+				"key"   => "gate_prd_optin_txt",
+				"title" => "OptIn Texto",
 			],
 		];
 
