@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Plugin Name: 			#Triibo_API_Services
  * Plugin URI: 				https://triibo.com.br
@@ -12,8 +13,9 @@
  * WC requires at least: 	8.0
  * WC tested up to: 		8.2
  *
- * @package 	Triibo_Api_Services
- * @version 	2.0.0
+ * @package Triibo_Api_Services
+ *
+ * @version 2.0.0
  */
 defined( "ABSPATH" ) || exit;
 
