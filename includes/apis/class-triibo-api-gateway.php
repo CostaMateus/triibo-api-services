@@ -491,30 +491,21 @@ class Triibo_Api_Gateway extends Triibo_Api
      * @since 1.0.0
      *
      * @param string    $triibo_id
-     * @param integer   $value
+     * @param float     $value
      * @param string    $event
      *
      * @return array
      */
-    public function credit_points( string $triibo_id, int $value, string $event ) : array
+    public function credit_points( string $triibo_id, float $value, string $event ) : array
     {
-        // TODO: transformar em 'option'
-        $events = [
-            "Compra_Marketplace",
-            "Assinatura_Triibo_Vip",
-            "Assinatura_Triibo_Vip_Plano_2",
-            "Assinatura_Triibo_Vip_Plano_3",
-
-            "Assinatura_Triibo_Vip_Plano_4",
-            "Assinatura_Triibo_Vip_Plano_5",
-            "Assinatura_Triibo_Vip_Plano_6",
-        ];
+        $events = apply_filters( "triibo_events_valid_events", [] );
 
         if ( !in_array( $event, $events ) )
         {
             return [
                 "success" => false,
-                "event"   => "Not found"
+                "event"   => $event,
+                "message" => "Evento não suportado."
             ];
         }
 
