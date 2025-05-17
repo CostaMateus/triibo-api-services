@@ -8,10 +8,10 @@
  * Author URI: 				https://costamateus.com.br/
  * Version: 				2.0.0
  * Text Domain: 			triibo-api-services
- * Requires at least: 		6.4
+ * Requires at least: 		6.6
  * Requires PHP: 			8.0
- * WC requires at least: 	8.0
- * WC tested up to: 		8.2
+ * WC requires at least: 	8.7.1
+ * WC tested up to: 		9.8.0
  *
  * @package Triibo_Api_Services
  *
