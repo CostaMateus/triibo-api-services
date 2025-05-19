@@ -10,7 +10,7 @@
  * @since 1.0.0
  * @version 2.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
 class Triibo_Api_Gateway extends Triibo_Api
 {
@@ -114,15 +114,6 @@ class Triibo_Api_Gateway extends Triibo_Api
     const DEL_USER_ORG  = "/removeUserOrgs";
 
     /**
-     * Option name for system UID.
-     *
-     * @since 1.14.0
-     *
-     * @var string
-     */
-    const SYS_UID_OPTION = "gateway_sys_uid";
-
-    /**
 	 * Internal ID for log.
 	 *
 	 * @since 2.0.0 	Same visibility as the parent
@@ -208,16 +199,27 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function __construct()
     {
-        $this->status = get_option( "triibo_api_services_gate_status" );
-        $this->env    = get_option( "triibo_api_services_gate_env"    );
+        $this->status = get_option( option: "triibo_api_services_gate_status" );
+        $this->env    = get_option( option: "triibo_api_services_gate_env"    );
 
         if ( $this->status() )
         {
             $this->url     = "https://triibo-api-gateway" . ( $this->env() ? "-hml" : "" ) . ".triibo.com.br";
 
-            $this->token   = $this->env() ? get_option( "triibo_api_services_gate_hml_tkn"     ) : get_option( "triibo_api_services_gate_prd_tkn"     );
-            $this->chn_id  = $this->env() ? get_option( "triibo_api_services_gate_hml_chn_id"  ) : get_option( "triibo_api_services_gate_prd_chn_id"  );
-            $this->chn_tkn = $this->env() ? get_option( "triibo_api_services_gate_hml_chn_tkn" ) : get_option( "triibo_api_services_gate_prd_chn_tkn" );
+            $opt_token     = "triibo_api_services_gate_hml_tkn";
+            $opt_chn_id    = "triibo_api_services_gate_hml_chn_id";
+            $opt_chn_tkn   = "triibo_api_services_gate_hml_chn_tkn";
+
+            if ( ! $this->env() )
+            {
+                $opt_token   = "triibo_api_services_gate_prd_tkn";
+                $opt_chn_id  = "triibo_api_services_gate_prd_chn_id";
+                $opt_chn_tkn = "triibo_api_services_gate_prd_chn_tkn";
+            }
+
+            $this->token   = get_option( option: $opt_token   );
+            $this->chn_id  = get_option( option: $opt_chn_id  );
+            $this->chn_tkn = get_option( option: $opt_chn_tkn );
 
             $this->header  = [
                 "channelName"   => self::GP_NM,
@@ -280,10 +282,10 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function hash( ?string $uid = null ) : array
     {
-        $passPhrase = floor( rand( 1000000000, 9999999999 ) ) . $uid . floor( rand( 1000000000, 9999999999 ) );
+        $passPhrase = floor( num: rand( min: 1000000000, max: 9999999999 ) ) . $uid . floor( num: rand( min: 1000000000, max: 9999999999 ) );
 
-        $challenge1 = md5( $passPhrase . $this->token   );
-        $challenge2 = md5( $challenge1 . $this->chn_tkn );
+        $challenge1 = md5( string: $passPhrase . $this->token   );
+        $challenge2 = md5( string: $challenge1 . $this->chn_tkn );
 
         return [
             "passPhrase" => $passPhrase,
@@ -304,7 +306,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function process_contact_list( array $contact, string $email, string $action ) : array
     {
-        $key      = array_search( "emailMarketplace", array_column( $contact, "type" ) );
+        $key      = array_search( needle: "emailMarketplace", haystack: array_column( array: $contact, column_name: "type" ) );
         $verified = false;
 
         // email marketplace
@@ -324,21 +326,21 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
         else
         {
-            array_push( $contact, [
+            array_push( array: $contact, values: [
                 "type"     => "emailMarketplace",
                 "value"    => $email,
                 "verified" => false
             ] );
         }
 
-        if ( in_array( $action, [ "UPDATE", "CREATE" ] ) )
+        if ( in_array( needle: $action, haystack: [ "UPDATE", "CREATE" ] ) )
         {
-            $key = array_search( "email", array_column( $contact, "type" ) );
+            $key = array_search( needle: "email", haystack: array_column( array: $contact, column_name: "type" ) );
 
             // email
             if ( $key === false )
             {
-                array_push( $contact, [
+                array_push( array: $contact, values: [
                     "type"     => "email",
                     "value"    => $email,
                     "verified" => $verified
@@ -371,13 +373,13 @@ class Triibo_Api_Gateway extends Triibo_Api
             "version"        => 1
         ];
 
-        if ( count( $terms ) == 0 )
+        if ( count( value: $terms ) == 0 )
         {
             $terms = [ $term ];
         }
         else
         {
-            $key = array_search( $id, array_column( $terms, "optInId" ) );
+            $key = array_search( needle: $option_id, haystack: array_column( array: $terms, column_name: "optInId" ) );
 
             if ( $key !== false )
             {
@@ -386,7 +388,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             }
             else
             {
-                array_push( $terms, $term );
+                array_push( array: $terms, values: [ $term ] );
             }
         }
 
@@ -407,7 +409,10 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function process_org( string $endpoint, string $uid, string $org_id ) : array
     {
-        $response = $this->get_channel_token( uid: self::SYS_UID );
+        $opt_sys_uid = ( $this->env() ) ? "triibo_api_services_gate_hml_sys_uid" : "triibo_api_services_gate_prd_sys_uid";
+        $sys_uid     = get_option( option: $opt_sys_uid );
+
+        $response    = $this->get_channel_token( uid: $sys_uid );
 
         if ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) )
         {
@@ -429,19 +434,19 @@ class Triibo_Api_Gateway extends Triibo_Api
         $this->add_header(
             add: [
                 "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
-                "uId"            => self::SYS_UID,
+                "uId"            => $sys_uid,
             ]
         );
 
-        $params   = [
+        $params      = [
             "triiboHeader" => $this->get_header(),
             "orgID"        => $org_id,
             "uId"          => $uid,
         ];
 
-        $response = $this->call( endpoint: $endpoint, params: $params );
+        $response    = $this->call( endpoint: $endpoint, params: $params );
 
-        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+        $error       = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
 
         $this->log(
             is_error: $error,
@@ -498,9 +503,9 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     public function credit_points( string $triibo_id, float $value, string $event ) : array
     {
-        $events = apply_filters( "triibo_events_valid_events", [] );
+        $events = apply_filters( hook_name: "triibo_events_valid_events", value: [] );
 
-        if ( !in_array( $event, $events ) )
+        if ( !in_array( needle: $event, haystack: $events ) )
         {
             return [
                 "success" => false,
@@ -658,7 +663,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
         $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
@@ -719,7 +724,7 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $cellphone = "+" . preg_replace( "/\D/", "", $cellphone );
+        $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
         $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
 
@@ -791,7 +796,7 @@ class Triibo_Api_Gateway extends Triibo_Api
                 "contactList" => [
                     [
                         "type"  => "cellPhone",
-                        "value" => "+" . preg_replace( "/\D/", "", $data )
+                        "value" => "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $data )
                     ]
                 ]
             ];

@@ -10,7 +10,7 @@
  * @since 1.0.0
  * @version 2.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
 abstract class Triibo_Api
 {
@@ -146,7 +146,7 @@ abstract class Triibo_Api
 	 */
 	protected function add_header( string|array $add ) : void
 	{
-		if ( is_string( $add ) )
+		if ( is_string( value: $add ) )
 			$add = [ $add ];
 
 		$this->header = array_merge( $this->header, $add );
@@ -163,19 +163,19 @@ abstract class Triibo_Api
      */
 	public function empty( string $attr ) : bool
 	{
-		if ( ! property_exists( $this, $attr ) )
+		if ( ! property_exists( object_or_class: $this, property: $attr ) )
 			return false;
 
 		if ( ! isset( $this->{$attr} ) )
 			return false;
 
-		if ( is_array( $this->{$attr} ) )
+		if ( is_array( value: $this->{$attr} ) )
 			return empty( $this->{$attr} );
 
-		if ( is_string( $this->{$attr} ) )
-			return empty( trim( $this->{$attr} ) );
+		if ( is_string( value: $this->{$attr} ) )
+			return empty( trim( string: $this->{$attr} ) );
 
-		if ( is_bool( $this->{$attr} ) )
+		if ( is_bool( value: $this->{$attr} ) )
 			return empty( $this->{$attr} );
 
 		return empty( $this->{$attr} );
@@ -244,30 +244,33 @@ abstract class Triibo_Api
 				];
 			}
 
-			$params = ( ! empty( $params ) ) ? json_encode( $params ) : null;
+			$params = ( ! empty( $params ) ) ? json_encode( value: $params ) : null;
 
-			curl_setopt_array( $curl, [
-				CURLOPT_URL            => $endpoint,
-				CURLOPT_RETURNTRANSFER => TRUE,
-				CURLOPT_ENCODING       => "",
-				CURLOPT_MAXREDIRS      => 5,
-				CURLOPT_TIMEOUT        => 60,
-				CURLOPT_FOLLOWLOCATION => TRUE,
-				CURLOPT_SSL_VERIFYPEER => TRUE,
-				CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
-				CURLOPT_CUSTOMREQUEST  => $method,
-				CURLOPT_POSTFIELDS     => $params,
-				CURLOPT_HTTPHEADER     => $header,
-			] );
+			curl_setopt_array(
+				handle : $curl,
+				options: [
+					CURLOPT_URL            => $endpoint,
+					CURLOPT_RETURNTRANSFER => TRUE,
+					CURLOPT_ENCODING       => "",
+					CURLOPT_MAXREDIRS      => 5,
+					CURLOPT_TIMEOUT        => 60,
+					CURLOPT_FOLLOWLOCATION => TRUE,
+					CURLOPT_SSL_VERIFYPEER => TRUE,
+					CURLOPT_HTTP_VERSION   => CURL_HTTP_VERSION_1_1,
+					CURLOPT_CUSTOMREQUEST  => $method,
+					CURLOPT_POSTFIELDS     => $params,
+					CURLOPT_HTTPHEADER     => $header,
+				]
+			);
 
-			$response = curl_exec( $curl );
-			$info     = curl_getinfo( $curl );
+			$response = curl_exec( handle: $curl );
+			$info     = curl_getinfo( handle: $curl );
 
 			$data_log[ "info" ] = $info;
 
 			if ( empty( $response ) )
 			{
-				$message = "cURL Error: " . curl_error( $curl );
+				$message = "cURL Error: " . curl_error( handle: $curl );
 
 				$this->log(
 					is_error: true,
@@ -276,7 +279,7 @@ abstract class Triibo_Api
 					context : [ "data" => $data_log ]
 				);
 
-				curl_close( $curl );
+				curl_close( handle: $curl );
 
 				return [
 					"code"    => 400, // "500.2",
@@ -287,11 +290,11 @@ abstract class Triibo_Api
 				];
 			}
 
-			$decoded  = json_decode( $response, true );
+			$decoded  = json_decode( json: $response, associative: true );
 
 			$data_log[ "response" ] = $decoded;
 
-			curl_close( $curl );
+			curl_close( handle: $curl );
 
 			if ( empty( $info[ "http_code" ] ) )
 			{
@@ -403,7 +406,7 @@ abstract class Triibo_Api
     public function log( string $level = "info", string $message, array $context = [], bool $is_error = false ) : void
     {
 		// Use WooCommerce logger if available
-        $logger  = function_exists( "wc_get_logger" )
+        $logger  = function_exists( function: "wc_get_logger" )
 			? wc_get_logger()
 			: new WC_Logger();
 

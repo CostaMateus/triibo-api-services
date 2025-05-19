@@ -10,7 +10,7 @@
  * @since 1.0.0
  * @version 2.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
 class Triibo_Api_Php extends Triibo_Api
 {

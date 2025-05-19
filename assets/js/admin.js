@@ -9,6 +9,7 @@
 			"tkn", // php too
 			"chn_id",
 			"chn_tkn",
+			"sys_uid",
 			"optin_id",
 			"optin_txt",
 

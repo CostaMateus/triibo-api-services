@@ -9,7 +9,7 @@
  * @since 1.0.0
  * @version 2.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
 /**
  * The core plugin class.
@@ -88,9 +88,9 @@ class Triibo_Api_Services
 	public function __construct()
 	{
 		$this->plugin_name = self::$name;
-		$this->version     = defined( "TRIIBO_API_SERVICES_VERSION" ) ? TRIIBO_API_SERVICES_VERSION : "1.0.0";
+		$this->version     = defined( constant_name: "TRIIBO_API_SERVICES_VERSION" ) ? TRIIBO_API_SERVICES_VERSION : "1.0.0";
 
-		require_once( plugin_dir_path( file: dirname( __FILE__ ) ) . "includes/class-triibo-api-services-loader.php" );
+		require_once( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "includes/class-triibo-api-services-loader.php" );
 
 		$this->loader      = new Triibo_Api_Services_Loader();
 		$this->loader->add_action( hook: "admin_enqueue_scripts", component: $this, callback: "enqueue_styles"  );
@@ -99,10 +99,10 @@ class Triibo_Api_Services
 		$this->add_actions();
 		$this->add_filters();
 
-		require_once( plugin_dir_path( file: dirname( __FILE__ ) ) . "includes/apis/class-triibo-api.php"         );
-		require_once( plugin_dir_path( file: dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
-		require_once( plugin_dir_path( file: dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-node.php"    );
-		require_once( plugin_dir_path( file: dirname( __FILE__ ) ) . "includes/apis/class-triibo-api-php.php"     );
+		require_once( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "includes/apis/class-triibo-api.php"         );
+		require_once( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "includes/apis/class-triibo-api-gateway.php" );
+		require_once( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "includes/apis/class-triibo-api-node.php"    );
+		require_once( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "includes/apis/class-triibo-api-php.php"     );
 	}
 
 	/**
@@ -134,7 +134,7 @@ class Triibo_Api_Services
 	{
 		wp_enqueue_style(
 			handle: $this->plugin_name,
-			src   : plugin_dir_url( dirname( __FILE__ ) ) . "assets/css/admin.css",
+			src   : plugin_dir_url( file: dirname( path: __FILE__ ) ) . "assets/css/admin.css",
 			deps  : [],
 			ver   : $this->version,
 			media : "all"
@@ -152,7 +152,7 @@ class Triibo_Api_Services
 	{
 		wp_enqueue_script(
 			handle: $this->plugin_name,
-			src   : plugin_dir_url( dirname( __FILE__ ) ) . "assets/js/admin.js",
+			src   : plugin_dir_url( file: dirname( path: __FILE__ ) ) . "assets/js/admin.js",
 			deps  : [ "jquery" ],
 			ver   : $this->version,
 			args  : false
@@ -228,7 +228,7 @@ class Triibo_Api_Services
 	 */
 	public function display_admin_menu() : void
 	{
-		if ( !current_user_can( "manage_options" ) )
+		if ( !current_user_can( capability: "manage_options" ) )
 			wp_die( message: __( text: "Você não tem permissões suficientes para acessar esta página." ) );
 
 		$active_tab = isset( $_GET[ "tab" ] ) ? $_GET[ "tab" ] : "general";
@@ -239,7 +239,7 @@ class Triibo_Api_Services
 			do_action( hook_name: "admin_notices", arg: $_GET[ "error_message" ] );
 		}
 
-		require_once ( plugin_dir_path( file: dirname( __FILE__ ) ) . "templates/{$this->plugin_name}-admin-display.php" );
+		require_once ( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "templates/{$this->plugin_name}-admin-display.php" );
 	}
 
 	/**
@@ -249,18 +249,18 @@ class Triibo_Api_Services
 	 */
 	public function display_admin_menu_settings() : void
 	{
-		if ( !current_user_can( "manage_options" ) )
+		if ( !current_user_can( capability: "manage_options" ) )
 			wp_die( message: __( text: "Você não tem permissões suficientes para acessar esta página." ) );
 
 		$active_tab = isset( $_GET[ "tab" ] ) ? $_GET[ "tab" ] : "general";
 
 		if ( isset( $_GET[ "error_message" ] ) )
 		{
-			add_action( "admin_notices", [ $this, "triibo_api_services_settings_messages" ] );
-			do_action( "admin_notices", $_GET[ "error_message" ] );
+			add_action( hook_name: "admin_notices", callback: [ $this, "triibo_api_services_settings_messages" ] );
+			do_action( hook_name: "admin_notices", arg: $_GET[ "error_message" ] );
 		}
 
-		require_once ( plugin_dir_path( dirname( __FILE__ ) ) . "templates/" . $this->plugin_name . "-admin-settings-display.php" );
+		require_once ( plugin_dir_path( file: dirname( path: __FILE__ ) ) . "templates/" . $this->plugin_name . "-admin-settings-display.php" );
 	}
 
 	/**
@@ -320,6 +320,9 @@ class Triibo_Api_Services
 				"key"   => "gate_hml_chn_tkn",
 				"title" => "Channel Token (homol)",
 			],[
+				"key"   => "gate_hml_sys_uid",
+				"title" => "System UID (homol)",
+			],[
 				"key"   => "gate_hml_optin_id",
 				"title" => "OptIn ID (homol)",
 			],[
@@ -334,6 +337,9 @@ class Triibo_Api_Services
 			],[
 				"key"   => "gate_prd_chn_tkn",
 				"title" => "Channel Token",
+			],[
+				"key"   => "gate_prd_sys_uid",
+				"title" => "System UID",
 			],[
 				"key"   => "gate_prd_optin_id",
 				"title" => "OptIn ID",
@@ -489,8 +495,8 @@ class Triibo_Api_Services
 			section : $section,
 			args    : [
 				"type"             => "input",
-				"subtype"          => ( in_array( $index, [ 0, 1 ] ) ) ? "checkbox"        : "text",
-				"label"            => ( in_array( $index, [ 0, 1 ] ) ) ? $field[ "label" ] : "",
+				"subtype"          => ( in_array( needle: $index, haystack: [ 0, 1 ] ) ) ? "checkbox"        : "text",
+				"label"            => ( in_array( needle: $index, haystack: [ 0, 1 ] ) ) ? $field[ "label" ] : "",
 				"value"            => ( $index == 1 ) ? $field[ "value" ] : "",
 				"id"               => $id,
 				"name"             => $id,
@@ -529,21 +535,21 @@ class Triibo_Api_Services
 	 */
 	public function message_section( $args ) : void
 	{
-		if ( strpos( $args[ "id" ], "gateway" ) !== false )
+		if ( strpos( haystack: $args[ "id" ], needle: "gateway" ) !== false )
 		{
 			echo "<p>Configurações da API Gateway</p>";
 			echo "<p>Plugins que usam essa API:</p>";
 			do_action( hook_name: "triibo_api_service_list_plugin_gate" );
 		}
 
-		if ( strpos( $args[ "id" ], "node"    ) !== false )
+		if ( strpos( haystack: $args[ "id" ], needle: "node"    ) !== false )
 		{
 			echo "<p>Configurações da API Node</p>";
 			echo "<p>Plugins que usam essa API:</p>";
 			do_action( hook_name: "triibo_api_service_list_plugin_node" );
 		}
 
-		if ( strpos( $args[ "id" ], "php"     ) !== false )
+		if ( strpos( haystack: $args[ "id" ], needle: "php"     ) !== false )
 		{
 			echo "<p>Configurações da API PHP</p>";
 			echo "<p>Plugins que usam essa API:</p>";
@@ -576,11 +582,11 @@ class Triibo_Api_Services
 			case "input":
 				$status = 0;
 
-				if ( strpos( $args[ "id" ], "gateway" ) !== false ) $status = get_option( option: "triibo_api_services_gate_status" );
-				if ( strpos( $args[ "id" ], "node"    ) !== false ) $status = get_option( option: "triibo_api_services_node_status" );
-				if ( strpos( $args[ "id" ], "php"     ) !== false ) $status = get_option( option: "triibo_api_services_php_status"  );
+				if ( strpos( haystack: $args[ "id" ], needle: "gateway" ) !== false ) $status = get_option( option: "triibo_api_services_gate_status" );
+				if ( strpos( haystack: $args[ "id" ], needle: "node"    ) !== false ) $status = get_option( option: "triibo_api_services_node_status" );
+				if ( strpos( haystack: $args[ "id" ], needle: "php"     ) !== false ) $status = get_option( option: "triibo_api_services_php_status"  );
 
-				$value = ( $args[ "value_type" ] == "serialized" ) ? serialize( $wp_data_value ) : $wp_data_value;
+				$value = ( $args[ "value_type" ] == "serialized" ) ? serialize( value: $wp_data_value ) : $wp_data_value;
 
 				if ( $args[ "subtype" ] != "checkbox" )
 				{
@@ -649,7 +655,7 @@ class Triibo_Api_Services
 		$path = path_join( base: WP_PLUGIN_DIR, path: $plugin_file );
 
 		if ( DIRECTORY_SEPARATOR == "\\" )
-			$path = str_replace( "/", "\\", $path );
+			$path = str_replace( search: "/", replace: "\\", subject: $path );
 
         if ( TRIIBO_API_SERVICES_FILE === $path )
 		{
@@ -657,8 +663,8 @@ class Triibo_Api_Services
 
             $plugin_meta[] = sprintf(
                 "<a href='%s' class='thickbox open-plugin-details-modal' aria-label='%s' data-title='%s'>%s</a>",
-                add_query_arg( "TB_iframe", "true", $url ),
-                esc_attr( text: sprintf( __( "More information about %s" ), $plugin_data[ "Name" ] ) ),
+                add_query_arg(  "TB_iframe", "true", $url ),
+                esc_attr( text: sprintf( format: __( text: "More information about %s" ), values: $plugin_data[ "Name" ] ) ),
                 esc_attr( text: $plugin_data[ "Name" ] ),
                 __( text: "Histórico de alterações" )
             );
@@ -700,7 +706,7 @@ class Triibo_Api_Services
 			"_is_integration",
 		];
 
-		if ( in_array( $meta_key, $triibo_metas ) )
+		if ( in_array( needle: $meta_key, haystack: $triibo_metas ) )
 			return false;
 
 		return $protected;
@@ -726,7 +732,7 @@ class Triibo_Api_Services
 
 		if ( !empty( $gallery ) )
 		{
-			$gallery_ids = explode( ",", $gallery );
+			$gallery_ids = explode( separator: ",", string: $gallery );
 
 			foreach ( $gallery_ids as $gallery_id )
 				wp_update_post( postarr: [ "ID" => $gallery_id, "post_parent" => $product_id, ] );

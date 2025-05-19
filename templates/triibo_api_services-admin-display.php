@@ -14,6 +14,6 @@
 	<h2>Triibo API Services</h2>
 
 	<h3>Plugins do ecossistema</h3>
-	<?php do_action( "triibo_api_service_add_button" ); ?>
+	<?php do_action( hook_name: "triibo_api_service_add_button" ); ?>
 
 </div>

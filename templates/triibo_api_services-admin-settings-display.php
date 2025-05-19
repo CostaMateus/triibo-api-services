@@ -17,8 +17,8 @@
 
 	<form method="POST" action="options.php">
 		<?php
-			settings_fields( "triibo_api_services_general_settings" );
-			do_settings_sections( "triibo_api_services_general_settings" );
+			settings_fields( option_group: "triibo_api_services_general_settings" );
+			do_settings_sections( page: "triibo_api_services_general_settings" );
 			submit_button();
 		?>
 	</form>

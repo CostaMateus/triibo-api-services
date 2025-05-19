@@ -10,7 +10,7 @@
  * @since 1.0.0
  * @version 2.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
 class Triibo_Api_Node extends Triibo_Api
 {
@@ -261,7 +261,7 @@ class Triibo_Api_Node extends Triibo_Api
 				? get_option( option: "triibo_api_services_node_hml_pass" )
 				: get_option( option: "triibo_api_services_node_prd_pass" );
 
-			$basic    = base64_encode( "{$username}:{$password}" );
+			$basic    = base64_encode( string: "{$username}:{$password}" );
 
 			$aux      = [ "Authorization: Basic {$basic}" ];
 
@@ -319,10 +319,16 @@ class Triibo_Api_Node extends Triibo_Api
 		if ( ! $str )
 			return null;
 
-		$iv   = hex2bin( "00000000000000000000000000000000" );
-		$encr = openssl_encrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
+		$iv   = hex2bin( string: "00000000000000000000000000000000" );
+		$encr = openssl_encrypt(
+			data       : $str,
+			cipher_algo: "aes-256-cbc",
+			passphrase : $key,
+			options    : OPENSSL_RAW_DATA,
+			iv         : $iv
+		);
 
-		return urlencode( base64_encode( $encr ) );
+		return urlencode( string: base64_encode( string: $encr ) );
     }
 
 	/**
@@ -340,10 +346,16 @@ class Triibo_Api_Node extends Triibo_Api
 		if ( ! $str )
 			return null;
 
-		$str = base64_decode( urldecode( $str ) );
-		$iv  = hex2bin( "00000000000000000000000000000000" );
+		$str = base64_decode( string: urldecode( string: $str ) );
+		$iv  = hex2bin( string: "00000000000000000000000000000000" );
 
-		return openssl_decrypt( $str, "aes-256-cbc", $key, OPENSSL_RAW_DATA, $iv );
+		return openssl_decrypt(
+			data       : $str,
+			cipher_algo: "aes-256-cbc",
+			passphrase : $key,
+			options    : OPENSSL_RAW_DATA,
+			iv         : $iv
+		);
     }
 
 	/**
@@ -372,7 +384,7 @@ class Triibo_Api_Node extends Triibo_Api
 	 */
 	private function format_cellphone( string $cellphone ) : string
 	{
-        return "+" . preg_replace( "/\D/", "", $cellphone );
+        return "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 	}
 
 	/**
@@ -599,16 +611,16 @@ class Triibo_Api_Node extends Triibo_Api
 			return $response;
 
 		$key64    = get_option( option: "_triibo_security_code" ); // inserted manually in DB.
-		$key      = base64_decode( $key64 );
+		$key      = base64_decode( string: $key64 );
 
 		$code     = $response[ "data" ][ "securityCode" ];
 
 		$decrypt  = $this->decrypt( str: $code, key: $key );
-		$decrypt  = json_decode( $decrypt );
+		$decrypt  = json_decode( json: $decrypt );
 
 		$decrypt->code *= 3;
 
-		$encrypt  = $this->encrypt( str: json_encode( $decrypt ), key: $key );
+		$encrypt  = $this->encrypt( str: json_encode( value: $decrypt ), key: $key );
 
 		$response[ "data" ][ "securityCode" ] = $encrypt;
 

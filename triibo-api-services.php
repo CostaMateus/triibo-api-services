@@ -17,21 +17,22 @@
  *
  * @version 2.0.0
  */
-defined( "ABSPATH" ) || exit;
+defined( constant_name: "ABSPATH" ) || exit;
 
-if ( !in_array( "woocommerce/woocommerce.php", apply_filters( "active_plugins", get_option( "active_plugins" ) ) ) ) return;
+if ( !in_array( needle: "woocommerce/woocommerce.php", haystack: apply_filters( hook_name: "active_plugins", value: get_option( option: "active_plugins" ) ) ) )
+	return;
 
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
  */
-define( "TRIIBO_API_SERVICES_VERSION", "2.0.0" );
-define( "TRIIBO_API_SERVICES_FILE",    __FILE__ );
+define( constant_name: "TRIIBO_API_SERVICES_VERSION", value: "2.0.0" );
+define( constant_name: "TRIIBO_API_SERVICES_FILE",    value: __FILE__ );
 
 /**
  * The core plugin class that is used to define admin-specific hooks.
  */
-require plugin_dir_path( __FILE__ ) . "includes/class-triibo-api-services.php";
+require plugin_dir_path( file: __FILE__ ) . "includes/class-triibo-api-services.php";
 
 /**
  * Begins execution of the plugin.
@@ -46,16 +47,16 @@ require plugin_dir_path( __FILE__ ) . "includes/class-triibo-api-services.php";
 function run_triibo_api_services()
 {
 	// Woo HPOS
-	add_action( "before_woocommerce_init", function ()
+	add_action( hook_name: "before_woocommerce_init", callback: function () : void
 	{
-		if ( defined( "WC_VERSION" ) && version_compare( WC_VERSION, "7.1", "<" ) )
+		if ( defined( constant_name: "WC_VERSION" ) && version_compare( version1: WC_VERSION, version2: "7.1", operator: "<" ) )
 			return;
 
-		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) )
+		if ( class_exists( class: \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) )
 			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility(
-				"custom_order_tables",
-				TRIIBO_API_SERVICES_FILE,
-				true
+				feature_id            : "custom_order_tables",
+				plugin_file           : TRIIBO_API_SERVICES_FILE,
+				positive_compatibility: true
 			);
 	} );
 
