@@ -265,14 +265,12 @@ class Triibo_Api_Node extends Triibo_Api
 
 			$aux      = [ "Authorization: Basic {$basic}" ];
 
-			if ( $token )
+			if ( !empty( $token ) )
 				$aux[] = $token;
-
-			$this->add_header( add: $aux );
 
 			return $this->exec(
 				endpoint: $this->url . $endpoint,
-				header  : $this->get_header(),
+				header  : array_merge( $this->get_header(), $aux ),
 				method  : $method,
 			);
 		}
@@ -283,22 +281,18 @@ class Triibo_Api_Node extends Triibo_Api
 				? get_option( option: "triibo_api_services_node_hml_auth_key" )
 				: get_option( option: "triibo_api_services_node_prd_auth_key" );
 
-			$this->add_header( add: [
-				"Authorization: {$token}",
-				"x-api-key: {$key}"
-			] );
-
 			return $this->exec(
 				endpoint: $this->url . $endpoint,
-				header  : $this->get_header()
+				header  : array_merge( $this->get_header(), [
+					"Authorization: {$token}",
+					"x-api-key: {$key}"
+				] )
 			);
 		}
 
-		$this->add_header( add: "Authorization: Bearer {$token}" );
-
 		return $this->exec(
 			endpoint: $this->url . $endpoint,
-			header  : $this->get_header(),
+			header  : array_merge( $this->get_header(), [ "Authorization: Bearer {$token}" ] ),
 			params  : $params,
 			method  : $method
 		);
@@ -370,7 +364,7 @@ class Triibo_Api_Node extends Triibo_Api
 	private function set_security_code( ?string $code = null ) : void
 	{
 		if ( $code )
-			$this->add_header( add: "securitycode: {$code}" );
+			$this->header = array_merge( $this->header, [ "securitycode: {$code}" ] );
 	}
 
 	/**

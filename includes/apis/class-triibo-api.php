@@ -135,23 +135,6 @@ abstract class Triibo_Api
 		return $this->header;
 	}
 
-	/**
-	 * Add header in basic header.
-	 *
-     * @since 2.0.0
-	 *
-	 * @param string|array 	$add 	Header to add
-	 *
-	 * @return void
-	 */
-	protected function add_header( string|array $add ) : void
-	{
-		if ( is_string( value: $add ) )
-			$add = [ $add ];
-
-		$this->header = array_merge( $this->header, $add );
-	}
-
     /**
      * Check if $attr is empty.
      *

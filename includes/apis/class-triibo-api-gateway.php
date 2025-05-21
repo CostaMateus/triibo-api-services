@@ -431,15 +431,13 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header(
-            add: [
-                "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
-                "uId"            => $sys_uid,
-            ]
-        );
+        $aux         = [
+            "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
+            "uId"            => $sys_uid,
+        ];
 
         $params      = [
-            "triiboHeader" => $this->get_header(),
+            "triiboHeader" => array_merge( $this->get_header(), $aux ),
             "orgID"        => $org_id,
             "uId"          => $uid,
         ];
@@ -474,17 +472,17 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function get_channel_token( ?string $uid = null ) : array
     {
-        $hash = $this->hash( uid: $uid );
+        $hash   = $this->hash( uid: $uid );
 
-        $this->add_header(
-            add: [
-                "uId"        => $uid,
-                "passPhrase" => $hash[ "passPhrase" ],
-                "challenge"  => $hash[ "challenge"  ]
-            ]
-        );
+        $aux    = [
+            "uId"        => $uid,
+            "passPhrase" => $hash[ "passPhrase" ],
+            "challenge"  => $hash[ "challenge"  ]
+        ];
 
-        return $this->call( endpoint: self::CHN_TKN_ID, params: [ "triiboHeader" => $this->get_header() ] );
+        $header = array_merge( $this->get_header(), $aux );
+
+        return $this->call( endpoint: self::CHN_TKN_ID, params: [ "triiboHeader" => $header ] );
     }
 
     /**
@@ -533,10 +531,10 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+        $aux    = [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ];
 
         $params = [
-            "triiboHeader"   => $this->get_header(),
+            "triiboHeader"   => array_merge( $this->get_header(), $aux ),
             "triiboId"       => "+{$triibo_id}@sms.triibo.com.br",
             "eventType"      => $event,
             "recursionValue" => $value,
@@ -588,15 +586,13 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header(
-            add: [
-                "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
-                "uId"            => $uid
-            ]
-        );
+        $aux      = [
+            "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ],
+            "uId"            => $uid
+        ];
 
         $params   = [
-            "triiboHeader"    => $this->get_header(),
+            "triiboHeader"    => array_merge( $this->get_header(), $aux ),
             "queryPartnerAPI" => [ "setUserInfo" ],
             "userInfo"        => [
                 "syncType"    => "override",
@@ -665,17 +661,17 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
-        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+        $aux       = [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ];
 
-        $params   = [
-            "triiboHeader" => $this->get_header(),
+        $params    = [
+            "triiboHeader" => array_merge( $this->get_header(), $aux ),
             "platform"     => "web",
             "cellphone"    => $cellphone,
         ];
 
-        $response = $this->call( endpoint: self::AUTH_SMS, params: $params );
+        $response  = $this->call( endpoint: self::AUTH_SMS, params: $params );
 
-        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+        $error     = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
 
         $this->log(
             is_error: $error,
@@ -726,18 +722,18 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         $cellphone = "+" . preg_replace( pattern: "/\D/", replacement: "", subject: $cellphone );
 
-        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
+        $aux       = [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ];
 
-        $params   = [
-            "triiboHeader"  => $this->get_header(),
+        $params    = [
+            "triiboHeader"  => array_merge( $this->get_header(), $aux ),
             "code"          => $code,
             "cellphone"     => $cellphone,
             "transactionId" => $trans_id,
         ];
 
-        $response = $this->call( endpoint: self::VAL_SMS, params: $params );
+        $response  = $this->call( endpoint: self::VAL_SMS, params: $params );
 
-        $error    = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
+        $error     = ( !$response[ "success" ] || ( isset( $response[ "data" ] ) && !$response[ "data" ][ "success" ] ) );
 
         $this->log(
             is_error: $error,
@@ -784,8 +780,6 @@ class Triibo_Api_Gateway extends Triibo_Api
             return $response;
         }
 
-        $this->add_header( add: [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ] );
-
         if ( $is_uid )
         {
             $user_info = [ "uId" => $data ];
@@ -802,8 +796,10 @@ class Triibo_Api_Gateway extends Triibo_Api
             ];
         }
 
+        $aux      = [ "channelTokenId" => $response[ "data" ][ "success" ][ "newToken" ][ "channelTokenId" ] ];
+
         $params   = [
-            "triiboHeader"    => $this->get_header(),
+            "triiboHeader"    => array_merge( $this->get_header(), $aux ),
             "queryPartnerAPI" => [ "getUserInfo" ],
             "userInfo"        => $user_info,
         ];
