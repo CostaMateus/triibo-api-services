@@ -435,6 +435,7 @@ class Triibo_Api_Node extends Triibo_Api
 		);
 
 		$this->log(
+			level  : "info",
 			message: "Token generated successfully.",
 			context: $response
 		);
@@ -653,6 +654,7 @@ class Triibo_Api_Node extends Triibo_Api
 			if ( $response_auth[ "success" ] && $phone )
 			{
 				$this->log(
+					level  : "info",
 					message: "find_uid : search user by phone '{$phone}'",
 					context: $response_auth
 				);
@@ -664,6 +666,7 @@ class Triibo_Api_Node extends Triibo_Api
 					$uid = $response_find[ "data" ][ "usersUid" ][ $phone ];
 
 					$this->log(
+						level  : "info",
 						message: "find_uid : user found '{$uid}'",
 						context: $response_find
 					);
@@ -685,6 +688,7 @@ class Triibo_Api_Node extends Triibo_Api
 		if ( ! $token )
 		{
 			$this->log(
+				level  : "info",
 				message: "validate_token : user without token {$user_id}",
 				context: [
 					"uid"   => $uid,
@@ -702,6 +706,7 @@ class Triibo_Api_Node extends Triibo_Api
 		if ( $diff->d > 0 || $diff->h > 10 )
 		{
 			$this->log(
+				level  : "info",
 				message: "validate_token : expired token {$user_id}",
 				context: [
 					"uid"   => $uid,

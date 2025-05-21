@@ -343,6 +343,7 @@ abstract class Triibo_Api
 			$message = "cURL Success: {$code} - {$url}";
 
 			$this->log(
+				level  : "info",
 				message: $message,
 				context: [ "data" => $data_log ]
 			);
