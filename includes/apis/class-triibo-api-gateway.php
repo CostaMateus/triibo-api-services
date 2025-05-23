@@ -306,7 +306,7 @@ class Triibo_Api_Gateway extends Triibo_Api
      */
     private function process_contact_list( array $contact, string $email, string $action ) : array
     {
-        $key      = array_search( needle: "emailMarketplace", haystack: array_column( array: $contact, column_name: "type" ) );
+        $key      = array_search( needle: "emailMarketplace", haystack: array_column( array: $contact, column_key: "type" ) );
         $verified = false;
 
         // email marketplace
@@ -335,7 +335,7 @@ class Triibo_Api_Gateway extends Triibo_Api
 
         if ( in_array( needle: $action, haystack: [ "UPDATE", "CREATE" ] ) )
         {
-            $key = array_search( needle: "email", haystack: array_column( array: $contact, column_name: "type" ) );
+            $key = array_search( needle: "email", haystack: array_column( array: $contact, column_key: "type" ) );
 
             // email
             if ( $key === false )
@@ -379,7 +379,7 @@ class Triibo_Api_Gateway extends Triibo_Api
         }
         else
         {
-            $key = array_search( needle: $option_id, haystack: array_column( array: $terms, column_name: "optInId" ) );
+            $key = array_search( needle: $option_id, haystack: array_column( array: $terms, column_key: "optInId" ) );
 
             if ( $key !== false )
             {
